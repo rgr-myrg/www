@@ -9,6 +9,7 @@
 		"omnitureLifecycleSessionTimeout" : "300",
 		"omnitureTrackingServer" : "sc.mtv.com",
 		"omnitureVisitorID" : "",
-		"omnitureDebugLogging" : "true"
+		"omnitureDebugLogging" : "true",
+		"demdexEnabled" : "true"
 	}
 ]
