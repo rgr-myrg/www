@@ -2,7 +2,13 @@
 	{
 		"omnitureEnabled" : "true",
 		"omnitureSuite"   : "viarnd",
-		"omnitureTrackingServer"  : "sc.mtv.com",
-		"omnitureChannel" : "BentoRig Channel"
+		"omnitureChannel" : "Bento TestRig Channel",
+		"omnitureCharSet" : "ISO-8859-1",
+		"omnitureCurrencyCode" : "USD",
+		"omnitureSSL" : "false",
+		"omnitureLifecycleSessionTimeout" : "300",
+		"omnitureTrackingServer" : "sc.mtv.com",
+		"omnitureVisitorID" : "",
+		"omnitureDebugLogging" : "true"
 	}
 ]
