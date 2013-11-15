@@ -24,79 +24,71 @@
 									response = request.response;
 									break;
 							}
-
-							if(typeof request.CODAOnRequestComplete === 'function'){
-								request.CODAOnRequestComplete(response);
-							}
 						}else{
+							response = request.status + ' ' + request.statusText;
+						}
+						if(typeof request.CODAOnAjaxRequestComplete === 'function'){
+							request.CODAOnAjaxRequestComplete(response);
 						}
 					}
 				}catch(e){
+					if(typeof request.CODAOnAjaxError === 'function'){
+						request.CODAOnAjaxError(e);
+					}
 				}
 			};
 
-			if(window.XMLHttpRequest){
-				request = new XMLHttpRequest();
-			} else if(window.ActiveXObject){
-				request = new ActiveXObject('Microsoft.XMLHTTP');
+			try{
+				if(window.XMLHttpRequest){
+					request = new XMLHttpRequest();
+				} else if(window.ActiveXObject){
+					request = new ActiveXObject('Microsoft.XMLHTTP');
+				}
+			}catch(e){
 			}
 		return {
 			send : function(options){
-				if(options.hasOwnProperty('contentType') && options.contentType){
-					contentType = options.contentType;
+				if(typeof options === 'object'){
+					if(options.hasOwnProperty('contentType') && options.contentType){
+						contentType = options.contentType;
+					}
+					if(options.hasOwnProperty('dataType') && options.dataType){
+						dataType = options.dataType;
+					}
+					if(options.hasOwnProperty('data') && options.data){
+						postData = typeof options.data === 'object' ? JSON.stringify(options.data) : options.data;
+					}
+					if(options.hasOwnProperty('method') && options.method){
+						method = options.method;
+					}
+					if(options.hasOwnProperty('async')){
+						async = options.async || options.async === 'true' ? options.async : false;
+					}
+					if(options.hasOwnProperty('onError') && typeof options.onError === 'function'){
+						request.CODAOnAjaxError = options.onError;
+					}
+					if(options.hasOwnProperty('url') && options.url){
+						try{
+							request.open(method, options.url, async);
+							request.onreadystatechange = onReadyState;
+							request.setRequestHeader('Content-Type', contentType);
+							request.send(postData);
+						}catch(e){
+							if(typeof request.CODAOnAjaxError === 'function'){
+								request.CODAOnAjaxError(e);
+							}
+						}
+					}
 				}
-				if(options.hasOwnProperty('dataType') && options.dataType){
-					dataType = options.dataType;
-				}
-				if(options.hasOwnProperty('data') && options.data){
-					postData = typeof options.data === 'object' ? JSON.stringify(options.data) : options.data;
-				}
-				if(options.hasOwnProperty('method') && options.method){
-					method = options.method;
-				}
-				if(options.hasOwnProperty('async')){
-					async = options.async || options.async === 'true' ? options.async : false;
-				}
-				if(options.hasOwnProperty('url') && options.url){
-					request.onreadystatechange = onReadyState;
-					request.open(method, options.url, async);
-					request.setRequestHeader('Content-Type', contentType);
-				//	request.setRequestHeader("Access-Control-Allow-Origin", "http://localhost");
-					request.send(postData);
-
-					return this;
-				}
+				return this;
 			},
 			done : function(func){
 				if(typeof func === 'function'){
-					request.CODAOnRequestComplete = func;
+					request.CODAOnAjaxRequestComplete = func;
 				}
+
+				return this;
 			}
 		};
 	})();
 })(CODA);
-
-// CODA.Ajax.send({
-// 	url: "json.php",
-//     method: 'POST',
-//     data: {},
-//     dataType: 'json',
-//     contentType: 'application/json; charset=utf-8'
-// }).done(
-// 	function(data){
-// 		console.log(data);
-// 	}
-// );
-
-CODA.Ajax.send({
-	url: "http://user.flux.com/api/v1/user/ucid/0F2EC20202C22E0F000102C22E0F/mtv",
-    method: 'POST',
-    data: {firstName:'Marek', favoriteNumber:12, birthDate:'1990-10-11', zipCode:'12345', bio:'this is a very short bio'},
-    dataType: 'json',
-    contentType: 'application/json; charset=utf-8'
-}).done(
-	function(data){
-		console.log(data);
-	}
-);
-
