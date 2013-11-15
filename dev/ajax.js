@@ -1,7 +1,7 @@
-(function($){$.CODA = typeof $.CODA === 'object' ? $.CODA : {};})(window);
+(function($){$.btg = typeof $.btg === 'object' ? $.btg : {};})(window);
 
 (function($){
-	$.Ajax = (function(){
+	$.AjaxUtils = (function(){
 		var	contentType  = "application/x-www-form-urlencoded; charset=UTF-8",
 			dataType     = "text",
 			method       = "POST",
@@ -33,7 +33,7 @@
 					}
 				}catch(e){
 					if(typeof request.CODAOnAjaxError === 'function'){
-						request.CODAOnAjaxError(e);
+						request.CODAOnAjaxError(request, request.statusText);
 					}
 				}
 			};
@@ -64,8 +64,8 @@
 					if(options.hasOwnProperty('async')){
 						async = options.async || options.async === 'true' ? options.async : false;
 					}
-					if(options.hasOwnProperty('onError') && typeof options.onError === 'function'){
-						request.CODAOnAjaxError = options.onError;
+					if(options.hasOwnProperty('error') && typeof options.error === 'function'){
+						request.CODAOnAjaxError = options.error;
 					}
 					if(options.hasOwnProperty('url') && options.url){
 						try{
@@ -91,4 +91,4 @@
 			}
 		};
 	})();
-})(CODA);
+})(btg);
