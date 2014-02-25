@@ -1,5 +1,5 @@
 [
 	{
-		"isCoppaCompliant" : "true"
+		"isCoppaCompliant" : 1
 	}
 ]

@@ -6,8 +6,8 @@
 		"height" : "250",
 		"appName" : "btg_test_app",
 		"sections" : "",
-		"isDFP" : "false",
-		"enableCloseButton" : "true",
+		"isDFP" : 0,
+		"enableCloseButton" : 1,
 		"closeButtonInterval" : "5",
 		"isRefreshable" : "false",
 		"refreshInterval" : "10"
