@@ -8,7 +8,7 @@
 		"admsLifecycleSessionTimeout" : 300,
 		"admsTrackingServer" : "sc.mtv.com",
 		"admsVisitorID" : "",
-		"admsxDebugLoggingEnabled" : true,
+		"admsDebugLoggingEnabled" : true,
 		"admsOfflineTrackingEnabled" : true
 	}
 ]
