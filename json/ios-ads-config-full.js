@@ -1,9 +1,9 @@
 [
 	{
-        "config" : {
+		"config" : {
 			"isCoppaCompliant" : true
-        },
-        "adData" : {
+		},
+		"adData" : {
 			"x" : 0,
 			"y"   : 0,
 			"width" : 300,
@@ -36,6 +36,6 @@
 					}
 				}		        	
 			}
-        }
-    }
+		}
+	}
 ]
