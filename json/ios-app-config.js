@@ -9,6 +9,10 @@
 		"admsTrackingServer" : "sc.mtv.com",
 		"admsVisitorID" : "",
 		"admsDebugLoggingEnabled" : true,
-		"admsOfflineTrackingEnabled" : true
+		"admsOfflineTrackingEnabled" : true,
+		"admsContextData"   : {
+			"contextDataKey1"    : "testcontextvalue1",
+			"contextDataKey2"    : "testcontextvalue2"
+		}
 	}
 ]
