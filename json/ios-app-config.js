@@ -10,9 +10,5 @@
 		"admsVisitorID" : "",
 		"admsDebugLoggingEnabled" : true,
 		"admsOfflineTrackingEnabled" : true,
-		"admsContextData"   : {
-			"m.contextDataKey1"    : "testcontextvalue1",
-			"contextDataKey2"    : "testcontextvalue2"
-		}
 	}
 ]
