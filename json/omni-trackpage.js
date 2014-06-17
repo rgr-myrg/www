@@ -17,7 +17,8 @@
         "channel"  : "remote sandbox channel",
         "contextData"   : {
             "m.contextDataKey1"    : "testcontextvalue1",
-            "contextDataKey2"    : "testcontextvalue2"
+            "contextDataKey2"    : "testcontextvalue2",
+	    "v.contextDataKey3" : "testcontextvalue3"
         }
 	}
 ]
