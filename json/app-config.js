@@ -1,5 +1,6 @@
 [
 	{
+		"debugMode" : "true",
 		"omnitureEnabled" : "true",
 		"omnitureSuite"   : "viarnd",
 		"omnitureChannel" : "Bento TestRig Channel",
