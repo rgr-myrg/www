@@ -18,6 +18,9 @@
 			"keyValues" : {
 				"testmodePrefix" : "celtra_mraid"
 			},
+			"keychainKeyValues" : {
+				
+			},
 			"dfpData" : {
 				"metadata" : {
 					"property" : "mtv_news",
