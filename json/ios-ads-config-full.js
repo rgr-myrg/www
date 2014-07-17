@@ -1,7 +1,7 @@
 [
 	{
 		"config" : {
-			"isCoppaCompliant" : true
+			"isCoppaCompliant" : false
 		},
 		"adData" : {
 			"x" : 0,
@@ -17,9 +17,6 @@
 			"refreshInterval" : 10,
 			"keyValues" : {
 				"testmodePrefix" : "celtra_mraid"
-			},
-			"keychainKeyValues" : {
-				"aamSegments" : ""
 			},
 			"dfpData" : {
 				"metadata" : {
