@@ -19,7 +19,6 @@
 				"testmodePrefix" : "celtra_mraid"
 			},
 			"keychainKeyValues" : {
-				"aamSegments" : ""
 			},
 			"dfpData" : {
 				"metadata" : {

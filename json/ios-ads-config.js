@@ -1,5 +1,0 @@
-[
-	{
-		"isCoppaCompliant" : 1
-	}
-]
