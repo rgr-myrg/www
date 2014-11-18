@@ -16,7 +16,8 @@
 			"channel" : "test_rig_channel",
 			"TVEContextDataFreePreviewPickedMethodPageName" : "test_rig_fp_picked_method",
 			"TVEContextDataFreePreviewSucceedMethodPageName" : "test_rig_fp_succeed_method",
-			"TVEContextDataElvisHasJustExpiredPageName" : "test_rig_free_preview_expired"
+			"TVEContextDataElvisHasJustExpiredPageName" : "test_rig_free_preview_expired",
+			"TVEContextDataCheckAuthPageName" : "test_rig_check_auth"
 		}
 	}
 ]
