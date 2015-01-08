@@ -13,7 +13,11 @@
 			"TVEContextDataElvisHasJustExpiredPageName" : "test_rig_elvis_preview_has_just_expired",
 			"TVEContextDataElvisPreviewLockedPageName" : "test_rig_elvis_locked",
 			"TVEContextDataActionPropOrigin" : "test_rig_origin",
-			"channel" : "test_rig_channel"
+			"channel" : "test_rig_channel",
+			"TVEContextDataFreePreviewPickedMethodPageName" : "test_rig_fp_picked_method",
+			"TVEContextDataFreePreviewSucceedMethodPageName" : "test_rig_fp_succeed_method",
+			"TVEContextDataElvisHasJustExpiredPageName" : "test_rig_free_preview_expired",
+			"TVEContextDataCheckAuthPageName" : "test_rig_check_auth"
 		},
 		"admsLifecycleSessionTimeout" : 30
 	}
