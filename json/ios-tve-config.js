@@ -14,6 +14,7 @@
 			"TVEContextDataElvisPreviewLockedPageName" : "test_rig_elvis_locked",
 			"TVEContextDataActionPropOrigin" : "test_rig_origin",
 			"channel" : "test_rig_channel"
-		}
+		},
+		"admsLifecycleSessionTimeout" : 30
 	}
 ]
