@@ -1,7 +1,6 @@
 [
 {
 "admsMeasureEnabled" : true,
-"admsEnabled" : false,
 "admsReportSuiteIDs"  : "viarnd",
 "admsCharacterSet" : "ISO-8859-1",
 "admsCurrencyCode" : "USD",
