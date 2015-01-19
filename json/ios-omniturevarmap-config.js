@@ -1,4 +1,4 @@
-{
+[{
 	"appId" : "btg_test_app",
 	"applicationName" : "BTG Test App iOS",
 	"ariaEnabled" : true,
@@ -32,4 +32,4 @@
 	"admsContextData" : {},
 	"version" : "2.0.0-TEST",
 	"TTL" : 0
-}
+}]
