@@ -6,7 +6,7 @@
 	"nielsenAppID" : "T383342AD-ACC2-4BFA-86A1-2CA4ECB932F6",
 	"nielsenSFCode" : "uat-cert",
 	"loggingEnabled" : true,
-	"admsMeasureEnabled" : false,
+	"admsMeasureEnabled" : true,
 	"admsSslEnabled" : false,
 	"admsDebugLoggingEnabled" : false,
 	"admsTimeSpentTrackingEnabled" : false,
