@@ -157,7 +157,7 @@ Bento.IMAControllerAS3Test = function() {
 
 				var playerContainer = getPlayerContainer();
 
-				setDisplaySize( playerContainer.offsetWidth, playerContainer.offsetHeight, false );
+				//setDisplaySize( playerContainer.offsetWidth, playerContainer.offsetHeight, false );
 
 				setDisplaySize({
 
