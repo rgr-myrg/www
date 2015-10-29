@@ -32,6 +32,7 @@ Bento.IMAControllerAS3Test = function() {
 
 			}
 
+			// Doesn't seem to work on Chrome. Test.
 			// (function() {
 
 			// 	adBridge[ name ].apply( adBridge, arguments );
@@ -95,7 +96,7 @@ Bento.IMAControllerAS3Test = function() {
 
 		Bento.onAdPodPlayEnd( {} );
 
-		//adBridge = NULL;
+		adBridge = NULL;
 
 		return TRUE;
 
@@ -117,8 +118,6 @@ Bento.IMAControllerAS3Test = function() {
 
 			playerContainerId = containerId;
 
-			//adContainerId = playerContainerId + Bento.IMAVars.CONTAINER_ID;
-			//adContainerId = Bento.AdSdkLoader.cloneAdBridgeSwf( containerId );
 			adContainerId = cloneAdBridgeSwf();
 
 			return adContainerId;
@@ -138,12 +137,6 @@ Bento.IMAControllerAS3Test = function() {
 		onAdBridgeLoaded: function() {
 
 			console.log( LOGTAG + "onAdBridgeLoaded hasIsTimeForAnAd", hasIsTimeForAnAd );
-
-			// if ( !adContainerId ) {
-
-			// 	adContainerId = Bento.AdSdkLoader.cloneAdBridgeSwf( playerContainerId );
-
-			// }
 
 			adContainerId = cloneAdBridgeSwf();
 
@@ -187,6 +180,7 @@ Bento.IMAControllerAS3Test = function() {
 
 				console.log( LOGTAG + "adTagUrl", adTagUrl );
 
+				// Test only
 				adTagUrl = 'http://pubads.g.doubleclick.net/gampad/ads?sz=640x480&' +
 				'iu=/124319096/external/ad_rule_samples&ciu_szs=300x250&ad_rule=1&' +
 				'impl=s&gdfp_req=1&env=vp&output=vmap&unviewed_position_start=1&' +
