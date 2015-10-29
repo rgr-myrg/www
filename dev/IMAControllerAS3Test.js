@@ -140,7 +140,7 @@ Bento.IMAControllerAS3Test = function() {
 
 			adContainerId = cloneAdBridgeSwf();
 
-			hasAdBridgeLoaded = true;
+			hasAdBridgeLoaded = TRUE;
 
 			adBridge = getAdBridgeContainer();
 
@@ -165,7 +165,7 @@ Bento.IMAControllerAS3Test = function() {
 					height : playerContainer.offsetHeight,
 					top    : playerContainer.offsetTop,
 					left   : playerContainer.offsetLeft,
-					isFullScreen : false
+					isFullScreen : FALSE
 
 				});
 
@@ -181,11 +181,13 @@ Bento.IMAControllerAS3Test = function() {
 				console.log( LOGTAG + "adTagUrl", adTagUrl );
 
 				// Test only
-				adTagUrl = 'http://pubads.g.doubleclick.net/gampad/ads?sz=640x480&' +
-				'iu=/124319096/external/ad_rule_samples&ciu_szs=300x250&ad_rule=1&' +
-				'impl=s&gdfp_req=1&env=vp&output=vmap&unviewed_position_start=1&' +
-				'cust_params=deployment%3Ddevsite%26sample_ar%3Dpremidpost&cmsid=496&' +
-				'vid=short_onecue&correlator=';
+				// adTagUrl = 'http://pubads.g.doubleclick.net/gampad/ads?sz=640x480&' +
+				// 'iu=/124319096/external/ad_rule_samples&ciu_szs=300x250&ad_rule=1&' +
+				// 'impl=s&gdfp_req=1&env=vp&output=vmap&unviewed_position_start=1&' +
+				// 'cust_params=deployment%3Ddevsite%26sample_ar%3Dpremidpost&cmsid=496&' +
+				// 'vid=short_onecue&correlator=';
+
+				//adTagUrl = "https://pubads.g.doubleclick.net/gampad/ads?env=vp&gdfp_req=1&unviewed_position_start=1&output=xml_vmap1&h1=en&ad_rule=1&url=http%3A%2F%2Fstage.centrictv.com%2Fvideos%2Fbeing%2F2014%2Ffull-episodes%2Fbeing-deitrick-haddon-episode-101.html&correlator=3243084017041408&cust_params=n%3Dbeing-deitrick-haddon-episode-101%26sub%3Dbeing%26prod%3D%26sz%3D250x250%26vad%3Dn%26embedshow%3D%26lt%26embedn%3D%26lt%26tile%3D4%26ct%3Dvideopage%26loc%3D4%26anum%3D1%26domainname%3Dstage.centrictv.com%26ord%3D1446136750223%26prog%3Dfullepisode&description_url=http%3A%2F%2Fstage.centrictv.com%2Fvideos%2Fbeing%2F2014%2Ffull-episodes%2Fbeing-deitrick-haddon-episode-101.html&cmsid=1163&iu=%2F271659723%2Fcentrictv.com%2FVideo&vid=538a9712-ae46-3148-85af-ca2999db93d3&sz=250x250%7C355x200&sdkv=h.3.111.0&sdki=1&scor=2742788321968128&adk=4037042209&osd=2&frm=0&ged=ta1_ve3_pt4.3.4_td4_tt1_pd1_bs10_tv1_is0_er120.10.320.365_sv2_sp1_vi0.0.559.375_vp100_ct1_vb1_vl1_vr1_eb24171";
 
 				execAdBridgeMethod( "setImaUrl", adTagUrl );
 
