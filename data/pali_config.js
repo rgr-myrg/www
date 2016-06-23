@@ -1,3 +1,1 @@
-{
-	"refresh": false
-}
+{"refresh": false}
