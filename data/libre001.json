@@ -1,71 +1,19 @@
 [
 {
 "title"   : "PRÓLOGO",
-"content" : "Mi canción es una muchacha.\nElla, cada vez que ve una azalea,\nse lanza al agua.\nAyer encontró a Dios\ndurmiendo en esa flor:\nSe agarró de su pureza y se arrojó\na la cascada.\nAhora es mía\nel agua.",
+"content" : "Mi canción es una muchacha.\nElla, cada vez que ve una azalea,\n\tse lanza al agua.\nAyer encontró a Dios\n\tdurmiendo en esa flor:\nSe agarró de su pureza y se arrojó\na la cascada.\nAhora es mía\n\tel agua.",
 "author"  : "Polibio Mayorga",
 "book"    : "La Voz y Los Espejos"
 },
 {
 "title"   : "BONDAD",
-"content" : "La bondad es un árbol de luciérnagas:\nA veces no se enciende...\nEntonces busco el mar\ny naufrago\nhasta que amanece.",
+"content" : "La bondad es un árbol de luciérnagas:\n\tA veces no se enciende...\nEntonces busco el mar\n\ty naufrago\nhasta que amanece.",
 "author"  : "Polibio Mayorga",
 "book"    : "La Voz y Los Espejos"
 },
 {
 "title"   : "ACUARELAS",
-"content" : "
-La sencillez se viste
-con la flor del silencio.
-
-Con la aguja mágica
-puedes bordar el nombre de tus lágrimas.
-
-Suena la campana
-cuando se toca el clítoris.
-
-Clavas los dedos en la música
-y salen golondrinas.
-
-La vida tiene su dolor de espaldas:
-Te curas con guitarras,
-con hojas de muchachas
-o con el eco de una santa.
-
-En el espejo
-miras tu cara desde el otro lado.
-
-Si la muerte es un hilo,
-puedes tejer tu propio jeroglífico.
-
-El sombrerito de la sombra
-tiene rumor de mariposa.
-
-El diablo echando candela
-es una brillante idea.
-
-La ilusión es telaraña
-que jamás se acaba.
-
-La pena se hace espuma
-en los océanos.
-
-Miras a los vivos: Están muertos.
-Miras a los muertos: Están vivos.
-
-Buscas una oscuridad
-difícil de tocar y
-fácil de no tocar.
-
-Curas a los locos
-con aguas de silencio
-y todos
-quieren el remedio.
-
-Creas, pintas y dibujas....
-
-Pero al final, bien sabes
-que la esperanza es una
-amable prostituta.",
+"content" : "La sencillez se viste\n\tcon la flor del silencio.\n\nCon la aguja mágica\n\tpuedes bordar el nombre de tus lágrimas.\n\nSuena la campana\n\tcuando se toca el clítoris.\n\nClavas los dedos en la música\n\ty salen golondrinas.\n\nLa vida tiene su dolor de espaldas:\n\tTe curas con guitarras,\n\tcon hojas de muchachas\\tno con el eco de una santa.\n\nEn el espejo\n\tmiras tu cara desde el otro lado.\n\nSi la muerte es un hilo,\n\tpuedes tejer tu propio jeroglífico.\n\nEl sombrerito de la sombra\n\ttiene rumor de mariposa.\n\nEl diablo echando candela\n\tes una brillante idea.\n\nLa ilusión es telaraña\n\tque jamás se acaba.\n\nLa pena se hace espuma\n\ten los océanos.\n\nMiras a los vivos: Están muertos.\nMiras a los muertos: Están vivos.\n\nBuscas una oscuridad\n\tdifícil de tocar y\n\tfácil de no tocar.\n\nCuras a los locos\n\tcon aguas de silencio\n\ty todos\n\tquieren el remedio.\n\nCreas, pintas y dibujas...\n\nPero al final, bien sabes\n\tque la esperanza es una\n\tamable prostituta.",
 "author"  : "Polibio Mayorga",
 "book"    : "La Voz y Los Espejos"
 }
