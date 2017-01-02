@@ -3,9 +3,9 @@
 "bookId" : 1,
 "title"  : "La Voz y Los Espejos",
 "author" : "Polibio Mayorga",
-"image"  : "https://c4.staticflickr.com/5/4043/4650387067_c4d690ea26_b.jpg",
+"image"  : "http://rgr-myrg.github.io/www/app/libre/img/cover-1.jpg",
 "url"    : "http://",
-"data"   : "http://rgr-myrg.github.io/www/data/libre/book-1-items.json",
+"data"   : "http://rgr-myrg.github.io/www/app/libre/json/book-1-items.json",
 "items"  : 3
 }
 ]
