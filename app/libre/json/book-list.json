@@ -5,7 +5,7 @@
 "author" : "Polibio Mayorga",
 "image"  : "http://rgr-myrg.github.io/www/app/libre/img/cover-1.jpg",
 "url"    : "http://",
-"data"   : "http://rgr-myrg.github.io/www/app/libre/json/book-1-items.json",
+"data"   : "book-1-items.json",
 "items"  : 3
 }
 ]
