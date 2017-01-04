@@ -1,7 +1,8 @@
 [
 {
 "itemId"  : 1,
-"title"   : "PRÓLOGO",
+"titleSP" : "PRÓLOGO",
+"titleEN" : "PROLOGUE",
 "spanish" : "http://rgr-myrg.github.io/www/app/libre/html/1_1_sp.html",
 "english" : "http://rgr-myrg.github.io/www/app/libre/html/1_1_en.html",
 "bookId"  : 1,
@@ -9,7 +10,8 @@
 },
 {
 "itemId"  : 2,
-"title"   : "BONDAD",
+"titleSP" : "BONDAD",
+"titleEN" : "KINDNESS",
 "spanish" : "http://rgr-myrg.github.io/www/app/libre/html/1_2_sp.html",
 "english" : "http://rgr-myrg.github.io/www/app/libre/html/1_2_en.html",
 "bookId"  : 1,
@@ -17,7 +19,8 @@
 },
 {
 "itemId"  : 3,
-"title"   : "ACUARELAS",
+"titleSP" : "ACUARELAS",
+"titleEN" : "WATERCOLOR",
 "spanish" : "http://rgr-myrg.github.io/www/app/libre/html/1_3_sp.html",
 "english" : "http://rgr-myrg.github.io/www/app/libre/html/1_3_en.html",
 "bookId"  : 1,
