@@ -1,8 +1,17 @@
 [
 {
+"itemId"  : 0,
+"titleSP" : "Poesía",
+"titleEN" : "Poetry",
+"spanish" : "http://rgr-myrg.github.io/www/app/libre/html/1_0_sp.html",
+"english" : "http://rgr-myrg.github.io/www/app/libre/html/1_0_en.html",
+"bookId"  : 1,
+"image"   : "http://"
+},
+{
 "itemId"  : 1,
-"titleSP" : "PRÓLOGO",
-"titleEN" : "PROLOGUE",
+"titleSP" : "",
+"titleEN" : "",
 "spanish" : "http://rgr-myrg.github.io/www/app/libre/html/1_1_sp.html",
 "english" : "http://rgr-myrg.github.io/www/app/libre/html/1_1_en.html",
 "bookId"  : 1,
@@ -10,8 +19,8 @@
 },
 {
 "itemId"  : 2,
-"titleSP" : "BONDAD",
-"titleEN" : "KINDNESS",
+"titleSP" : "Prólogo",
+"titleEN" : "PROLOGUE",
 "spanish" : "http://rgr-myrg.github.io/www/app/libre/html/1_2_sp.html",
 "english" : "http://rgr-myrg.github.io/www/app/libre/html/1_2_en.html",
 "bookId"  : 1,
@@ -19,11 +28,11 @@
 },
 {
 "itemId"  : 3,
-"titleSP" : "ACUARELAS",
-"titleEN" : "WATERCOLOR",
+"titleSP" : "Bondad",
+"titleEN" : "Kindness",
 "spanish" : "http://rgr-myrg.github.io/www/app/libre/html/1_3_sp.html",
 "english" : "http://rgr-myrg.github.io/www/app/libre/html/1_3_en.html",
 "bookId"  : 1,
-"image"   : "https://c1.staticflickr.com/3/2478/3813626692_b0122f487e_b.jpg"
+"image"   : "http://"
 }
 ]
