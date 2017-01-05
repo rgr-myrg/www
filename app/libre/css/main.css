@@ -1,7 +1,13 @@
 body {
 	font-family: 'Special Elite', cursive;
 	line-height: 20px;
+	text-align: center;
+}
+#main {
+	display: inline-block;
+	margin: auto;
+	text-align: left;
 }
 #footer {
-	margin-top: 35px;
+	padding-top: 25px;
 }
