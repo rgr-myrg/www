@@ -1,8 +1,8 @@
 [
 {
 "itemId"  : 1,
-"titleSP" : "Poesía",
-"titleEN" : "Poetry",
+"titleSP" : "",
+"titleEN" : "",
 "spanish" : "http://rgr-myrg.github.io/www/app/libre/html/1_1_sp.html",
 "english" : "http://rgr-myrg.github.io/www/app/libre/html/1_1_en.html",
 "bookId"  : 1,
@@ -32,6 +32,15 @@
 "titleEN" : "Kindness",
 "spanish" : "http://rgr-myrg.github.io/www/app/libre/html/1_4_sp.html",
 "english" : "http://rgr-myrg.github.io/www/app/libre/html/1_4_en.html",
+"bookId"  : 1,
+"image"   : "http://"
+},
+{
+"itemId"  : 5,
+"titleSP" : "La Voz y Los Espejos",
+"titleEN" : "The Voice and The Mirrors",
+"spanish" : "http://rgr-myrg.github.io/www/app/libre/html/1_5_sp.html",
+"english" : "http://rgr-myrg.github.io/www/app/libre/html/1_5_en.html",
 "bookId"  : 1,
 "image"   : "http://"
 }
