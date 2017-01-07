@@ -1,13 +1,3 @@
-body {
-	font-family: 'Special Elite', cursive;
-	line-height: 20px;
-	text-align: center;
-}
-#main {
-	display: inline-block;
-	margin: auto;
-	text-align: left;
-}
-#footer {
-	padding-top: 25px;
-}
+body {font-family: 'Special Elite', cursive;line-height: 20px;text-align: center;}
+#main {display: inline-block;margin: auto;text-align: left;}
+#footer {padding-top: 25px;}
