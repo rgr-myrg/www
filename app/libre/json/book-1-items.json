@@ -1,8 +1,8 @@
 [
 {
 "itemId"  : 1,
-"titleSP" : "",
-"titleEN" : "",
+"titleSP" : "Dedicación",
+"titleEN" : "Dedication",
 "spanish" : "http://rgr-myrg.github.io/www/app/libre/html/1_1_sp.html",
 "english" : "http://rgr-myrg.github.io/www/app/libre/html/1_1_en.html",
 "bookId"  : 1,
@@ -10,8 +10,8 @@
 },
 {
 "itemId"  : 2,
-"titleSP" : "",
-"titleEN" : "",
+"titleSP" : "Epígrafo",
+"titleEN" : "Epigraph",
 "spanish" : "http://rgr-myrg.github.io/www/app/libre/html/1_2_sp.html",
 "english" : "http://rgr-myrg.github.io/www/app/libre/html/1_2_en.html",
 "bookId"  : 1,
@@ -20,7 +20,7 @@
 {
 "itemId"  : 3,
 "titleSP" : "Prólogo",
-"titleEN" : "PROLOGUE",
+"titleEN" : "Prologue",
 "spanish" : "http://rgr-myrg.github.io/www/app/libre/html/1_3_sp.html",
 "english" : "http://rgr-myrg.github.io/www/app/libre/html/1_3_en.html",
 "bookId"  : 1,
