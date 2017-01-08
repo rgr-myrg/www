@@ -1,8 +1,8 @@
 [
 {
 "itemId"  : 1,
-"titleSP" : "Dedicación",
-"titleEN" : "Dedication",
+"titleSP" : "Título",
+"titleEN" : "Title",
 "spanish" : "http://rgr-myrg.github.io/www/app/libre/html/1_1_sp.html",
 "english" : "http://rgr-myrg.github.io/www/app/libre/html/1_1_en.html",
 "bookId"  : 1,
@@ -10,8 +10,8 @@
 },
 {
 "itemId"  : 2,
-"titleSP" : "Epígrafe",
-"titleEN" : "Epigraph",
+"titleSP" : "Dedicación",
+"titleEN" : "Dedication",
 "spanish" : "http://rgr-myrg.github.io/www/app/libre/html/1_2_sp.html",
 "english" : "http://rgr-myrg.github.io/www/app/libre/html/1_2_en.html",
 "bookId"  : 1,
@@ -19,17 +19,17 @@
 },
 {
 "itemId"  : 3,
-"titleSP" : "Prólogo",
-"titleEN" : "Prologue",
+"titleSP" : "Epígrafe",
+"titleEN" : "Epigraph",
 "spanish" : "http://rgr-myrg.github.io/www/app/libre/html/1_3_sp.html",
 "english" : "http://rgr-myrg.github.io/www/app/libre/html/1_3_en.html",
-"bookId"  : 1,
+"bookId"  : 4,
 "image"   : "http://"
 },
 {
 "itemId"  : 4,
-"titleSP" : "Bondad",
-"titleEN" : "Kindness",
+"titleSP" : "Prólogo",
+"titleEN" : "Prologue",
 "spanish" : "http://rgr-myrg.github.io/www/app/libre/html/1_4_sp.html",
 "english" : "http://rgr-myrg.github.io/www/app/libre/html/1_4_en.html",
 "bookId"  : 1,
@@ -37,10 +37,19 @@
 },
 {
 "itemId"  : 5,
-"titleSP" : "La Voz y Los Espejos",
-"titleEN" : "The Voice and The Mirrors",
+"titleSP" : "Bondad",
+"titleEN" : "Kindness",
 "spanish" : "http://rgr-myrg.github.io/www/app/libre/html/1_5_sp.html",
 "english" : "http://rgr-myrg.github.io/www/app/libre/html/1_5_en.html",
+"bookId"  : 1,
+"image"   : "http://"
+},
+{
+"itemId"  : 6,
+"titleSP" : "La Voz y Los Espejos",
+"titleEN" : "The Voice and The Mirrors",
+"spanish" : "http://rgr-myrg.github.io/www/app/libre/html/1_6_sp.html",
+"english" : "http://rgr-myrg.github.io/www/app/libre/html/1_6_en.html",
 "bookId"  : 1,
 "image"   : "http://"
 }
