@@ -1,41 +1,41 @@
 [
 {
-"itemId"  : "PM-01-01",
+"itemKey" : "PM-01-01",
 "title"   : "Title",
 "content" : "http://rgr-myrg.github.io/www/app/libre/html/1_1_en.html",
 "bookId"  : 1,
 "image"   : "http://"
 },
 {
-"itemId"  : "PM-01-02",
+"itemKey" : "PM-01-02",
 "title"   : "Dedication",
 "content" : "http://rgr-myrg.github.io/www/app/libre/html/1_2_en.html",
 "bookId"  : 1,
 "image"   : "http://"
 },
 {
-"itemId"  : "PM-01-03",
+"itemKey" : "PM-01-03",
 "title"   : "Epigraph",
 "content" : "http://rgr-myrg.github.io/www/app/libre/html/1_3_en.html",
 "bookId"  : 1,
 "image"   : "http://"
 },
 {
-"itemId"  : "PM-01-04",
+"itemKey" : "PM-01-04",
 "title"   : "Prologue",
 "content" : "http://rgr-myrg.github.io/www/app/libre/html/1_4_en.html",
 "bookId"  : 1,
 "image"   : "http://"
 },
 {
-"itemId"  : "PM-01-05",
+"itemKey" : "PM-01-05",
 "title"   : "Kindness",
 "content" : "http://rgr-myrg.github.io/www/app/libre/html/1_5_en.html",
 "bookId"  : 1,
 "image"   : "http://"
 },
 {
-"itemId"  : "PM-01-06",
+"itemKey" : "PM-01-06",
 "title"   : "The Voice and The Mirrors",
 "content" : "http://rgr-myrg.github.io/www/app/libre/html/1_6_en.html",
 "bookId"  : 1,

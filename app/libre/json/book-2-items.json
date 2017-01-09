@@ -1,41 +1,41 @@
 [
 {
-"itemId"  : "PM-02-01",
+"itemKey" : "PM-02-01",
 "title"   : "Título",
 "content" : "http://rgr-myrg.github.io/www/app/libre/html/1_1_sp.html",
 "bookId"  : 2,
 "image"   : "http://"
 },
 {
-"itemId"  : "PM-02-02",
+"itemKey" : "PM-02-02",
 "title"   : "Dedicación",
 "content" : "http://rgr-myrg.github.io/www/app/libre/html/1_2_sp.html",
 "bookId"  : 2,
 "image"   : "http://"
 },
 {
-"itemId"  : "PM-02-03",
+"itemKey" : "PM-02-03",
 "title"   : "Epígrafe",
 "content" : "http://rgr-myrg.github.io/www/app/libre/html/1_3_sp.html",
 "bookId"  : 2,
 "image"   : "http://"
 },
 {
-"itemId"  : "PM-02-04",
+"itemKey" : "PM-02-04",
 "title"   : "Prólogo",
 "content" : "http://rgr-myrg.github.io/www/app/libre/html/1_4_sp.html",
 "bookId"  : 2,
 "image"   : "http://"
 },
 {
-"itemId"  : "PM-02-05",
+"itemKey" : "PM-02-05",
 "title"   : "Bondad",
 "content" : "http://rgr-myrg.github.io/www/app/libre/html/1_5_sp.html",
 "bookId"  : 12,
 "image"   : "http://"
 },
 {
-"itemId"  : "PM-02-06",
+"itemKey" : "PM-02-06",
 "title"   : "La Voz y Los Espejos",
 "content" : "http://rgr-myrg.github.io/www/app/libre/html/1_6_sp.html",
 "bookId"  : 2,
