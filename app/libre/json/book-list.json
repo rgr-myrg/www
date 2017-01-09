@@ -1,12 +1,22 @@
 [
 {
 "bookId"  : 1,
-"titleSP" : "La Voz y Los Espejos",
-"titleEN" : "The Voice and The Mirrors",
+"title"   : "The Voice and The Mirrors",
+"caption" : "English Version", 
 "author"  : "Polibio Mayorga",
 "image"   : "http://rgr-myrg.github.io/www/app/libre/img/cover-1.jpg",
 "url"     : "http://rgr-myrg.github.io/www/app/libre",
 "data"    : "book-1-items.json",
+"items"   : 6
+},
+{
+"bookId"  : 2,
+"title"   : "La Voz y Los Espejos",
+"caption" : "Versión en Espanol", 
+"author"  : "Polibio Mayorga",
+"image"   : "http://rgr-myrg.github.io/www/app/libre/img/cover-1.jpg",
+"url"     : "http://rgr-myrg.github.io/www/app/libre",
+"data"    : "book-2-items.json",
 "items"   : 6
 }
 ]
