@@ -60356,7 +60356,7 @@ uvpjs.mediaCapabilities = uvpjs.MediaCapabilities()._detectEnvironment();
             // Inject liveSegmentData into the metadata payload if available.
             this._contentMetadata = obj.util.copyObjectWithKeyMap(segmentKeys)
                                   .from(this._liveSegmentData)
-                                  .to(this._getContentMetadata());
+                                  .to(this._contentMetadata);
 
             this.streamingTag && this.streamingTag.playVideoContentPart(
                 this._contentMetadata,
