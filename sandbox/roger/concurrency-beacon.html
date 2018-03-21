@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Player Example</title>
+    <script type="application/javascript" src="//s0.2mdn.net/instream/html5/ima3.js"></script>
+    <script src="//0.0.0.0:8000/build/CBSI-PLAYER.max.js"></script>
+    <script type="text/javascript" src="script/uvpjs-builder.js"></script>
+    <script type="text/javascript" src="script/uvpc-beacon.js"></script>
+</head>
+<body>
+    <div id="myVideoContainer" style="max-width: 768px;"></div><br/>
+    <div>
+        [<a href="#" onclick="firePlaybackResume()">Playback Resume Event</a>]
+    </div>
+</body>
+<script type="text/javascript">
+var PREVIEW_IMAGE = '//vidtech.cbsinteractive.com/skins/ui/imgs/poster.jpg';
+var ASSET_URL = 'https://bitdash-a.akamaihd.net/content/MI201109210084_1/m3u8s/f08e80da-bf1d-4e3d-8899-f0f6155f6efa.m3u8';
+var uvpjsPlayer;
+var firePlaybackResume = function() {
+    uvpjsPlayer.eventsMgr.dispatchEvent(
+        'playbackDurationResume',
+        {},
+        'myVideoContainer'
+    );
+};
+
+uvpjs.player()
+    .id('myVideoContainer')
+    .sessionOptions({
+        partner: "cnet",
+        netwk: "cnet",
+        cms: "platform",
+        usesIMA: true,
+        skin: true,
+        autoPlay: false,
+        previewImage: PREVIEW_IMAGE,
+        uvpc: uvpc_beacon,
+        useDynamicSwitching: false,
+        capLevelToPlayerSize: true,
+        userId: 555555
+    })
+    .rco({
+        videoTitle: 'CBSSports',
+        vidContId: 'myVideoContainer',
+        type: uvpjs.mediaCapabilities.RP_URL,
+        assetURL: ASSET_URL,
+        isLive: false
+    })
+    .onReady(p => uvpjsPlayer = p)
+    .onError(e => console.log('[Error]', e))
+    .loadAndPlay();
+</script>
+</html>

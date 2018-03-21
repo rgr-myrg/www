@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Player Example</title>
+    <script type="application/javascript" src="//s0.2mdn.net/instream/html5/ima3.js"></script>
+    <script src="../build/CBSI-PLAYER.max.js"></script>
+    <script type="text/javascript" src="script/uvpjs-builder.js"></script>
+    <script type="text/javascript" src="script/uvpc-comscore.js"></script>
+</head>
+<body>
+    <div id="myVideoContainer" style="max-width: 768px;"></div>
+    <br/>
+    <div>
+        <a href="#" onclick="liveSegmentStart();">[liveSegmentStart]</a>
+    </div>
+</body>
+<script type="text/javascript">
+//var PREVIEW_IMAGE = '//vidtech.cbsinteractive.com/skins/ui/imgs/poster.jpg';
+var PREVIEW_IMAGE = '//cnet2.cbsistatic.com/img/xhT2E9JH6x380i0YQzrYQx-OROs=/770x433/2017/03/16/41a9fd65-d1a7-479c-a862-d00cc81146f4/news0316drone.jpg';
+//var ASSET_URL = 'https://cbssportsdc-i.akamaihd.net/hls/live/518856/dc_1/master.m3u8';
+//var ASSET_URL = 'http://www.streambox.fr/playlists/test_001/stream.m3u8';
+var ASSET_URL = 'https://bitdash-a.akamaihd.net/content/MI201109210084_1/m3u8s/f08e80da-bf1d-4e3d-8899-f0f6155f6efa.m3u8';
+var uvpjsPlayer;
+var mockEpNumber = 10;
+var mockTitle = 'Ep Title ' + mockEpNumber;
+
+var liveSegmentStart = function() {
+    uvpjsPlayer.liveSegmentStart({
+        publisherBrand:  'CBS Sports', /* ns_st_pu */
+        programTitle:    'Sports HQ',  /* ns_st_pr */
+        episodeTitle:    mockTitle,    /* ns_st_ep */
+        seasonNumber:    '05',         /* ns_st_sn */
+        episodeNumber:   mockEpNumber, /* ns_st_en */
+        stationTitle:    'CBS',        /* ns_st_st */
+        clipLength:      1440000,      /* ns_st_cl */
+        contentGenre:    'Sports',     /* ns_st_ge */
+        tmsGracenoteId:  'EP01158124', /* ns_st_ti */
+        episodeId:       '5432534',    /* ns_st_tep */
+        adLoadFlag:      0,            /* ns_st_ia */
+        fullEpisodeFlag: 1,            /* ns_st_ce */
+        digitalAirDate:  '2018-03-01', /* ns_st_ddt */
+        tvAirDate:       '2018-02-01', /* ns_st_tdt */
+    });
+    mockEpNumber++;
+    mockTitle = 'Ep Title ' + mockEpNumber;
+};
+
+var onVideoPlayerReady = (videoPlayer) => {
+    var events = videoPlayer.eventsMgr.eventTypes;
+    uvpjsPlayer = videoPlayer;
+
+    /* Register for UVPJS Events */
+    // uvpjsPlayer.on(events.CONTENT_START, e => {
+    //     if (!shouldPlayAgain) liveSegmentStart();
+    // });
+};
+
+uvpjs.player()
+    .id('myVideoContainer')
+    .sessionOptions({
+        partner: "cnet",
+        netwk: "cnet",
+        cms: "platform",
+        usesIMA: true,
+        skin: true,
+        autoPlay: true,
+        previewImage: PREVIEW_IMAGE,
+        uvpc: uvpc_comscore,
+        useDynamicSwitching: false,
+        capLevelToPlayerSize: true,
+        isLive: true
+    })
+    .rco({
+        videoTitle: 'Redbull: Art of Motion',
+        vidContId: 'myVideoContainer',
+        type: uvpjs.mediaCapabilities.RP_URL,
+        assetURL: ASSET_URL,
+        isLive: true,
+        contextMetadata: {
+            comscore_c4: 'maxpreps'
+        }
+    })
+    .onReady(onVideoPlayerReady)
+    .onError(e => console.log('[Error]', e))
+    .loadAndPlay();
+</script>
+</html>
