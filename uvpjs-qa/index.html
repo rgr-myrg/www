@@ -1,0 +1,478 @@
+<!doctype html>
+<html>
+<head>
+  <title>UVPJS Test Page</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <link rel="stylesheet" type="text/css" media="all" href="css/switchery.min.css">
+  <script type="text/javascript" src="js/switchery.min.js"></script>
+  <link rel="stylesheet" href="css/style.css">
+
+  <!-- JS SCRIPTS such as CBSI-PLAYER build of your choice (2.7 +) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/3.9.3/lodash.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/ractive/0.7.3/ractive.min.js"></script>
+  <script src="http://vidtech.cbsinteractive.com/uvpjs/2.8.0/CBSI-PLAYER-dash.js"></script>
+  <script type='text/javascript' src='//imasdk.googleapis.com/js/sdkloader/ima3.js'></script>
+</head>
+
+<body>
+  <div class="container">
+    <div class="row">
+      <header>
+        <div class="title">
+          <h2>
+            <img src="assets/logo.png" />
+            <strong>CBSi</strong>
+            <span>VTG:</span>
+            UVPJS Test Page
+          </h2>
+        </div>
+      </header>
+    </div> <!-- .row -->
+
+    <div id="data">
+      <script id="template" type="text/html">
+      {{#if !configured}}
+        <div id="wrapper">
+          <form on-submit="submit" class="pid-form">
+            <div class="form-data">
+              <div class="form-left margin-top-10">
+                <label class="label required" for="name">PID / Asset URL:</label>
+              </div>
+              <div class="form-right margin-left-med">
+                <input class="text-input line form-control" value="{{ pid }}" id="pid" name="pid" required="" type="text" placeholder="Enter PID or assetURL here...">
+              </div>
+            </div>
+
+            <div class="form-data margin-top-20">
+              <div class="form-left">
+                <label class="label required" for="name">Autoplay:</label>
+              </div>
+              <div class="form-right">
+                <input type="checkbox" checked="{{ autoPlay }}" name="autoPlay" class="js-switch">
+              </div>
+            </div>
+
+            <div class="form-data margin-top-20">
+              <div class="form-left">
+                <label class="label required" for="name">Livestream:</label>
+              </div>
+              <div class="form-right">
+                <input type="checkbox" checked="{{ isLive }}" name="isLive" class="js-switch">
+              </div>
+            </div>
+
+            <div class="form-data margin-top-20">
+              <div class="form-left">
+                <label class="label required" for="name">IMA Ads:</label>
+              </div>
+              <div class="form-right">
+                <input type="checkbox" checked="{{ usesIMA }}" name="usesIMA" class="js-switch">
+              </div>
+            </div>
+
+            <div class="form-data margin-top-20">
+              <div class="form-left">
+                <label class="label required" for="name">is 360:</label>
+              </div>
+              <div class="form-right">
+                <input type="checkbox" checked="{{ is360 }}" name="is360" class="js-switch">
+              </div>
+            </div>
+
+            <div class="form-data">
+              <div class="align-right">
+                <input class="button" type="submit" value="Ready!" on-click="submit">
+              </div>
+            </div>
+
+          </form>
+        </div>
+      {{else}}
+          <div class="box-container">
+            <div id="myVideoContainer">
+            </div>
+
+            <div class="box margin-right-small" id="playback">
+              <div class="data">
+                <div class="data-title">Playback</div>
+              </div>
+              <div class="data">
+                <div class="column-left">Current Time:</div>
+                <div class="column-right">{{ currentTime }}</div>
+              </div>
+              <div class="data">
+                <div class="column-left">Duration:</div>
+                <div class="column-right">
+                  {{#if _isLive}} -1
+                  {{else}} {{ duration }}
+                  {{/if}}
+                </div>
+              </div>
+              <div class="data">
+                {{#if !_isLive}}
+                  <div class="column-left">Progress:</div>
+                  <div class="column-right">
+                    <div id="progress" class="graph">
+                      <div id="bar" style="width:{{ percentComplete }}%">
+                      </div>
+                    </div>
+                  </div>
+                {{/if}}
+              </div>
+              <div class="data">
+                <div class="column-left">Current State:</div>
+                <div class="column-right">{{ playbackState }}</div>
+              </div>
+              <div class="data">
+                <div class="column-left">Started:</div>
+                <div class="column-right">{{ playbackStarted }}</div>
+              </div>
+              <div class="data">
+                <div class="column-left">Complete:</div>
+                <div class="column-right">{{ playbackComplete }}</div>
+              </div>
+              <div class="data">
+                <div class="column-left">is Ad:</div>
+                <div class="column-right">{{ isAd }}</div>
+              </div>
+              <div class="data">
+                <div class="column-left">is Live:</div>
+                <div class="column-right">{{ isPlayingLive }}</div>
+              </div>
+            </div>
+
+            {{#if !isAd}}
+              <div class="box" id="playback">
+                <div class="data">
+                  <div class="data-title">Stream/Codec</div>
+                </div>
+                <div class="data">
+                  <div class="column-left">Stream Type:</div>
+                  <div class="column-right">{{ streamType }}</div>
+                </div>
+                <div class="data">
+                  <div class="column-left">Level:</div>
+                  <div class="column-right">{{ level }}</div>
+                </div>
+                <div class="data">
+                  <div class="column-left">Buffer Length:</div>
+                  <div class="column-right">{{ bufferLength }}</div>
+                </div>
+                <div class="data">
+                  <div class="column-left">Player Width:</div>
+                  <div class="column-right">{{ width }}</div>
+                </div>
+                <div class="data">
+                  <div class="column-left">Player Height:</div>
+                  <div class="column-right">{{ height }}</div>
+                </div>
+                <div class="data">
+                  <div class="column-left">Video Codec:</div>
+                  <div class="column-right">{{ videoCodec }}</div>
+                </div>
+                <div class="data">
+                  <div class="column-left">Audio Codec:</div>
+                  <div class="column-right">{{ audioCodec }}</div>
+                </div>
+                <div class="data">
+                  <div class="column-left">Load Error:</div>
+                  <div class="column-right">{{ loadError }}</div>
+                </div>
+              </div>
+            {{/if}}
+          </div>
+
+          <div class="bottom-container">
+            <div class="bottom-left-container">
+              {{#if !isAd}}
+                <div class="box">
+                  <div class="data-bottom">
+                    <div class="data-title">Content Video Data</div>
+                  </div>
+
+                  {{#if notBlank(cdn)}}
+                  <div class="data-bottom">
+                    <div class="bottom-left">CDN:</div>
+                    <div class="bottom-right">{{ cdn }}</div>
+                  </div>
+                  {{/if}}
+
+                  {{#if notBlank(cms)}}
+                  <div class="data-bottom">
+                    <div class="bottom-left">CMS:</div>
+                    <div class="bottom-right">{{ cms }}</div>
+                  </div>
+                  {{/if}}
+
+                  {{#if notBlank(cmsRefGuid)}}
+                  <div class="data-bottom">
+                    <div class="bottom-left">cmsRefGuid:</div>
+                    <div class="bottom-right">{{ cmsRefGuid }}</div>
+                  </div>
+                  {{/if}}
+
+                  {{#if notBlank(videoTitle)}}
+                  <div class="data-bottom">
+                    <div class="bottom-left">Video Title:</div>
+                    <div class="bottom-right">{{ videoTitle }}</div>
+                  </div>
+                  {{/if}}
+
+                  {{#if notBlank(mediaId)}}
+                  <div class="data-bottom">
+                    <div class="bottom-left">Media Id:</div>
+                    <div class="bottom-right">{{ mediaId }}</div>
+                  </div>
+                  {{/if}}
+
+                  {{#if isPid(pid)}}
+                  <div class="data-bottom">
+                    <div class="bottom-left">Pid:</div>
+                    <div class="bottom-right">{{ pid }}</div>
+                  </div>
+                  {{/if}}
+
+                  {{#if notBlank(fileType)}}
+                  <div class="data-bottom">
+                    <div class="bottom-left">File Type:</div>
+                    <div class="bottom-right">{{ fileType }}</div>
+                  </div>
+                  {{/if}}
+
+                  {{#if notBlank(assetURL)}}
+                  <div class="data-bottom">
+                    <div class="bottom-left">Asset URL:</div>
+                    <div class="bottom-right">{{ assetURL }}</div>
+                  </div>
+                  {{/if}}
+
+                  {{#if notBlank(closedCaptionPath)}}
+                  <div class="data-bottom">
+                    <div class="bottom-left">CC Path:</div>
+                    <div class="bottom-right">{{ closedCaptionPath }}</div>
+                  </div>
+                  {{/if}}
+
+                  {{#if notBlank(keywords)}}
+                  <div class="data-bottom">
+                    <div class="bottom-left">Keywords:</div>
+                    <div class="bottom-right">{{ keywords }}</div>
+                  </div>
+                  {{/if}}
+
+                  {{#if notBlank(episodeAbstract)}}
+                  <div class="data-bottom">
+                    <div class="bottom-left">Episode Abstract:</div>
+                    <div class="bottom-right">{{ episodeAbstract }}</div>
+                  </div>
+                  {{/if}}
+
+                  {{#if notBlank(isAffiliateFeed)}}
+                  <div class="data-bottom">
+                    <div class="bottom-left">Is Affiliate Feed:</div>
+                    <div class="bottom-right">{{ isAffiliateFeed }}</div>
+                  </div>
+                  {{/if}}
+
+                  {{#if notBlank(isGeoRestricted)}}
+                  <div class="data-bottom">
+                    <div class="bottom-left">Is Geo-Restricted:</div>
+                    <div class="bottom-right">{{ isGeoRestricted }}</div>
+                  </div>
+                  {{/if}}
+
+                  {{#if notBlank(showPreroll)}}
+                  <div class="data-bottom">
+                    <div class="bottom-left">Show Preroll:</div>
+                    <div class="bottom-right">{{ showPreroll }}</div>
+                  </div>
+                  {{/if}}
+
+                  {{#if notBlank(deliveryType)}}
+                  <div class="data-bottom">
+                    <div class="bottom-left">Delivery Type:</div>
+                    <div class="bottom-right">{{ deliveryType }}</div>
+                  </div>
+                  {{/if}}
+                </div>
+              {{else}}
+                <div class="box">
+                    <div class="data-bottom">
+                      <div class="data-title">Ad Video Data</div>
+                    </div>
+
+                    {{#if notBlank(adClipID)}}
+                    <div class="data-bottom">
+                      <div class="bottom-left">Ad Clip ID:</div>
+                      <div class="bottom-right">{{ adClipID }}</div>
+                    </div>
+                    {{/if}}
+
+                    {{#if notBlank(adPosition)}}
+                    <div class="data-bottom">
+                      <div class="bottom-left">Ad Position:</div>
+                      <div class="bottom-right">{{ adPosition }}</div>
+                    </div>
+                    {{/if}}
+
+                    {{#if notBlank(adServerName)}}
+                    <div class="data-bottom">
+                      <div class="bottom-left">Ad Server Name:</div>
+                      <div class="bottom-right">{{ adServerName }}</div>
+                    </div>
+                    {{/if}}
+
+                    {{#if notBlank(adVideoId)}}
+                    <div class="data-bottom">
+                      <div class="bottom-left">Ad Video Id:</div>
+                      <div class="bottom-right">{{ adVideoId }}</div>
+                    </div>
+                    {{/if}}
+
+                    {{#if notBlank(adVideoTitle)}}
+                    <div class="data-bottom">
+                      <div class="bottom-left">Ad Video Title:</div>
+                      <div class="bottom-right">{{ adVideoTitle }}</div>
+                    </div>
+                    {{/if}}
+
+                    {{#if notBlank(fileType)}}
+                    <div class="data-bottom">
+                      <div class="bottom-left">Creative Id:</div>
+                      <div class="bottom-right">{{ fileType }}</div>
+                    </div>
+                    {{/if}}
+
+                    {{#if notBlank(adDeliveryType)}}
+                    <div class="data-bottom">
+                      <div class="bottom-left">Delivery Type:</div>
+                      <div class="bottom-right">{{ adDeliveryType }}</div>
+                    </div>
+                    {{/if}}
+
+                    {{#if notBlank(adDuration)}}
+                    <div class="data-bottom">
+                      <div class="bottom-left">Ad Duration:</div>
+                      <div class="bottom-right">{{ adDuration }}</div>
+                    </div>
+                    {{/if}}
+
+                    {{#if notBlank(isLinear)}}
+                    <div class="data-bottom">
+                      <div class="bottom-left">Linear Ad:</div>
+                      <div class="bottom-right">{{ isLinear }}</div>
+                    </div>
+                    {{/if}}
+
+                    {{#if notBlank(isRewindable)}}
+                    <div class="data-bottom">
+                      <div class="bottom-left">Is Rewindable:</div>
+                      <div class="bottom-right">{{ isRewindable }}</div>
+                    </div>
+                    {{/if}}
+
+                    {{#if notBlank(isVPAID)}}
+                    <div class="data-bottom">
+                      <div class="bottom-left">Is VPAID:</div>
+                      <div class="bottom-right">{{ isVPAID }}</div>
+                    </div>
+                    {{/if}}
+
+                    {{#if notBlank(adAssetUrl)}}
+                    <div class="data-bottom">
+                      <div class="bottom-left">Ad Asset Url:</div>
+                      <div class="bottom-right">{{ adAssetUrl }}</div>
+                    </div>
+                    {{/if}}
+                </div>
+              {{/if}}
+            </div>
+
+            {{#if !isAd}}
+              <div class="bottom-right-container">
+                <div class="box margin-right-small">
+                  <div class="data">
+                    <div class="data-title">Bitrate</div>
+                  </div>
+                  <div class="bitrate-data">
+                    <div class="bitrate-data-left">Switching Mode:</div>
+                    <div class="bitrate-data-right">{{ switchingMode }}</div>
+                  </div>
+                  <div class="bitrate-data">
+                    <div class="bitrate-data-left">Start Bitrate:</div>
+                    <div class="bitrate-data-right">{{ startBitrate }}</div>
+                  </div>
+                  <div class="bitrate-data">
+                    <div class="bitrate-data-left">Current Bitrate:</div>
+                    <div class="bitrate-data-right">{{ currentBitrate }}</div>
+                  </div>
+                  <div class="bitrate-data">
+                    <div class="bitrate-data-left">Max. Bitrate:</div>
+                    <div class="bitrate-data-right">{{ maxBitrate }}</div>
+                  </div>
+                  <div class="bitrate-data">
+                    <div class="bitrate-data-left">Min. Bitrate:</div>
+                    <div class="bitrate-data-right">{{ minBitrate }}</div>
+                  </div>
+                  <div class="bitrate-data">
+                    <div class="bitrate-data-left">Current ABR Index:</div>
+                    <div class="bitrate-data-right">{{ currentBitrateIndex }} of {{ ABRLength }}</div>
+                  </div>
+                  <div class="bitrate-data">
+                    <div class="bitrate-data-left">Highest ABR:</div>
+                    <div class="bitrate-data-right">{{ highestABR }}</div>
+                  </div>
+                  <div class="bitrate-data">
+                    <div class="bitrate-data-left">Lowest ABR:</div>
+                    <div class="bitrate-data-right">{{ lowestABR }}</div>
+                  </div>
+                </div>
+
+                <div class="box">
+                  <div class="data">
+                    <div class="data-title">Frame/Bandwidth</div>
+                  </div>
+                  <div class="bitrate-data">
+                    <div class="bitrate-data-left">Frame Rate:</div>
+                    <div class="bitrate-data-right">{{ playbackFramerate }}</div>
+                  </div>
+                  <div class="bitrate-data">
+                    <div class="bitrate-data-left">Dropped Frames:</div>
+                    <div class="bitrate-data-right">{{ droppedFrames }}</div>
+                  </div>
+                  <div class="bitrate-data">
+                    <div class="bitrate-data-left">Dropped FPS:</div>
+                    <div class="bitrate-data-right">{{ droppedFPS }}</div>
+                  </div>
+                  <div class="bitrate-data">
+                    <div class="bitrate-data-left">Ave. Dropped FPS:</div>
+                    <div class="bitrate-data-right">{{ averageDroppedFPS }}</div>
+                  </div>
+                  <div class="bitrate-data">
+                    <div class="bitrate-data-left">Bandwidth:</div>
+                    <div class="bitrate-data-right">{{ currentBandwidth }}</div>
+                  </div>
+                  <div class="bitrate-data">
+                    <div class="bitrate-data-left">Max. Bandwidth:</div>
+                    <div class="bitrate-data-right">{{ currentMaxBandwidth }}</div>
+                  </div>
+                </div>
+              </div>
+            {{/if}}
+
+          </div>
+      {{/if}}
+      </script>
+    </div> <!-- .data -->
+  </div> <!-- .container -->
+
+  <script src="js/script.js"></script>
+  <script type="text/javascript">
+  var elems = Array.prototype.slice.call(document.querySelectorAll('.js-switch'));
+
+  elems.forEach(function(html) {
+    var switchery = new Switchery(html);
+  });
+  </script>
+</body>
+</html>

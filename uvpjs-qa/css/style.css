@@ -1,0 +1,362 @@
+@import url('https://fonts.googleapis.com/css?family=Roboto:300,400,500');
+@import url('https://fonts.googleapis.com/css?family=Oxygen:300,400');
+/*@import "compass/css3";*/
+
+html{ min-height:100%; position:relative; }
+
+body {
+  height:100%;
+  margin: 0;
+  padding: 0;
+  font-family: 'Roboto', sans-serif;
+  font-weight: 400;
+  padding-left: 30px;
+  /* background: #EAECE5; */
+  background: #FFF;
+}
+
+/*
+table { margin: 5px; background: #eaece5;}
+table td { padding: 6px 30px; color: #000; font-size: 16px;}
+*/
+
+.red { color: #ff1a1a; }
+.green { color: #00b300; }
+.blue { color: #004d99; }
+.large { font-size: 150%; line-height: 130%; }
+.margin-top-20 { margin-top: 20px; }
+.margin-top-10 { margin-top: 10px; }
+.margin-top-7 { margin-top: 7px; }
+.margin-bottom-top { margin-top: 20px; }
+.margin-bottom-med { margin-top: 10px; }
+.margin-bottom-7 { margin-top: 7px; }
+.margin-left-small { margin-left: 15px; }
+.margin-left-med { margin-left: 15px; }
+.margin-right-small { margin-right: 15px; }
+.bottom { font-size: 14px; }
+.align-left { text-align: left; }
+.align-right { text-align: right; padding-right: 20px;}
+
+/* -----------------------------------------
+Player Configuration Section
+------------------------------------------- */
+
+.pid-form {
+  text-align: left;
+  float: left;
+  padding: 20px;
+  width: 900px;
+  border: 1px solid #221F1F;
+}
+
+#wrapper {
+  width: 1080px;
+  padding: 10px;
+  background: #FFF;
+}
+
+.form-data {
+  color: #221F1F;
+  width: 900px;
+  display: inline-block;
+}
+
+.form-left {
+  width: 25%;
+  float: left;
+}
+.form-right {
+  width: 70%;
+  float: left;
+}
+
+.label {
+  font-size: 1.5em;
+  float: left;
+  display: inline-block;
+  text-align: right;
+  color: #221F1F;
+  font-family: 'Oxygen', Sans-Serif;
+  font-weight: 300;
+}
+
+.text-input {
+  width: 100%;
+  line-height: 1.5em;
+}
+
+input[type=submit] {
+  padding: 5px 15px;
+  background: #19A0DE;
+  color: #FFF;
+  border: 1px solid #221F1F;
+  font-family: 'Roboto', Sans-Serif;
+  font-weight: 400;
+  font-size: 24px;
+  cursor: pointer;
+  -webkit-border-radius: 5px;
+  border-radius: 5px;
+  letter-spacing: 2px;
+}
+
+label {
+  font-family: 'Roboto', Sans-Serif;
+  font-weight: 300;
+  font-size: 20px;
+  margin-left: 5px;
+}
+
+.line {
+  display: block;
+  border: none;
+  color: #333;
+  background: transparent;
+  border-bottom: 1px dotted black;
+  padding-left: 10px;
+  padding-top: 2px;
+  padding-bottom: 2px;
+  font-size: 1em;
+  margin-top: 6px;
+  margin-left: -12px;
+}
+
+.line:focus {
+  outline: none;
+  border-color: #51CBEE;
+}
+
+
+/* -----------------------------------------
+   Header Section
+------------------------------------------- */
+
+header {
+  width: 100%;
+  height: auto;
+  padding-top: 10px;
+}
+
+header div {
+  margin: 0 auto auto 15px;
+  position: relative;
+  padding-left: 40px;
+  font-size: 32px;
+  line-height: 32px;
+  color: #221F1F;
+}
+
+header div img {
+  position: absolute;
+  top: 0px;
+  width: 30px;
+  height: 30px;
+  left: 0;
+}
+
+.title h2 {
+  font-family: 'Roboto', Sans-Serif;
+  font-weight: 300;
+  font-size: 32px;
+}
+
+.title h2 span {
+  color: #19a0de;
+  margin-left: 10px;
+  margin-right: 10px;
+  font-weight: 500;
+}
+
+/* -----------------------------------------
+     Main Data
+------------------------------------------- */
+.container {
+    width: 1080px;
+}
+
+#myVideoContainer {
+  width: 436px;
+  float: left;
+  display: block;
+  margin-right: 15px;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2),
+              0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+#data {
+  margin: 0;
+  margin-top: 0px;
+  display: block;
+  float: left;
+}
+
+.box {
+  padding-top: 10px;
+  padding-bottom: 10px;
+  padding-left: 10px;
+  padding-right: 10px;
+  box-shadow: 1px 1px 3px rgba(0,0,0,.15);
+  background-color: #F9F9F9;
+  display: inline-block;
+  width: 100%;
+  height: auto;
+}
+
+#playback {
+  width: 285px;
+  float: left;
+}
+
+.box-container {
+  padding: 5px;
+  clear: both;
+  width: 1080px;
+}
+
+.bottom-container {
+  padding: 5px;
+  width: 1080px;
+  clear: both;
+  padding-top: 15px;
+}
+
+.bottom-left-container {
+  width: 560px;
+  float: left;
+}
+
+.bottom-right-container {
+  width: 490px;
+  display: flex;
+  float: right;
+}
+.bottom-right-container > div { flex: 1; }
+
+.data {
+  color: #221F1F;
+  font-weight: 300;
+  width: 100%;
+  display: flex;
+  line-height: 1.5em;
+}
+.data > div { flex: 1; }
+
+.data-title {
+  font-size: 18px;
+  border-bottom: solid 2px #221F1F;
+  font-weight: 500;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+  letter-spacing: 2px;
+}
+
+.column-left {
+  font-weight: 400;
+  text-align: left;
+  float: left;
+  width: 50%;
+}
+
+.column-right {
+  font-weight: 300;
+  text-align: left;
+  float: right;
+  width: 50%;
+}
+
+.data-bottom {
+  line-height: 1.5em;
+}
+
+.bottom-left {
+  font-weight: 400;
+  text-align: left;
+  float: left;
+  width: 25%;
+}
+
+.bottom-right {
+  font-weight: 300;
+  text-align: left;
+  float: right;
+  width: 75%;
+}
+
+.bitrate-data {
+  line-height: 1.5em;
+}
+
+.bitrate-data-left {
+  font-weight: 400;
+  text-align: left;
+  float: left;
+  width: 70%;
+}
+
+.bitrate-data-right {
+  font-weight: 300;
+  text-align: left;
+  float: right;
+  width: 30%;
+}
+
+/* -----------------------------------------
+   Progress Bar
+------------------------------------------- */
+#progress {
+  margin-top: 8px;
+  width: 100px;
+}
+
+.graph {
+  width: 100px;
+  height: 6px;
+  border: 1px solid #ccc;
+  background: rgb(168,168,168);
+  background: -moz-linear-gradient(top, rgba(168,168,168,1) 0%, rgba(204,204,204,1) 23%);
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(168,168,168,1)), color-stop(23%,rgba(204,204,204,1)));
+  background: -webkit-linear-gradient(top, rgba(168,168,168,1) 0%,rgba(204,204,204,1) 23%);
+  background: -o-linear-gradient(top, rgba(168,168,168,1) 0%,rgba(204,204,204,1) 23%);
+  background: -ms-linear-gradient(top, rgba(168,168,168,1) 0%,rgba(204,204,204,1) 23%);
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#a8a8a8', endColorstr='#cccccc',GradientType=0 );
+  background: linear-gradient(top, rgba(168,168,168,1) 0%,rgba(204,204,204,1) 23%);
+  position: relative;
+}
+#bar {
+  height: 6px; /* Not 30px because the 1px top-border brings it up to 30px to match #graph */
+  background: rgb(10,63,87);
+  background: -moz-linear-gradient(top, rgba(10,63,87,1) 0%, rgba(42,171,231,1) 100%);
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(255,197,120,1)), color-stop(100%,rgba(244,128,38,1)));
+  background: -webkit-linear-gradient(top, rgba(10,63,87,1) 0%,rgba(42,171,231,1) 100%);
+  background: -o-linear-gradient(top, rgba(10,63,87,1) 0%,rgba(42,171,231,1) 100%);
+  background: -ms-linear-gradient(top, rgba(10,63,87,1) 0%,rgba(42,171,231,1) 100%);
+  background: linear-gradient(top, rgba(10,63,87,1) 0%,rgba(42,171,231,1) 100%);
+
+}
+.error {
+  /* These styles are arbitrary */
+  background-color: #fceabb;
+  padding: 1em;
+  font-weight: bold;
+  color: red;
+  border: 1px solid red;
+}
+
+/* ----------------------------------------
+   Responsive style adjustments
+   ---------------------------------------*/
+
+@media (max-width: 978px) {
+  .container {
+  padding:0;
+  margin:0;
+}
+
+body {
+  padding:0;
+}
+
+.navbar-fixed-top, .navbar-fixed-bottom, .navbar-static-top {
+  margin-left: 0;
+  margin-right: 0;
+  margin-bottom:0;
+}
