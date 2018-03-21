@@ -10038,7 +10038,7 @@ function isUndefined(arg) {
 // see https://tools.ietf.org/html/rfc1808
 
 /* jshint ignore:start */
-(function(root) { 
+(function(root) {
 /* jshint ignore:end */
 
   var URL_REGEX = /^((?:[^\/;?#]+:)?)(\/\/[^\/\;?#]*)?(.*?)??(;.*?)?(\?.*?)?(#.*?)?$/;
@@ -11564,7 +11564,7 @@ var tsdemuxer_TSDemuxer = function () {
   };
 
   /**
-   * Initializes a new init segment on the demuxer/remuxer interface. Needed for discontinuities/track-switches (or at stream start) 
+   * Initializes a new init segment on the demuxer/remuxer interface. Needed for discontinuities/track-switches (or at stream start)
    * Resets all internal track instances of the demuxer.
    *
    * @override Implements generic demuxing/remuxing interface (see DemuxerInline)
@@ -11594,7 +11594,7 @@ var tsdemuxer_TSDemuxer = function () {
   };
 
   /**
-   * 
+   *
    * @override
    */
 
@@ -26191,7 +26191,7 @@ uvpjs._ = _.noConflict();
 
             // 4) Cache model-derived custom params
             mdlCp = mdlAdParams[custp];
-            
+
             // 5) Delete properties no longer needed in object
             delete mdlAdParams[custp];
             delete mdlAdParams.partner;
@@ -26407,19 +26407,19 @@ uvpjs._ = _.noConflict();
                 clen = (Array.isArray(wcIds) && wcIds.length) || 0,
                 waId = null,
                 wcId = null,
-                aId = ad.getAdId() || '', 
+                aId = ad.getAdId() || '',
                 cId = ad.getCreativeId() || '';
 
             if (alen) {
                 alen > 1 && (waId = waIds[1]);
                 aId = waIds[0];
             }
-            
+
             if (clen) {
                 clen > 1 && (wcId = wcIds[1]);
                 cId = wcIds[0];
             }
-            
+
             return {
                 adId: aId,
                 wrapperAdId: waId,
@@ -26730,7 +26730,7 @@ uvpjs._ = _.noConflict();
 
     'use strict';
 
-    uvpjs.Configuration = {"env":"dev","hostname":"0.0.0.0:8000","name":"UVPJS","version":"2.8.3","date":"03/20/18 1:09:27 PM (EDT)","path":"//0.0.0.0:8000/build/","playerName":"CBSI-PLAYER"};
+    uvpjs.Configuration = {"env":"dev","hostname":"0.0.0.0:8000","name":"UVPJS","version":"2.8.3","date":"03/20/18 1:09:27 PM (EDT)","path":"../build/","playerName":"CBSI-PLAYER"};
 
 })(uvpjs);
 /* jshint ignore:end */
@@ -31330,7 +31330,7 @@ uvpjs.mediaCapabilities = uvpjs.MediaCapabilities()._detectEnvironment();
             };
 
             document.querySelector('head').appendChild(s);
-            
+
             this.timeoutHandle = setTimeout(function(url) {
                 var isLoaded = _.indexOf(self.urls, url) === -1;
 
@@ -31592,7 +31592,7 @@ uvpjs.mediaCapabilities = uvpjs.MediaCapabilities()._detectEnvironment();
                 vidContId: this.vidContId,
                 cviMgr: this
             });
-            
+
             this.captionsMgr = new uvpjs.CaptionsManager({
                 containerId: this.vidContId,
                 cviModel: this.cviModel,
@@ -33100,7 +33100,7 @@ uvpjs.mediaCapabilities = uvpjs.MediaCapabilities()._detectEnvironment();
 
             /**
              * Events of this type are dispatched every time an ad clip has been loaded, but not yet started playing.
-             * 
+             *
              * @example Payload for AD_LOADED event
              *  {
              *      payload: {
@@ -33110,7 +33110,7 @@ uvpjs.mediaCapabilities = uvpjs.MediaCapabilities()._detectEnvironment();
              *      target: 'myVideoContainer',
              *      type: 'onAdLoaded'
              *  }
-             * 
+             *
              * @memberof uvpjs.EventsManager
              * @public
              */
@@ -33127,7 +33127,7 @@ uvpjs.mediaCapabilities = uvpjs.MediaCapabilities()._detectEnvironment();
              *      target: 'myVideoContainer',
              *      type: 'onAdLoaded'
              *  }
-             * 
+             *
              * @memberof uvpjs.EventsManager
              * @public
              */
@@ -33144,7 +33144,7 @@ uvpjs.mediaCapabilities = uvpjs.MediaCapabilities()._detectEnvironment();
              *      target: 'myVideoContainer',
              *      type: 'onAdResponse'
              *  }
-             * 
+             *
              * @memberof uvpjs.EventsManager
              * @public
              */
@@ -34060,7 +34060,7 @@ uvpjs.mediaCapabilities = uvpjs.MediaCapabilities()._detectEnvironment();
                     payload = id === nielsenOwnerName ?
                               this.parseNielsen(id, data, offset) :
                               this.readStr(data, ++offset, data.length);
-                    
+
                     this.dataCallback({
                         name: id,
                         data: payload,
@@ -34121,11 +34121,11 @@ uvpjs.mediaCapabilities = uvpjs.MediaCapabilities()._detectEnvironment();
 }(uvpjs.register('uvpjs')));
 
 (function (obj) {
-    
+
     var nielsenOwnerName = 'www.nielsen.com';
 
     obj.TrackId3Parser = uvpjs.AbstractId3Parser.subClass({
-        
+
         /**
          * * Parse ID3 data frames, and pass back to dataCallback
          * @memberof uvpjs.TrackId3Parser#
@@ -34140,10 +34140,10 @@ uvpjs.mediaCapabilities = uvpjs.MediaCapabilities()._detectEnvironment();
             if (cue.value.key !== 'PRIV') {
                 return;
             }
-            
-            for (var i = 0; i < this.ownerIds.length; i++) {                                
-                var ownerId = this.ownerIds[i];                
-                if (cue.value.info.indexOf(ownerId) !== -1) {                
+
+            for (var i = 0; i < this.ownerIds.length; i++) {
+                var ownerId = this.ownerIds[i];
+                if (cue.value.info.indexOf(ownerId) !== -1) {
                     this.dataCallback({
                         name: ownerId,
                         data: ownerId === nielsenOwnerName ? cue.value.info : String.fromCharCode.apply(null, new Uint8Array(cue.value.data)),
@@ -34889,7 +34889,7 @@ uvpjs.mediaCapabilities = uvpjs.MediaCapabilities()._detectEnvironment();
         prepForRestrictedAutoplay: function(isPreviewBtn) {
             var v = this.dom.video.el,
                 fn = Function.prototype;
-            
+
             this.hPrePlay = function() {
                 this.isPreparedForAutoplay = true;
                 v.removeEventListener('play', this.hPrePlay, false);
@@ -34910,7 +34910,7 @@ uvpjs.mediaCapabilities = uvpjs.MediaCapabilities()._detectEnvironment();
 
             p !== undefined && p.then(fn).catch(function(e){return;});
         },
-        
+
         /**
          * Generally for internal use only, but may be called from a custom skin implementation
          * @memberof uvpjs.VideoControlInterface#
@@ -40327,12 +40327,12 @@ uvpjs.mediaCapabilities = uvpjs.MediaCapabilities()._detectEnvironment();
             if (Kaleidoscope360) {
                 Kaleidoscope360.destroy();
                 Kaleidoscope360 = null;
-            }                        
+            }
 
 
             this.resourceProvider = null;
             this.vidContId = null;
-            
+
             this.videoTagRef = null;
             this.vidContId = null;
             this.vidContentId = null;
@@ -40546,7 +40546,7 @@ uvpjs.mediaCapabilities = uvpjs.MediaCapabilities()._detectEnvironment();
                             uvpjs.log(this.DEBUG_ID, 'VideoPlayerFacade  handleEvent LOAD_START NON-iDEVICE CASE CALL this.resourceProvider.facadeDisplayReady()');
                         }
                         this.resourceProvider.facadeDisplayReady();
-                    }                   
+                    }
 
                     break;
 
@@ -41234,7 +41234,7 @@ uvpjs.mediaCapabilities = uvpjs.MediaCapabilities()._detectEnvironment();
                 start = 0,
                 end = 0,
                 delta;
-            
+
             if (buffered) {
                 start = buffered.start && buffered.start(0);
                 end = buffered.end && buffered.end(0);
@@ -42334,8 +42334,8 @@ uvpjs.mediaCapabilities = uvpjs.MediaCapabilities()._detectEnvironment();
 
             if (options.drm.enabled) {
                 this.fairplayDRM = new uvpjs.FairPlayDRM({
-                    drm: options.drm, 
-                    videoTagRef: this.videoTagRef, 
+                    drm: options.drm,
+                    videoTagRef: this.videoTagRef,
                     eventTypes: this.eventTypes,
                     errorCallback: this.handleFairPlayError.bind(this)
                 });
@@ -42371,7 +42371,7 @@ uvpjs.mediaCapabilities = uvpjs.MediaCapabilities()._detectEnvironment();
                 this.startTime = null;
             }
         },
-        
+
         /**
          * Handles errors from the FairPlayDRM class and calls facadeError
          * All errors are treated as fatal errors
@@ -42419,7 +42419,7 @@ uvpjs.mediaCapabilities = uvpjs.MediaCapabilities()._detectEnvironment();
         },
 
 
-        onAddTextTrack: function(event) {            
+        onAddTextTrack: function(event) {
             if (event.track && event.track.kind === 'metadata') {
                 event.track.addEventListener(this.eventTypes.HTML5.CUE_CHANGE, this.hCueChange, false);
                 event.track.mode = 'hidden';
@@ -42432,7 +42432,7 @@ uvpjs.mediaCapabilities = uvpjs.MediaCapabilities()._detectEnvironment();
                 this.resourceProvider.facadeId3Data(event.target.activeCues);
             }
         },
-        
+
         /**
          * Remove facade specific events.
          * @memberof uvpjs.VPF_HTML5
@@ -42636,7 +42636,7 @@ uvpjs.mediaCapabilities = uvpjs.MediaCapabilities()._detectEnvironment();
             // N being the last fragment of the live playlist. decreasing this value is likely to cause playback stalls.
             // HLS Specification default: 3
             typeof options.liveSyncDurationCount === 'number' && options.liveSyncDurationCount > 0 && (this.libConfig.liveSyncDurationCount = options.liveSyncDurationCount);
-            // if set to true, the adaptive algorithm with limit levels usable in auto-quality by the HTML video element dimensions (width and height). 
+            // if set to true, the adaptive algorithm with limit levels usable in auto-quality by the HTML video element dimensions (width and height).
             // If dimensions between multiple levels are equal, the cap is chosen as the level with the greatest bandwidth.
             options.capLevelToPlayerSize === true && (this.libConfig.capLevelToPlayerSize = options.capLevelToPlayerSize);
 
@@ -42875,7 +42875,7 @@ uvpjs.mediaCapabilities = uvpjs.MediaCapabilities()._detectEnvironment();
                 return this._super();
             }
         },
-        
+
         /**
          * Gets the current bitrate.
          * Note: This is the manifest value of the bitrate associated with the current rendition.
@@ -43355,7 +43355,7 @@ uvpjs.mediaCapabilities = uvpjs.MediaCapabilities()._detectEnvironment();
             if (recoverable) {
                 return;
             }
-            
+
             this.resourceProvider.facadeError(this._getErrorInfoForType(type, details, fatal));
         },
 
@@ -43374,7 +43374,7 @@ uvpjs.mediaCapabilities = uvpjs.MediaCapabilities()._detectEnvironment();
                 et = Hls.ErrorTypes,
                 ec = uvpjs.ErrorInfo.errorCodes;
             switch(type) {
-                case et.NETWORK_ERROR: 
+                case et.NETWORK_ERROR:
                     return new ei({
                         errorCode: ec.HLSJS_PLAYBACK_ERROR,
                         hlsjsErrorCode: ec.HLSJS_NETWORK_ERROR,
@@ -44271,9 +44271,9 @@ uvpjs.mediaCapabilities = uvpjs.MediaCapabilities()._detectEnvironment();
     obj.Kaleidoscope360 = uvpjs.Class.subClass({
 
         DEBUG_ID: uvpjs.DebugManager.configParams.VIDEO_PLAYER_FACADE,
-        
+
         PREFIX:   '360_',
-        // kaleidoscope library path        
+        // kaleidoscope library path
         KALEIDOSCOPE_SDK_PATH: uvpjs.Configuration.path + 'lib/kaleidoscope.min.js',
 
         /**
@@ -44313,7 +44313,7 @@ uvpjs.mediaCapabilities = uvpjs.MediaCapabilities()._detectEnvironment();
 
             this._kaleidoscopeViewer = null;
 
-            this._loadKaleidoscope(this._setupKaleidoscope.bind(this));            
+            this._loadKaleidoscope(this._setupKaleidoscope.bind(this));
             this._addEventListeners();
         },
 
@@ -44355,7 +44355,7 @@ uvpjs.mediaCapabilities = uvpjs.MediaCapabilities()._detectEnvironment();
          * Then calls the callback function
          *
          * @private
-         * 
+         *
          * @param {Function} callback function.
          *
          * @memberof uvpjs.Kaleidoscope360#
@@ -44387,7 +44387,7 @@ uvpjs.mediaCapabilities = uvpjs.MediaCapabilities()._detectEnvironment();
          * Setup of DOM and create a Kaleidoscope Video player instance
          *
          * @private
-         * 
+         *
          *
          * @memberof uvpjs.Kaleidoscope360#
          */
@@ -44397,13 +44397,13 @@ uvpjs.mediaCapabilities = uvpjs.MediaCapabilities()._detectEnvironment();
             }
 
             this._create360Dom();
-            
+
             this._kaleidoscopeViewer = new window.Kaleidoscope.Video({
                 source: this._videoEl,
                 container: this._360El,
                 height: this._contentEl.clientHeight,
                 width: this._contentEl.clientWidth
-            });                                   
+            });
         },
 
         /**
@@ -44412,7 +44412,7 @@ uvpjs.mediaCapabilities = uvpjs.MediaCapabilities()._detectEnvironment();
          * Sets a style so this div will also be on-top and accept the click events
          *
          * @private
-         * 
+         *
          *
          * @memberof uvpjs.Kaleidoscope360#
          */
@@ -44428,7 +44428,7 @@ uvpjs.mediaCapabilities = uvpjs.MediaCapabilities()._detectEnvironment();
          * Removes the <div> created for the Kaleidoscope WebGL <canvas>
          *
          * @private
-         * 
+         *
          *
          * @memberof uvpjs.Kaleidoscope360#
          */
@@ -44444,7 +44444,7 @@ uvpjs.mediaCapabilities = uvpjs.MediaCapabilities()._detectEnvironment();
          * Calling too early can result in a LOT of WebGL warnings
          *
          * @private
-         * 
+         *
          *
          * @memberof uvpjs.Kaleidoscope360#
          */
@@ -44460,7 +44460,7 @@ uvpjs.mediaCapabilities = uvpjs.MediaCapabilities()._detectEnvironment();
          * This should be called from CONTAINER_RESIZE event.
          *
          * @private
-         * 
+         *
          *
          * @memberof uvpjs.Kaleidoscope360#
          */
@@ -44468,7 +44468,7 @@ uvpjs.mediaCapabilities = uvpjs.MediaCapabilities()._detectEnvironment();
             if (!this._kaleidoscopeViewer || !this._contentEl) {
                 return;
             }
-            // Resize the Kaleidoscope canvas when video is loaded            
+            // Resize the Kaleidoscope canvas when video is loaded
             this._kaleidoscopeViewer.setSize({height: this._contentEl.clientHeight, width: this._contentEl.clientWidth});
         },
 
@@ -44493,9 +44493,9 @@ uvpjs.mediaCapabilities = uvpjs.MediaCapabilities()._detectEnvironment();
 
             // UVPJS events.
             em.addEventListener(et.CONTAINER_RESIZE + ns, this._handleContainerResize.bind(this));
-            // To handle WebGL errors in Kaleidoscope before video has started, 
+            // To handle WebGL errors in Kaleidoscope before video has started,
             // wait for CONTENT_START before calling render.
-            em.addEventListener(et.CONTENT_START + ns, this._startKaleidoscopeRender.bind(this)); 
+            em.addEventListener(et.CONTENT_START + ns, this._startKaleidoscopeRender.bind(this));
         },
 
         /**
@@ -47248,7 +47248,7 @@ uvpjs.mediaCapabilities = uvpjs.MediaCapabilities()._detectEnvironment();
          */
         setOptions: function(opts) {
             var q;
-            
+
             for (q in opts) {
                 this.opts[q] = opts[q];
             }
@@ -47316,7 +47316,7 @@ uvpjs.mediaCapabilities = uvpjs.MediaCapabilities()._detectEnvironment();
             if (url.indexOf(cbParam) < 0) {
                 url += (url.indexOf('?') < 0 ? '?' : '&') + cbParam;
             }
-            
+
             this.selectorCall = url;
 
 
@@ -47583,7 +47583,7 @@ uvpjs.mediaCapabilities = uvpjs.MediaCapabilities()._detectEnvironment();
                 (str.charAt(0) === '[' && str.charAt(str.length - 1) === ']')
             );
         },
-        
+
         /**
          * @memberof uvpjs.ContentDataProxy#
          * @param {Object} xhr - request object
@@ -47948,7 +47948,7 @@ uvpjs.mediaCapabilities = uvpjs.MediaCapabilities()._detectEnvironment();
             }
 
             this.dispatchVideoStateChange(this.mc.LOADING);
-            
+
             this.dataLoadedCB = dataLoadedCallback;
             this.dataLoadErrorCB = errorCallback;
 
@@ -48168,11 +48168,11 @@ uvpjs.mediaCapabilities = uvpjs.MediaCapabilities()._detectEnvironment();
             if (dp.getProperty("episodeFlag") && cvs.isLive !== true) {
                 useGlobalResume = shouldUseGlobalResume();
                 useLocalResume = !useGlobalResume && rco.pid === cvs.resumePid;
-                
+
                 if (useGlobalResume || useLocalResume) {
 
                     this.debug && uvpjs.log(this.DEBUG_ID, 'RP_Platform; Resume: ' + useLocalResume ? 'Local' : 'Global');
-                    
+
                     st = useGlobalResume ? rco.globalResumeTime : (+cvs.resumeContentTime || 0);
                     et = useGlobalResume ? 0 : (elapsedTime || 0);
                     sp = useGlobalResume ? false : elapsedTime > this.ONE_HOUR_MS;
@@ -63512,13 +63512,13 @@ uvpjs.mediaCapabilities = uvpjs.MediaCapabilities()._detectEnvironment();
          */
         init: function (options) {
             this.cviModel = options.cviModel;
-            this.debug = this._isDebugEnabled();                                    
+            this.debug = this._isDebugEnabled();
             this.DEBUG_ID = uvpjs.DebugManager.configParams.MUX_DEBUG;
 
             this.debug && uvpjs.log(this.DEBUG_ID, 'MuxAgent: construct', options);
 
-            this.trackingMgr = options.trackingMgr;            
-            
+            this.trackingMgr = options.trackingMgr;
+
             // eventsMgr is null on "first" instantiation (will go away when SDK loader in play)
             this.eventTypes = (options.eventsMgr && options.eventsMgr.eventTypes) || null;
             this.moduleName = options.moduleName;
@@ -63602,7 +63602,7 @@ uvpjs.mediaCapabilities = uvpjs.MediaCapabilities()._detectEnvironment();
          *
          * @memberof uvpjs.MuxAgent#
          */
-        _isDebugEnabled: function() {            
+        _isDebugEnabled: function() {
             if (!this.cviModel) return uvpjs.debug;
             var debugParams = this._gatherModuleParams(uvpjs.DebugManager.CONFIG_MODULE_NAME);
             if (!debugParams) return false;
@@ -63641,8 +63641,8 @@ uvpjs.mediaCapabilities = uvpjs.MediaCapabilities()._detectEnvironment();
 
             var mdl = this.cviModel,
                 mp = this.moduleParams;
-            
-            var muxData = _.assign({                
+
+            var muxData = _.assign({
                 page_type: '', // (see docs) 'watchpage', 'iframe', or leave empty
                 viewer_user_id: mdl.getSessionOption('userId'), // ex: '12345'
                 experiment_name: mp && !uvpjs.util.isEmpty(mp.experimentName) ? mp.experimentName : '', // ex: 'player_test_A'
@@ -63651,12 +63651,12 @@ uvpjs.mediaCapabilities = uvpjs.MediaCapabilities()._detectEnvironment();
                 // Player Metadata
                 player_name: this.playerName, // ex: 'My Main Player'
                 player_version: this.playerVersion, // ex: '1.0.0'
-                player_init_time: mdl.initTime, // ex: 1451606400000                    
+                player_init_time: mdl.initTime, // ex: 1451606400000
             }, this._getMuxVideoData());
 
             // Setup the propertyKey
             if (this.useDefaultProperty) {
-                muxData.property_key = this.MUX_DEFAULT_PROPERTY_KEY;                
+                muxData.property_key = this.MUX_DEFAULT_PROPERTY_KEY;
             } else {
                 muxData.property_key = mp.propertyKey;
             }
@@ -63704,7 +63704,7 @@ uvpjs.mediaCapabilities = uvpjs.MediaCapabilities()._detectEnvironment();
          *
          * @memberof uvpjs.MuxAgent#
          */
-        _emitMuxVideoChange: function() {            
+        _emitMuxVideoChange: function() {
             window.mux.emit(this.videoElement, 'videochange', this._getMuxVideoData());
         },
 
@@ -63750,7 +63750,7 @@ uvpjs.mediaCapabilities = uvpjs.MediaCapabilities()._detectEnvironment();
                 if (this.muxMonitor === null) {
                     this.muxMonitor = this._createMuxMonitor();
 
-                    if (this.muxMonitor !== null) {                    
+                    if (this.muxMonitor !== null) {
                         this.debug && uvpjs.log(this.DEBUG_ID, "MuxAgent: created Mux monitor.");
                     }
                 } else {
@@ -63792,7 +63792,7 @@ uvpjs.mediaCapabilities = uvpjs.MediaCapabilities()._detectEnvironment();
                 module = model.getModule(moduleName),
                 mp = module.params,
                 params = {}, p;
-            
+
             if (!mp) return null;
             var i = mp.length;
 
@@ -63830,7 +63830,7 @@ uvpjs.mediaCapabilities = uvpjs.MediaCapabilities()._detectEnvironment();
 
             evtCbs[types.AD_LOADED] = ha; // adplay
             evtCbs[types.AD_START] = ha; // adplaying
-            // AdEvent.Type.RESUMED - emit `adplay` followed (immediately) by `adplaying`. 
+            // AdEvent.Type.RESUMED - emit `adplay` followed (immediately) by `adplaying`.
             // adpause
             evtCbs[types.VIDEO_STATE_CHANGE] = ha;
             evtCbs[types.AD_SKIPPED] = ha; // adended (skip)
@@ -63856,7 +63856,7 @@ uvpjs.mediaCapabilities = uvpjs.MediaCapabilities()._detectEnvironment();
         _getMuxAdData: function(e) {
             var adAssetUrl = e.payload.adData ? e.payload.adData.adAssetUrl : e.payload.adAssetUrl;
             return {
-                ad_tag_url: e.payload.adCallUrl, 
+                ad_tag_url: e.payload.adCallUrl,
                 ad_asset_url: adAssetUrl
             };
         },
@@ -63873,7 +63873,7 @@ uvpjs.mediaCapabilities = uvpjs.MediaCapabilities()._detectEnvironment();
             if (!eventName) return;
             if (!data) {
                 data = {
-                    ad_tag_url: '', 
+                    ad_tag_url: '',
                     ad_asset_url: ''
                 };
             }
@@ -63908,7 +63908,7 @@ uvpjs.mediaCapabilities = uvpjs.MediaCapabilities()._detectEnvironment();
             var types = this.eventTypes,
             muxAdEvents = this.MUX_AD_EVENTS,
             muxEvents = this.MUX_EVENTS;
-            
+
             switch(e.type) {
                 case types.AD_PLUGIN_CONTENT_PAUSE_REQUEST:
                     if (this.cviModel.contentPlaybackState.playbackState === uvpjs.mediaCapabilities.PLAYING) {
@@ -63935,13 +63935,13 @@ uvpjs.mediaCapabilities = uvpjs.MediaCapabilities()._detectEnvironment();
                         currentState = e.payload.currentState;
                     if (newState === this.mc.PAUSED) {
                         this._dispatchMuxAdEvent(muxAdEvents.AD_PAUSE, this._getMuxAdData(e));
-                    } 
+                    }
                     else if (currentState == this.mc.PAUSED && newState === this.mc.PLAYING) {
                         this._dispatchMuxAdEvent(muxAdEvents.AD_PLAY, this._getMuxAdData(e));
                         this._dispatchMuxAdEvent(muxAdEvents.AD_PLAYING, this._getMuxAdData(e));
                     }
                     break;
-                case types.AD_SKIPPED: 
+                case types.AD_SKIPPED:
                     this._dispatchMuxAdEvent(muxAdEvents.AD_ENDED, this._getMuxAdData(e));
                     break;
                 case types.AD_END:
@@ -63956,13 +63956,13 @@ uvpjs.mediaCapabilities = uvpjs.MediaCapabilities()._detectEnvironment();
                 case types.AD_RESPONSE:
                     this._dispatchMuxAdEvent(muxAdEvents.AD_RESPONSE, this._getMuxAdData(e));
                     break;
-                case types.AD_QUARTILE:                    
+                case types.AD_QUARTILE:
                     var percent = e.payload.percent;
                     switch (percent) {
-                        case 25: 
+                        case 25:
                             this._dispatchMuxAdEvent(muxAdEvents.AD_FIRST_QUARTILE, this._getMuxAdData(e));
                             break;
-                        case 50: 
+                        case 50:
                             this._dispatchMuxAdEvent(muxAdEvents.AD_MIDPOINT, this._getMuxAdData(e));
                             break;
                         case 75:
@@ -63970,7 +63970,7 @@ uvpjs.mediaCapabilities = uvpjs.MediaCapabilities()._detectEnvironment();
                             break;
                     }
                     break;
-            }   
+            }
         },
     });
 
@@ -64137,7 +64137,7 @@ uvpjs.mediaCapabilities = uvpjs.MediaCapabilities()._detectEnvironment();
             this.videoTagRef = options.videoTagRef;
             this.eventTypes = options.eventTypes;
             this.errorCallback = options.errorCallback;
-            
+
             this.appCertData = null;
             this.appCertLoaded = false;
 
@@ -64145,7 +64145,7 @@ uvpjs.mediaCapabilities = uvpjs.MediaCapabilities()._detectEnvironment();
             this.initData = null;
 
             this._loadAppCert();
-            this._addEvents();         
+            this._addEvents();
         },
 
         /**
@@ -64154,13 +64154,13 @@ uvpjs.mediaCapabilities = uvpjs.MediaCapabilities()._detectEnvironment();
          */
         destroy: function() {
             this._removeEvents();
-            this.drm = null;  
+            this.drm = null;
             this.videoTagRef = null;
             this.eventTypes = null;
             this.errorCallback = null;
             this.appCertData = null;
             this.initData = null;
-        },      
+        },
 
         // Private
 
@@ -64175,7 +64175,7 @@ uvpjs.mediaCapabilities = uvpjs.MediaCapabilities()._detectEnvironment();
 
             var cl = new uvpjs.CodeLoader();
             cl.loadArrayBuffer(appCertURL,  this._onAppCertLoaded.bind(this),  this._onAppCertError.bind(this));
-        },  
+        },
 
         /**
          * Registers an event handler for the 'webkitneedkey' event
@@ -64213,7 +64213,7 @@ uvpjs.mediaCapabilities = uvpjs.MediaCapabilities()._detectEnvironment();
             this.initData = event.initData;
             if (this.appCertLoaded) {
                 this._initializeFairPlayCDM();
-            }            
+            }
         },
 
         _initializeFairPlayCDM: function() {
@@ -64224,8 +64224,8 @@ uvpjs.mediaCapabilities = uvpjs.MediaCapabilities()._detectEnvironment();
                 this.debug && uvpjs.error(this.DEBUG_ID, 'FairPlayDRM _onWebKitNeedKey. No ContentId in URI');
                 this.errorCallback && this.errorCallback(uvpjs.ErrorInfo.errorCodes.FAIRPLAY_LIC_ERROR, uvpjs.ErrorInfo.messages.FAIRPLAY_NO_CONTENTID);
                 return;
-            }        
-            
+            }
+
             if (!this.videoTagRef.webkitKeys) {
                 var keySystem;
                 if (WebKitMediaKeys.isTypeSupported('com.apple.fps.1_0', 'video/mp4')) {
@@ -64237,7 +64237,7 @@ uvpjs.mediaCapabilities = uvpjs.MediaCapabilities()._detectEnvironment();
                 }
                 this.videoTagRef.webkitSetMediaKeys(new WebKitMediaKeys(keySystem));
             }
-    
+
             if (!this.videoTagRef.webkitKeys) {
                 this.debug && uvpjs.error(this.DEBUG_ID, 'FairPlayDRM _onWebKitNeedKey. Could not create MediaKeys');
                 this.errorCallback && this.errorCallback(uvpjs.ErrorInfo.errorCodes.FAIRPLAY_LIC_ERROR, uvpjs.ErrorInfo.messages.FAIRPLAY_CREATE_MEDIAKEYS);
@@ -64276,7 +64276,7 @@ uvpjs.mediaCapabilities = uvpjs.MediaCapabilities()._detectEnvironment();
         },
 
         /**
-         * Handles Application Certificate failing to load        
+         * Handles Application Certificate failing to load
          * @memberof uvpjs.FairPlayDRM#
          *
          * @param {Object} event Event object
@@ -64287,13 +64287,13 @@ uvpjs.mediaCapabilities = uvpjs.MediaCapabilities()._detectEnvironment();
         },
 
         /**
-         * Concats initData, contentId & appCert into single Uint8Array payload for video.webkitKeys.createSession               
+         * Concats initData, contentId & appCert into single Uint8Array payload for video.webkitKeys.createSession
          * @memberof uvpjs.FairPlayDRM#
          *
          * @param {Uint8Array} initData Initialization data from webkitneedkey event
          * @param {String} id Content ID for the current asset
-         * @param {Uint8Array} cert Application Certificate data  
-         * 
+         * @param {Uint8Array} cert Application Certificate data
+         *
          * @returns {Uint8Array} Initialization payload
          */
         _concatInitDataIdAndCertificate: function(initData, id, cert) {
@@ -64329,7 +64329,7 @@ uvpjs.mediaCapabilities = uvpjs.MediaCapabilities()._detectEnvironment();
             certArray.set(cert);
 
             return new Uint8Array(buffer, 0, buffer.byteLength);
-        },        
+        },
 
         /**
          * When FairPlay CDM is ready, build the SPC payload and send it to license server to get CKC for playback
@@ -64353,7 +64353,7 @@ uvpjs.mediaCapabilities = uvpjs.MediaCapabilities()._detectEnvironment();
             request.addEventListener('error', this._onLicenseRequestError.bind(this), false);
 
             // Build the SPC payload, binary message data must be Base64 encoded and then URL escaped
-            var params = 'spc=' + encodeURIComponent(this._base64EncodeUint8Array(message));            
+            var params = 'spc=' + encodeURIComponent(this._base64EncodeUint8Array(message));
             request.open('POST', licenseServerUrl, true);
             request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
 
@@ -64365,7 +64365,7 @@ uvpjs.mediaCapabilities = uvpjs.MediaCapabilities()._detectEnvironment();
          * @memberof uvpjs.FairPlayDRM#
          *
          * @param {Uint8Array} input Unit8Array data
-         * 
+         *
          * @returns {String} Base64 encoded string
          */
         _base64EncodeUint8Array: function(input) {
@@ -64426,19 +64426,19 @@ uvpjs.mediaCapabilities = uvpjs.MediaCapabilities()._detectEnvironment();
         },
 
         /**
-         * Parses the FairPlay initData and constructs a license server URL 
+         * Parses the FairPlay initData and constructs a license server URL
          * skd:// is swapped to https://
          * If sessionID or ticket are set on the contentVideoState.drm they are appened to the URL
          * @memberof uvpjs.FairPlayDRM#
          *
          * @param {Uint16Array} initData Inititialization data from webkitneedkey, usually contains the URI from HLS manifest
-         * 
+         *
          * @returns {String} URL for the license server, this is usually a /getckc URL for Irdeto
          */
-        _getLicenseServerUrl: function(initData) {            
+        _getLicenseServerUrl: function(initData) {
             var initDataString = String.fromCharCode.apply(null, new Uint16Array(initData.buffer));
-            
-            var splitString = initDataString.split('://');        
+
+            var splitString = initDataString.split('://');
             var url = 'https://' + splitString[1];
 
             var sessionId = this.drm.sessionId,
@@ -64446,13 +64446,13 @@ uvpjs.mediaCapabilities = uvpjs.MediaCapabilities()._detectEnvironment();
 
             if (sessionId) {
                 url += '&SessionId=' + sessionId;
-            }   
+            }
 
             if (ticket) {
                 url += '&Ticket=' + ticket;
             }
 
-            return url;            
+            return url;
         },
 
         /**
@@ -64460,10 +64460,10 @@ uvpjs.mediaCapabilities = uvpjs.MediaCapabilities()._detectEnvironment();
          * @memberof uvpjs.FairPlayDRM#
          *
          * @param {String} licenseServerUrl License server URL
-         * 
+         *
          * @returns {String} Content Id value
          */
-        _getContentId: function(licenseServerUrl) {            
+        _getContentId: function(licenseServerUrl) {
             var qObj = uvpjs.util.objFromQueryStr(licenseServerUrl);
             return qObj.ContentId || null;
         }
