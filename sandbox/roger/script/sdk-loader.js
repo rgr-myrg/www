@@ -15,7 +15,7 @@
 			var scriptSrc      = null,
 				scriptType     = 'text/javascript',
 				scriptAsync    = true,
-				scriptOnLoad   = Function.prototype,
+				scriptOnLoad   = null,
 				scriptOnError  = Function.prototype,
 				statusComplete = {status: 'complete'};
 
@@ -48,7 +48,7 @@
 				return this;
 			};
 
-			this.load = function() {console.log('[load]');
+			this.load = function() {
 				if (scriptSrc === null) {
 					notifyError('script src missing');
 					return;
@@ -67,9 +67,9 @@
 
 				script.onreadystatechange = script.onload = function() {
 					if (!script.readyState || /loaded|complete/.test(script.readyState)) {
-						script.onreadystatechange = script.onload = null;
+						//script.onreadystatechange = script.onload = null;
 
-						History.add(scriptUrl);
+						History.add(scriptSrc);
 						scriptOnLoad.call(this, statusComplete);
 					}
 				};
@@ -78,7 +78,6 @@
 					notifyError(error);
 				};
 
-				console.log(script);
 				document.querySelector('head').appendChild(script);
 			};
 
@@ -91,13 +90,13 @@
 	})();
 })(uvpjs);
 
-new uvpjs.SdkLoader.script()
-	.src('http://rgr-myrg.github.io/www/sandbox/build/lib/tracking/mux.js')
-	.async(true)
-	.onLoad((result) => {
-		console.log(result);
-	})
-	.onError((result) => {
-		console.log(result);
-	})
-	.load();
+// new uvpjs.SdkLoader.script()
+// 	.src('http://rgr-myrg.github.io/www/sandbox/build/lib/tracking/mux.js')
+// 	.async(true)
+// 	.onLoad((result) => {
+// 		console.log(result);
+// 	})
+// 	.onError((result) => {
+// 		console.log(result);
+// 	})
+// 	.load();
