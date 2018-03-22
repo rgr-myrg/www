@@ -12,73 +12,90 @@
 			};
 		})();
 		var ScriptLoader = function() {
-			var scriptUrl = null,
-				scriptLoaded = null
-				loadError = Function.prototype;
+			var scriptSrc      = null,
+				scriptType     = 'text/javascript',
+				scriptAsync    = true,
+				scriptOnLoad   = Function.prototype,
+				scriptOnError  = Function.prototype,
+				statusComplete = {status: 'complete'},
+				statusError    = {status: 'error'};
 
-			this.url = function(url) {
-				scriptUrl = url;
+			this.src = function(src) {
+				scriptSrc = src;
 				return this;
 			};
 
-			this.onLoaded = function(callback) {
-				scriptLoaded = callback;
+			this.type = function(type) {
+				scriptType = type;
+				return this;
+			};
+
+			this.async = function(async) {
+				scriptAsync = async;
+				return this;
+			};
+
+			this.onLoad = function(callback) {
+				scriptOnLoad = callback;
 				return this;
 			};
 
 			this.onError = function(callback) {
-				loadError = callback;
+				scriptOnError = callback;
 				return this;
 			};
 
-			this.loadScript = function() {
-				if (scriptUrl === null || typeof scriptLoaded !== "function") {
-					console.warn("Url or onLoaded callback missing.");
+			this.load = function() {
+				if (scriptSrc === null) {
+					statusError.error = 'src is missing';
+					scriptOnError.call(this, statusError);
 					return;
 				}
 
-				if (History.has(scriptUrl)) {
-					scriptLoaded.call(this, "loaded");
+				if (History.has(scriptSrc)) {
+					scriptOnLoad.call(this, statusComplete);
 					return;
 				}
 
-				var script = document.createElement("script");
+				var script = document.createElement('script');
 
-				script.type = "text/javascript";
-				script.src = scriptUrl;
-				script.async = true;
+				script.type = scriptType;
+				script.src = scriptSrc;
+				script.async = scriptAsync;
 
 				script.onreadystatechange = script.onload = function() {
 					if (!script.readyState || /loaded|complete/.test(script.readyState)) {
 						script.onreadystatechange = script.onload = null;
 
-						History.add(scriptUrl);
-						scriptLoaded.call(this, "loaded");
+						History.add(scriptSrc);
+						scriptOnLoad.call(this, statusComplete);
 					}
 				};
 
 				script.onerror = function(error) {
-					loadError.call(this, "error");
+					statusError.error = error;
+					scriptOnError.call(this, statusError);
 				};
 
-				document.querySelector("head").appendChild(script);
+				document.querySelector('head').appendChild(script);
 			};
 
 			return this;
 		};
 
 		return {
-			ScriptLoader: ScriptLoader
+			script: ScriptLoader
 		};
 	})();
 })(uvpjs);
 
-uvpjs.SdkLoader.ScriptLoader()
-	.url("http://rgr-myrg.github.io/www/sandbox/build/lib/tracking/mux.js")
-	.onLoaded((result) => {
+uvpjs.SdkLoader.script()
+	.src('//rgr-myrg.github.io/www/sandbox/build/lib/tracking/mux.js')
+	.async(true)
+	.onLoad((result) => {
 		console.log(result);
 	})
 	.onError((result) => {
 		console.log(result);
 	})
-	.loadScript();
+	.load();
