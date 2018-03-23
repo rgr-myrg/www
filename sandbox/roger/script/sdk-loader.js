@@ -36,7 +36,7 @@
 			}.bind(this);
 
 			var notifyStatus = function() {
-				status = arguments[0];
+				var status = arguments[0];
 
 				if (arguments.length > 0) {
 					status.error = arguments[1];
