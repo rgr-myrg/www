@@ -21,7 +21,7 @@
 				statusError     = {status: 'error'},
 				maxNumOfRetries = 5,
 				totalRetryCount = 0,
-				numOfRetries    = 0
+				numOfRetries    = 1
 				timeToWait      = 100;
 
 			this.src = function(src) {
@@ -41,6 +41,11 @@
 
 			this.retry = function(num) {
 				numOfRetries = num;
+				return this;
+			};
+
+			this.delay = function(milliSecs) {
+				timeToWait = milliSecs;
 				return this;
 			};
 
@@ -86,7 +91,10 @@
 
 					if (totalRetryCount <= numOfRetries) {
 						console.log('[retry]', totalRetryCount);
-						this.load();
+						setTimeout(
+							function() { this.load(); }.bind(this),
+							timeToWait
+						);
 						return;
 					}
 
@@ -110,6 +118,7 @@ uvpjs.SdkLoader.script()
 	.src('http://rgr-myrg.github.io/www/sandbox/build/lib/tracking/mux.js')
 	.async(true)
 	.retry(3)
+	.delay(2000)
 	.onLoad((result) => {
 		console.log(result);
 	})
