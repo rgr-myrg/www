@@ -12,13 +12,17 @@
 			};
 		})();
 		var ScriptLoader = function() {
-			var scriptSrc      = null,
-				scriptType     = 'text/javascript',
-				scriptAsync    = true,
-				scriptOnLoad   = Function.prototype,
-				scriptOnError  = Function.prototype,
-				statusComplete = {status: 'complete'},
-				statusError    = {status: 'error'};
+			var scriptSrc       = null,
+				scriptType      = 'text/javascript',
+				scriptAsync     = true,
+				scriptOnLoad    = Function.prototype,
+				scriptOnError   = Function.prototype,
+				statusComplete  = {status: 'complete'},
+				statusError     = {status: 'error'},
+				maxNumOfRetries = 5,
+				totalRetryCount = 0,
+				numOfRetries    = 0
+				timeToWait      = 100;
 
 			this.src = function(src) {
 				scriptSrc = src;
@@ -32,6 +36,11 @@
 
 			this.async = function(async) {
 				scriptAsync = async;
+				return this;
+			};
+
+			this.retry = function(num) {
+				numOfRetries = num;
 				return this;
 			};
 
@@ -70,12 +79,20 @@
 						History.add(scriptSrc);
 						scriptOnLoad.call(this, statusComplete);
 					}
-				};
+				}.bind(this);
 
 				script.onerror = function(error) {
+					totalRetryCount++;
+
+					if (totalRetryCount <= numOfRetries) {
+						console.log('[retry]', totalRetryCount);
+						this.load();
+						return;
+					}
+
 					statusError.error = error;
 					scriptOnError.call(this, statusError);
-				};
+				}.bind(this);
 
 				document.querySelector('head').appendChild(script);
 			};
@@ -90,8 +107,9 @@
 })(uvpjs);
 
 uvpjs.SdkLoader.script()
-	.src('//rgr-myrg.github.io/www/sandbox/build/lib/tracking/mux.js')
+	.src('http://rgr-myrg.github.io/www/sandbox/build/lib/tracking/mux.js')
 	.async(true)
+	.retry(3)
 	.onLoad((result) => {
 		console.log(result);
 	})
