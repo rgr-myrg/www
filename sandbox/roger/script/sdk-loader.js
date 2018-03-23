@@ -11,12 +11,12 @@
 				}
 			};
 		})();
-		var ScriptLoader = function() {
+		var ScriptInjector = function() {
 			var scriptElement   = null,
 				scriptSrc       = null,
 				scriptType      = 'text/javascript',
 				scriptAsync     = true,
-				scriptOnLoad    = Function.prototype,
+				scriptOnReady   = Function.prototype,
 				scriptOnError   = Function.prototype,
 				statusComplete  = {status: 'complete'},
 				statusError     = {status: 'error'},
@@ -34,7 +34,7 @@
 			}.bind(this);
 
 			this.src = function(src) {
-				scriptSrc = src;
+				scriptSrc = src.replace(/^http:|^https:/gi, '');
 				return this;
 			};
 
@@ -58,8 +58,8 @@
 				return this;
 			};
 
-			this.onLoad = function(callback) {
-				scriptOnLoad = callback;
+			this.onReady = function(callback) {
+				scriptOnReady = callback;
 				return this;
 			};
 
@@ -75,7 +75,7 @@
 				}
 
 				if (History.has(scriptSrc)) {
-					scriptOnLoad.call(this, statusComplete);
+					scriptOnReady.call(this, statusComplete);
 					return;
 				}
 
@@ -90,17 +90,19 @@
 						script.onreadystatechange = script.onload = null;
 
 						History.add(scriptSrc);
-						scriptOnLoad.call(this, statusComplete);
+						scriptOnReady.call(this, statusComplete);
 						scriptElement = null;
 					}
 				}.bind(this);
 
-				script.onerror = function(error) {
+				script.onerror = function(e) {
 					totalRetryCount++;
+
+					/* Remove failed script from the DOM */
+					document.querySelector('head').removeChild(script);
 
 					if (totalRetryCount <= maxNumOfRetries) {
 						console.log('[retry]', totalRetryCount);
-						document.querySelector('head').removeChild(script);
 						setTimeout(
 							function() { this.load(); }.bind(this),
 							timeToWait
@@ -108,7 +110,7 @@
 						return;
 					}
 
-					notifyError(error);
+					notifyError(e);
 				}.bind(this);
 
 				try {
@@ -118,11 +120,25 @@
 				}
 			};
 
+			this.bulkLoad = function(list) {
+				list.forEach(function(src) {
+					obj.SdkLoader.script()
+						.src(src)
+						.type(scriptType)
+						.async(scriptAsync)
+						.retry(maxNumOfRetries)
+						.delay(timeToWait)
+						.onReady(scriptOnReady)
+						.onError(scriptOnError)
+						.load();
+				});
+			};
+
 			return this;
 		};
 
 		return {
-			script: ScriptLoader
+			script: ScriptInjector
 		};
 	})();
 })(uvpjs);
@@ -132,10 +148,26 @@ uvpjs.SdkLoader.script()
 	.async(true)
 	.retry(3)
 	.delay(2000)
-	.onLoad((result) => {
+	.onReady((result) => {
 		console.log(result);
 	})
 	.onError((result) => {
 		console.log(result);
 	})
 	.load();
+
+uvpjs.SdkLoader.script()
+	.async(true)
+	.retry(5)
+	.delay(2000)
+	.onReady((result) => {
+		console.log(result);
+	})
+	.onError((result) => {
+		console.log(result);
+	})
+	.bulkLoad([
+		'script/uvpjs-builder.js',
+		'script/uvpc-config.js',
+		'script/uvpc-comscore.js'
+	]);
