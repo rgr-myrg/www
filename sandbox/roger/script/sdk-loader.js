@@ -131,6 +131,13 @@
 				try {
 					document.querySelector('head').appendChild(script);
 				} catch (e) {
+					var head = document.querySelector('head');
+
+					/* Attempt to remove script */
+					if (head.lastChild === script) {
+						document.querySelector('head').removeChild(script);
+					}
+
 					notifyStatus(statusError, e);
 				}
 			};
@@ -194,6 +201,6 @@ uvpjs.SdkLoader.script()
 	.retry(5)
 	.delay(2000)
 	.ready((result) => {
-		console.log('ready', result);
+		window.console.log('ready', result);
 	})
 	.load();
