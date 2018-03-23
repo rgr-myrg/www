@@ -12,17 +12,26 @@
 			};
 		})();
 		var ScriptLoader = function() {
-			var scriptSrc       = null,
+			var scriptElement   = null,
+				scriptSrc       = null,
 				scriptType      = 'text/javascript',
 				scriptAsync     = true,
 				scriptOnLoad    = Function.prototype,
 				scriptOnError   = Function.prototype,
 				statusComplete  = {status: 'complete'},
 				statusError     = {status: 'error'},
-				maxNumOfRetries = 5,
 				totalRetryCount = 0,
-				numOfRetries    = 1
+				maxNumOfRetries = 1
 				timeToWait      = 100;
+
+			var getScriptElement = function() {
+				return scriptElement || document.createElement('script');
+			}.bind(this);
+
+			var notifyError = function(e) {
+				statusError.error = e;
+				scriptOnError.call(this, statusError);
+			}.bind(this);
 
 			this.src = function(src) {
 				scriptSrc = src;
@@ -40,7 +49,7 @@
 			};
 
 			this.retry = function(num) {
-				numOfRetries = num;
+				maxNumOfRetries = num;
 				return this;
 			};
 
@@ -61,8 +70,7 @@
 
 			this.load = function() {
 				if (scriptSrc === null) {
-					statusError.error = 'src is missing';
-					scriptOnError.call(this, statusError);
+					notifyError('src is missing');
 					return;
 				}
 
@@ -71,7 +79,7 @@
 					return;
 				}
 
-				var script = document.createElement('script');
+				var script = getScriptElement();
 
 				script.type = scriptType;
 				script.src = scriptSrc;
@@ -83,14 +91,16 @@
 
 						History.add(scriptSrc);
 						scriptOnLoad.call(this, statusComplete);
+						scriptElement = null;
 					}
 				}.bind(this);
 
 				script.onerror = function(error) {
 					totalRetryCount++;
 
-					if (totalRetryCount <= numOfRetries) {
+					if (totalRetryCount <= maxNumOfRetries) {
 						console.log('[retry]', totalRetryCount);
+						document.querySelector('head').removeChild(script);
 						setTimeout(
 							function() { this.load(); }.bind(this),
 							timeToWait
@@ -98,11 +108,14 @@
 						return;
 					}
 
-					statusError.error = error;
-					scriptOnError.call(this, statusError);
+					notifyError(error);
 				}.bind(this);
 
-				document.querySelector('head').appendChild(script);
+				try {
+					document.querySelector('head').appendChild(script);
+				} catch (e) {
+					notifyError(e);
+				}
 			};
 
 			return this;
