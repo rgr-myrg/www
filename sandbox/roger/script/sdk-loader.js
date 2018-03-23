@@ -20,7 +20,7 @@
 				statusComplete  = {status: 'complete'},
 				statusError     = {status: 'error'},
 				totalRetryCount = 0,
-				maxNumOfRetries = 1
+				maxNumOfRetries = 1,
 				timeToWait      = 100;
 
 			var getScriptElement = function() {
