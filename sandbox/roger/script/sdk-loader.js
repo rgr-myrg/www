@@ -38,7 +38,7 @@
 			var notifyStatus = function() {
 				var status = arguments[0];
 
-				if (arguments.length > 0) {
+				if (arguments.length > 1) {
 					status.error = arguments[1];
 				}
 
