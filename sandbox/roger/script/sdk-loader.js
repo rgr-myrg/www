@@ -2,15 +2,28 @@
 	obj.SdkLoader = (function() {
 		var History = (function() {
 			var items = {};
+
 			return {
-				add: function(entry) {
-					items[entry] = true;
+				add: function(key, value) {
+					items[key] = value;
 				},
-				has: function(entry) {
-					return items.hasOwnProperty(entry);
+				has: function(key) {
+					return items.hasOwnProperty(key);
+				},
+				getItemsAsArray: function() {
+					var arr = [];
+
+					for (var i in items) {
+						if (items.hasOwnProperty(i)) {
+							arr.push(items[i]);
+						}
+					}
+
+					return arr;
 				}
 			};
 		})();
+
 		var ScriptInjector = function() {
 			var scriptElement   = null,
 				scriptSrc       = null,
@@ -43,6 +56,8 @@
 				}
 
 				status.info = getScriptInfo();
+
+				History.add(scriptSrc, status);
 				scriptOnReady.call(this, status);
 			}.bind(this);
 
@@ -106,7 +121,7 @@
 				script.onreadystatechange = script.onload = function() {
 					if (!script.readyState || /loaded|complete/.test(script.readyState)) {
 						scriptElement = script.onreadystatechange = script.onload = null;
-						History.add(scriptSrc);
+						//History.add(scriptSrc);
 						notifyStatus(statusComplete);
 					}
 				}.bind(this);
@@ -169,6 +184,10 @@
 				}.bind(this);
 
 				loadNext();
+			};
+
+			this.getHistoryItems = function() {
+				return History.getItemsAsArray();
 			};
 
 			return this;
