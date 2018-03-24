@@ -14,9 +14,7 @@
                     var arr = [];
 
                     for (var i in items) {
-                        if (items.hasOwnProperty(i)) {
-                            arr.push(items[i]);
-                        }
+                        arr.push(items[i]);
                     }
 
                     return arr;
@@ -30,32 +28,22 @@
                 scriptType      = 'text/javascript',
                 scriptAsync     = true,
                 scriptOnReady   = Function.prototype,
-                statusComplete  = {status: 'complete'},
-                statusError     = {status: 'error'},
                 totalRetryCount = 0,
                 maxNumOfRetries = 1,
                 timeToWait      = 100;
 
-            var getScriptElement = function() {
-                return scriptElement || document.createElement('script');
-            }.bind(this);
-
-            var getScriptInfo = function() {
-                return {
-                    src: scriptSrc,
-                    type: scriptType,
-                    async: scriptAsync
-                };
-            }.bind(this);
-
             var notifyStatus = function() {
-                var status = arguments[0];
+                var status = {status: arguments[0]};
 
                 if (arguments.length > 1) {
                     status.error = arguments[1];
                 }
 
-                status.info = getScriptInfo();
+                status.info = {
+                    src: scriptSrc,
+                    type: scriptType,
+                    async: scriptAsync
+                };
 
                 History.add(scriptSrc, status);
                 scriptOnReady.call(this, status);
@@ -98,7 +86,7 @@
 
             this.load = function() {
                 if (scriptSrc === null) {
-                    notifyStatus(statusError, 'src is missing');
+                    notifyStatus('error', 'src is missing');
                     return;
                 }
 
@@ -108,11 +96,11 @@
                 }
 
                 if (History.has(scriptSrc)) {
-                    notifyStatus(statusComplete);
+                    notifyStatus('loaded');
                     return;
                 }
 
-                var script = getScriptElement();
+                var script = scriptElement || document.createElement('script');
 
                 script.type = scriptType;
                 script.src = scriptSrc;
@@ -121,8 +109,7 @@
                 script.onreadystatechange = script.onload = function() {
                     if (!script.readyState || /loaded|complete/.test(script.readyState)) {
                         scriptElement = script.onreadystatechange = script.onload = null;
-                        //History.add(scriptSrc);
-                        notifyStatus(statusComplete);
+                        notifyStatus('loaded');
                     }
                 }.bind(this);
 
@@ -140,7 +127,7 @@
                         return;
                     }
 
-                    notifyStatus(statusError, e);
+                    notifyStatus('error', e);
                 }.bind(this);
 
                 try {
@@ -153,8 +140,10 @@
                         document.querySelector('head').removeChild(script);
                     }
 
-                    notifyStatus(statusError, e);
+                    notifyStatus('error', e);
                 }
+
+                return this;
             };
 
             this.bulkLoad = function(list) {
@@ -168,11 +157,11 @@
                     if (scripts.length === 0) {
                         onready.call(this, results);
                     } else {
-                        loadNext();
+                        loadNextScript();
                     }
                 }.bind(this);
 
-                var loadNext = function() {
+                var loadNextScript = function() {
                     obj.SdkLoader.script()
                         .src(scripts.shift())
                         .type(scriptType)
@@ -183,7 +172,7 @@
                         .load();
                 }.bind(this);
 
-                loadNext();
+                loadNextScript();
             };
 
             this.getHistoryItems = function() {
@@ -207,7 +196,7 @@ uvpjs.SdkLoader.script()
     .ready((result) => {
         console.log(result);
     })
-    .load();
+    .load()     ;
 
 uvpjs.SdkLoader.script()
     .src([
@@ -220,6 +209,6 @@ uvpjs.SdkLoader.script()
     .retry(5)
     .delay(2000)
     .ready((result) => {
-        window.console.log('ready', result);
+        console.log('ready', result);
     })
     .load();
