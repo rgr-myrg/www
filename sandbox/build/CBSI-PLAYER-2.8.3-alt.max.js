@@ -26734,7 +26734,9 @@ uvpjs._ = _.noConflict();
 
     'use strict';
 
-    uvpjs.Configuration = {"env":"stage","hostname":"vtstage.cbsinteractive.com","name":"UVPJS","version":"2.8.3-alt","date":"04/10/18 10:49:39 AM (PDT)","path":"//vtstage.cbsinteractive.com/uvpjs/2.8.3-alt/","playerName":"CBSI-PLAYER"};
+    //uvpjs.Configuration = {"env":"stage","hostname":"vtstage.cbsinteractive.com","name":"UVPJS","version":"2.8.3-alt","date":"04/10/18 10:49:39 AM (PDT)","path":"//vtstage.cbsinteractive.com/uvpjs/2.8.3-alt/","playerName":"CBSI-PLAYER"};
+    uvpjs.Configuration = {"env":"stage","hostname":"vtstage.cbsinteractive.com","name":"UVPJS","version":"2.8.3-alt","date":"04/10/18 10:49:39 AM (PDT)","path":"//vidtech.cbsinteractive.com/uvpjs/2.8.3/","playerName":"CBSI-PLAYER"};
+
 
 })(uvpjs);
 /* jshint ignore:end */
