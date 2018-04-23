@@ -58,8 +58,7 @@ var currentMediaThumb = mediaThumbs[0];
 var timer = null;
 
 var applicationIDs = [
-    '66354228',
-    chrome.cast.media.DEFAULT_MEDIA_RECEIVER_APP_ID
+    '66354228'
 ];
 
 /**
@@ -82,6 +81,7 @@ function initializeCastApi() {
   //     chrome.cast.media.DEFAULT_MEDIA_RECEIVER_APP_ID
   //   ];
 
+applicationIDs.push(chrome.cast.media.DEFAULT_MEDIA_RECEIVER_APP_ID);
 
   // auto join policy can be one of the following three
   // 1) no auto join
