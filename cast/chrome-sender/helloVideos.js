@@ -57,6 +57,11 @@ var currentMediaThumb = mediaThumbs[0];
 
 var timer = null;
 
+var applicationIDs = [
+    '66354228',
+    chrome.cast.media.DEFAULT_MEDIA_RECEIVER_APP_ID
+];
+
 /**
  * Call initialization
  */
@@ -72,10 +77,10 @@ window['__onGCastApiAvailable'] = function(isAvailable) {
 function initializeCastApi() {
   // default app ID to the default media receiver app
   // optional: you may change it to your own app ID/receiver
-  var applicationIDs = [
-      '66354228',
-      chrome.cast.media.DEFAULT_MEDIA_RECEIVER_APP_ID
-    ];
+  // var applicationIDs = [
+  //     '66354228',
+  //     chrome.cast.media.DEFAULT_MEDIA_RECEIVER_APP_ID
+  //   ];
 
 
   // auto join policy can be one of the following three
