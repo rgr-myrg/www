@@ -92,7 +92,7 @@ class UvpCastApi {
         media.breakClips = [{
             id: 'AdClip1',
             title: 'Test Ad',
-            contentId: '//techslides.com/demos/sample-videos/small.mp4',
+            contentId: 'video/small.mp4',
             contentType: 'video/mp4',
             posterUrl: '//cnet2.cbsistatic.com/img/xhT2E9JH6x380i0YQzrYQx-OROs=/770x433/2017/03/16/41a9fd65-d1a7-479c-a862-d00cc81146f4/news0316drone.jpg',
             whenSkippable: 2
