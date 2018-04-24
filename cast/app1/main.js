@@ -7,13 +7,11 @@ console.log('[MAIN] Start Up');
 
 class UvpCastApi {
     constructor() {
-        console.log('[UVP] Constructor');
         this.context = cast.framework.CastReceiverContext.getInstance();
-        console.log('[UVP] context', this.context);
         this.playerManager = this.context.getPlayerManager();
         this.addEventListeners();
-        console.log('[UVP] context.start()');
         this.context.start();
+        this.isAdBreak = false;
     }
 
     addEventListeners() {
@@ -25,10 +23,67 @@ class UvpCastApi {
             }
         );
         //https://developers.google.com/cast/docs/reference/caf_receiver/cast.framework.events#.EventType
+        // this.playerManager.addEventListener(
+        //     cast.framework.events.EventType.ALL,
+        //     event => {
+        //         console.log('[cast.framework.events]', event);
+        //     }
+        // );
+
+
         this.playerManager.addEventListener(
-            cast.framework.events.EventType.ALL,
+            cast.framework.events.EventType.LOADED_METADATA,
             event => {
-                console.log('[cast.framework.events]', event);
+                console.log('[LOADED_METADATA]', event);
+            }
+        );
+
+        this.playerManager.addEventListener(
+            cast.framework.events.EventType.BREAK_STARTED,
+            event => {
+                console.log('[BREAK_STARTED]', event);
+            }
+        );
+
+        this.playerManager.addEventListener(
+            cast.framework.events.EventType.BREAK_CLIP_STARTED,
+            event => {
+                console.log('[BREAK_CLIP_STARTED]', event);
+                this.isAdBreak = true;
+            }
+        );
+
+        this.playerManager.addEventListener(
+            cast.framework.events.EventType.BREAK_CLIP_ENDED,
+            event => {
+                console.log('[BREAK_CLIP_ENDED]', event);
+            }
+        );
+
+        this.playerManager.addEventListener(
+            cast.framework.events.EventType.BREAK_ENDED,
+            event => {
+                console.log('[BREAK_ENDED]', event);
+            }
+        );
+
+        this.playerManager.addEventListener(
+            cast.framework.events.EventType.PROGRESS,
+            event => {
+                console.log('[PROGRESS]', event.currentMediaTime);
+                if (this.isAdBreak) {
+                    console.log('[AD TRACKING]');
+                } else {
+                    console.log('[CONTENT TRACKING]');
+                }
+            }
+        );
+
+        this.playerManager.addEventListener(
+            cast.framework.events.EventType.ENDED,
+            event => {
+                console.log('[ENDED]', event);
+                console.log('[ENDED] isAdBreak', this.isAdBreak);
             }
         );
     }
