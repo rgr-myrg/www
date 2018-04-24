@@ -81,6 +81,13 @@ class UvpCastApi {
         );
 
         this.playerManager.addEventListener(
+            cast.framework.events.EventType.MEDIA_STATUS,
+            event => {
+                console.log('[MEDIA_STATUS]', event);
+            }
+        );
+
+        this.playerManager.addEventListener(
             cast.framework.events.EventType.ENDED,
             event => {
                 console.log('[ENDED]', event);
