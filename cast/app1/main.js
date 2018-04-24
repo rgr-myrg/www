@@ -50,11 +50,11 @@ class UvpCastApi {
     }
 }
 
-let uvpCastApi;
+let uvpCastApi = new UvpCastApi();
 
 window['__onGCastApiAvailable'] = function(isAvailable) {
     console.log('[MAIN] isAvailable', isAvailable);
     if (isAvailable) {
-        uvpCastApi = new UvpCastApi();
+        //uvpCastApi = new UvpCastApi();
     }
 };
