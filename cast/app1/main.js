@@ -10,7 +10,7 @@ class UvpCastApi {
         console.log('[UVP] Constructor');
         this.context = cast.framework.CastReceiverContext.getInstance();
         console.log('[UVP] context', this.context);
-        this.playerManager = context.getPlayerManager();
+        this.playerManager = this.context.getPlayerManager();
         this.addEventListeners();
         console.log('[UVP] context.start()');
         this.context.start();
