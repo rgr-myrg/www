@@ -7,9 +7,12 @@ console.log('[MAIN] Start Up');
 
 class UvpCastApi {
     constructor() {
+        console.log('[UVP] Constructor');
         this.context = cast.framework.CastReceiverContext.getInstance();
+        console.log('[UVP] context', this.context);
         this.playerManager = context.getPlayerManager();
         this.addEventListeners();
+        console.log('[UVP] context.start()');
         this.context.start();
     }
 
