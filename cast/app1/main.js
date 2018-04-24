@@ -64,6 +64,7 @@ class UvpCastApi {
             cast.framework.events.EventType.BREAK_ENDED,
             event => {
                 console.log('[BREAK_ENDED]', event);
+                this.isAdBreak = false;
             }
         );
 
