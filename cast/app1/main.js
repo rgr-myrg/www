@@ -16,27 +16,20 @@ class UvpCastApi {
 
     addEventListeners() {
         this.playerManager.setMessageInterceptor(
-            cast.framework.messages.MessageType.ALL,
-            request => {
-                console.log('[MessageType.ALL]', request);
-            }
-        );
-
-        this.playerManager.setMessageInterceptor(
             cast.framework.messages.MessageType.LOAD,
             request => {
+                console.log('[MessageType.LOAD]', request);
                 this.insertAdBreak(request.media);
                 return request;
             }
         );
         //https://developers.google.com/cast/docs/reference/caf_receiver/cast.framework.events#.EventType
-        // this.playerManager.addEventListener(
-        //     cast.framework.events.EventType.ALL,
-        //     event => {
-        //         console.log('[cast.framework.events]', event);
-        //     }
-        // );
-
+        this.playerManager.addEventListener(
+            cast.framework.events.EventType.ALL,
+            event => {
+                console.log('[EventType.ALL]', event);
+            }
+        );
 
         this.playerManager.addEventListener(
             cast.framework.events.EventType.LOADED_METADATA,
@@ -128,7 +121,133 @@ window['__onGCastApiAvailable'] = function(isAvailable) {
         //uvpCastApi = new UvpCastApi();
     }
 };
+//
+// cast.framework.messages.MessageType
+//
+/*
+CLOUD_STATUS
+:
+"CLOUD_STATUS"
+CUSTOM_COMMAND
+:
+"CUSTOM_COMMAND"
+DISPLAY_STATUS
+:
+"DISPLAY_STATUS"
+EDIT_AUDIO_TRACKS
+:
+"EDIT_AUDIO_TRACKS"
+EDIT_TRACKS_INFO
+:
+"EDIT_TRACKS_INFO"
+EXECUTE_ACTION_SCRIPT
+:
+"EXECUTE_ACTION_SCRIPT"
+FOCUS_STATE
+:
+"FOCUS_STATE"
+GET_STATUS
+:
+"GET_STATUS"
+LOAD
+:
+"LOAD"
+LOAD_BY_ENTITY
+:
+"LOAD_BY_ENTITY"
+MEDIA_STATUS
+:
+"MEDIA_STATUS"
+PAUSE
+:
+"PAUSE"
+PLAY
+:
+"PLAY"
+PLAY_AGAIN
+:
+"PLAY_AGAIN"
+PLAY_STRING
+:
+"PLAY_STRING"
+PRECACHE
+:
+"PRECACHE"
+PRELOAD
+:
+"PRELOAD"
+QUEUE_CHANGE
+:
+"QUEUE_CHANGE"
+QUEUE_GET_ITEMS
+:
+"QUEUE_GET_ITEMS"
+QUEUE_GET_ITEM_IDS
+:
+"QUEUE_GET_ITEM_IDS"
+QUEUE_GET_ITEM_RANGE
+:
+"QUEUE_GET_ITEM_RANGE"
+QUEUE_INSERT
+:
+"QUEUE_INSERT"
+QUEUE_ITEMS
+:
+"QUEUE_ITEMS"
+QUEUE_ITEM_IDS
+:
+"QUEUE_ITEM_IDS"
+QUEUE_LOAD
+:
+"QUEUE_LOAD"
+QUEUE_NEXT
+:
+"QUEUE_NEXT"
+QUEUE_PREV
+:
+"QUEUE_PREV"
+QUEUE_REMOVE
+:
+"QUEUE_REMOVE"
+QUEUE_REORDER
+:
+"QUEUE_REORDER"
+QUEUE_SHUFFLE
+:
+"QUEUE_SHUFFLE"
+QUEUE_UPDATE
+:
+"QUEUE_UPDATE"
+REFRESH_CREDENTIALS
+:
+"REFRESH_CREDENTIALS"
+SEEK
+:
+"SEEK"
+SET_CREDENTIALS
+:
+"SET_CREDENTIALS"
+SET_PLAYBACK_RATE
+:
+"SET_PLAYBACK_RATE"
+SET_VOLUME
+:
+"SET_VOLUME"
+SKIP_AD
+:
+"SKIP_AD"
+STOP
+:
+"STOP"
+USER_ACTION
+:
+"USER_ACTION"
+*/
 
+
+//
+// cast.framework.events.EventType
+//
 /*
 "ABORT"
 ALL
