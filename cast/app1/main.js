@@ -15,6 +15,11 @@ class UvpCastApi {
     }
 
     addEventListeners() {
+        this.context.addCustomMessageListener('urn:x-cast:com.cbsi.cast.message', function(customEvent) {
+            console.log('[urn:x-cast:com.cbsi.cast.message]', customEvent);
+          // handle customEvent.
+        });
+
         this.playerManager.setMessageInterceptor(
             cast.framework.messages.MessageType.LOAD,
             request => {

@@ -336,6 +336,11 @@ function loadMedia(mediaURL) {
   mediaInfo.metadata.title = currentMediaTitle;
   mediaInfo.metadata.images = [{'url': MEDIA_SOURCE_ROOT + currentMediaThumb}];
 
+//
+// CONFIG OBJECT TEST - rpm
+//
+// Payload for Receiver in MessageType.LOAD
+//
   mediaInfo.config = {
       testProp: 'testValue'
   };
