@@ -227,7 +227,7 @@ function selectMedia(m) {
  */
 function launchApp() {
   console.log('launching app...');
-  appendMessage('launching app...');
+  appendMessage('>>>>>launching app...');
   chrome.cast.requestSession(onRequestSessionSuccess, onLaunchError);
   if (timer) {
     clearInterval(timer);
@@ -340,7 +340,7 @@ function loadMedia(mediaURL) {
       testProp: 'testValue'
   };
 
-  console.log('invoking chrome.cast.media.LoadRequest');
+  console.log('invoking chrome.cast.media.LoadRequest', mediaInfo);
 
   var request = new chrome.cast.media.LoadRequest(mediaInfo);
   request.autoplay = true;
