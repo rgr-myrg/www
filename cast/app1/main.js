@@ -16,6 +16,13 @@ class UvpCastApi {
 
     addEventListeners() {
         this.playerManager.setMessageInterceptor(
+            cast.framework.messages.MessageType.ALL,
+            request => {
+                console.log('[MessageType.ALL]', request);
+            }
+        );
+
+        this.playerManager.setMessageInterceptor(
             cast.framework.messages.MessageType.LOAD,
             request => {
                 this.insertAdBreak(request.media);

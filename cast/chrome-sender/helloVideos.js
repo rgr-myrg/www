@@ -336,6 +336,12 @@ function loadMedia(mediaURL) {
   mediaInfo.metadata.title = currentMediaTitle;
   mediaInfo.metadata.images = [{'url': MEDIA_SOURCE_ROOT + currentMediaThumb}];
 
+  mediaInfo.config = {
+      testProp: 'testValue'
+  };
+
+  console.log('invoking chrome.cast.media.LoadRequest');
+
   var request = new chrome.cast.media.LoadRequest(mediaInfo);
   request.autoplay = true;
   request.currentTime = 0;
