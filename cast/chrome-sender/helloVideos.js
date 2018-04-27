@@ -156,19 +156,6 @@ function sessionListener(e) {
   console.log('New session ID: ' + e.sessionId);
   appendMessage('New session ID:' + e.sessionId);
   session = e;
-  //
-  // #rpm
-  //
-  session.sendMessage(
-      'urn:x-cast:com.cbsi.cast.message',
-      {name: 'sessionListener'},
-      () => {
-          console.log('[RPM] send message success');
-      },
-      (e) => {
-          console.log('[RPM] error', e);
-      }
-  );
 
   document.getElementById('casticon').src = CAST_ICON_THUMB_ACTIVE;
   if (session.media.length != 0) {
@@ -265,7 +252,10 @@ function onRequestSessionSuccess(e) {
   //sendMessage(namespace, message, successCallback, errorCallback)
   session.sendMessage(
       'urn:x-cast:com.cbsi.cast.message',
-      {name: 'onRequestSessionSuccess'},
+      {
+          name: 'onRequestSessionSuccess',
+          ADBMobileConfig: ADBMobileConfig
+      },
       () => {
           console.log('[RPM] send message success');
       },
