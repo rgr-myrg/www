@@ -156,6 +156,20 @@ function sessionListener(e) {
   console.log('New session ID: ' + e.sessionId);
   appendMessage('New session ID:' + e.sessionId);
   session = e;
+  //
+  // #rpm
+  //
+  session.sendMessage(
+      'urn:x-cast:com.cbsi.cast.message',
+      {name: 'rpm'},
+      () => {
+          console.log('[RPM] send message success');
+      },
+      (e) => {
+          console.log('[RPM] error', e);
+      }
+  );
+
   document.getElementById('casticon').src = CAST_ICON_THUMB_ACTIVE;
   if (session.media.length != 0) {
     appendMessage(
@@ -244,6 +258,12 @@ function onRequestSessionSuccess(e) {
   appendMessage('session success: ' + e.sessionId);
   saveSessionID(e.sessionId);
   session = e;
+
+
+  //
+  // #rpm
+  //sendMessage(namespace, message, successCallback, errorCallback)
+
   document.getElementById('casticon').src = CAST_ICON_THUMB_ACTIVE;
   session.addUpdateListener(sessionUpdateListener.bind(this));
   if (session.media.length != 0) {
@@ -337,7 +357,7 @@ function loadMedia(mediaURL) {
   mediaInfo.metadata.images = [{'url': MEDIA_SOURCE_ROOT + currentMediaThumb}];
 
 //
-// CONFIG OBJECT TEST - rpm
+// CONFIG OBJECT TEST - #rpm
 //
 // Payload for Receiver in MessageType.LOAD
 //
