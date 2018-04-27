@@ -161,7 +161,7 @@ function sessionListener(e) {
   //
   session.sendMessage(
       'urn:x-cast:com.cbsi.cast.message',
-      {name: 'rpm'},
+      {name: 'sessionListener'},
       () => {
           console.log('[RPM] send message success');
       },
@@ -263,6 +263,16 @@ function onRequestSessionSuccess(e) {
   //
   // #rpm
   //sendMessage(namespace, message, successCallback, errorCallback)
+  session.sendMessage(
+      'urn:x-cast:com.cbsi.cast.message',
+      {name: 'onRequestSessionSuccess'},
+      () => {
+          console.log('[RPM] send message success');
+      },
+      (e) => {
+          console.log('[RPM] error', e);
+      }
+  );
 
   document.getElementById('casticon').src = CAST_ICON_THUMB_ACTIVE;
   session.addUpdateListener(sessionUpdateListener.bind(this));
