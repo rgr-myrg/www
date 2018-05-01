@@ -5,6 +5,8 @@ console.log('[MAIN] Start Up');
 
 //console.log('[MAIN] context', context);
 
+// player div id = castMediaElement
+
 class UvpCastApi {
     constructor() {
         this.context = cast.framework.CastReceiverContext.getInstance();
