@@ -52,7 +52,7 @@ class UvpCastApi {
             cast.framework.messages.MessageType.LOAD,
             request => {
                 console.log('[MessageType.LOAD]', request);
-                this.startUpMux();
+                // this.startUpMux();
                 this.insertAdBreak(request.media);
 
                 return request;
@@ -85,6 +85,7 @@ class UvpCastApi {
             event => {
                 console.log('[BREAK_CLIP_STARTED]', event);
                 this.isAdBreak = true;
+                this.startUpMux();
             }
         );
 
@@ -151,7 +152,7 @@ class UvpCastApi {
         // Add mux
         mux.monitor('castMediaElement', {
             "debug": true,
-            "data": this.videoData
+            "data": mux_metadata
         });
     }
 }
