@@ -149,6 +149,9 @@ class UvpCastApi {
     }
 
     startUpMux() {
+        let container = document.getElementById('castMediaPlayer');
+        let videoElement = container.D;
+        console.log('[videoElement]', videoElement);
         // Add mux
         mux.monitor('castMediaPlayer', {
             "debug": true,
