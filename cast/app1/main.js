@@ -46,18 +46,15 @@ class UvpCastApi {
         this.context.addCustomMessageListener('urn:x-cast:com.cbsi.cast.message', customEvent => {
             console.log('[urn:x-cast:com.cbsi.cast.message]', customEvent);
           // handle customEvent.
-          // Add mux
-          mux.monitor('castMediaElement', {
-				"debug": true,
-				"data": this.videoData
-			});
         });
 
         this.playerManager.setMessageInterceptor(
             cast.framework.messages.MessageType.LOAD,
             request => {
                 console.log('[MessageType.LOAD]', request);
+                this.startUpMux();
                 this.insertAdBreak(request.media);
+
                 return request;
             }
         );
@@ -148,6 +145,14 @@ class UvpCastApi {
             breakClipIds: ['AdClip1'],
             position: 0
         }];
+    }
+
+    startUpMux() {
+        // Add mux
+        mux.monitor('castMediaElement', {
+            "debug": true,
+            "data": this.videoData
+        });
     }
 }
 
