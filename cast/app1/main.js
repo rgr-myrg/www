@@ -150,7 +150,7 @@ class UvpCastApi {
 
     startUpMux() {
         // Add mux
-        mux.monitor('castMediaElement', {
+        mux.monitor('castMediaPlayer', {
             "debug": true,
             "data": mux_metadata
         });
