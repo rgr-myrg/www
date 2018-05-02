@@ -7,6 +7,32 @@ console.log('[MAIN] Start Up');
 
 // player div id = castMediaElement
 
+let mux_metadata = {
+		property_key: "e943cd86834c363d0d06a3826",
+		page_type: '', // (see docs) 'watchpage', 'iframe', or leave empty
+		viewer_user_id: "", // ex: '12345'
+		experiment_name: 'vtg:chromecast:test1', // ex: 'player_test_A'
+		sub_property_id: '', // ex: 'cus-1'
+		// Player Metadata
+		player_name: 'Chromecast Player',
+		player_version: '1.0.0',
+		player_init_time: 1451606400000,
+
+		// Video Metadata (cleared with 'videochange' event)
+		video_id: '123123', // ex: 'abcd123'
+		video_title: 'video_title', // ex: 'My Great Video'
+		video_series: '', // ex: 'Weekly Great Videos'
+		video_producer: '', // ex: 'Bob the Producer'
+		video_content_type: '', // 'short', 'movie', 'episode', 'clip', 'trailer', or 'event'
+		video_language_code: '', // ex: 'en'
+		video_variant_name: '', // ex: 'Spanish Hard Subs'
+		video_variant_id: '', // ex: 'abcd1234'
+		video_duration: 120000, // in milliseconds, ex: 120000
+		video_stream_type: '', // 'live' or 'on-demand'
+		video_encoding_variant: '', // ex: 'Variant 1'
+		video_cdn: 'Akamai' // ex: 'Fastly', 'Akamai'
+	};
+
 class UvpCastApi {
     constructor() {
         this.context = cast.framework.CastReceiverContext.getInstance();
@@ -20,6 +46,11 @@ class UvpCastApi {
         this.context.addCustomMessageListener('urn:x-cast:com.cbsi.cast.message', customEvent => {
             console.log('[urn:x-cast:com.cbsi.cast.message]', customEvent);
           // handle customEvent.
+          // Add mux
+          mux.monitor('castMediaElement', {
+				"debug": true,
+				"data": this.videoData
+			});
         });
 
         this.playerManager.setMessageInterceptor(
@@ -31,12 +62,12 @@ class UvpCastApi {
             }
         );
         //https://developers.google.com/cast/docs/reference/caf_receiver/cast.framework.events#.EventType
-        this.playerManager.addEventListener(
-            cast.framework.events.EventType.ALL,
-            event => {
-                console.log('[EventType.ALL]', event);
-            }
-        );
+        // this.playerManager.addEventListener(
+        //     cast.framework.events.EventType.ALL,
+        //     event => {
+        //         console.log('[EventType.ALL]', event);
+        //     }
+        // );
 
         this.playerManager.addEventListener(
             cast.framework.events.EventType.LOADED_METADATA,
