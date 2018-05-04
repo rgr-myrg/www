@@ -33,11 +33,20 @@ let mux_metadata = {
 		video_cdn: 'Akamai' // ex: 'Fastly', 'Akamai'
 	};
 
+/*
+const context = cast.framework.CastReceiverContext.getInstance();
+const player = context.getPlayerManager();
+
+const playerData = {};
+const playerDataBinder = new cast.framework.ui.PlayerDataBinder(playerData);
+*/
+
 class UvpCastApi {
     constructor() {
         this.context = cast.framework.CastReceiverContext.getInstance();
         this.playerManager = this.context.getPlayerManager();
         this.addEventListeners();
+		this.playerDataBinder = new cast.framework.ui.PlayerDataBinder({});
         this.context.start();
         this.isAdBreak = false;
     }
