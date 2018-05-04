@@ -174,7 +174,7 @@ class UvpCastApi {
 
         console.log('[videoElement]', videoElement);
         // Add mux
-        mux.monitor('myVideoContainer', {
+        mux.monitor(videoElement, {
             "debug": true,
             "data": mux_metadata
         });
