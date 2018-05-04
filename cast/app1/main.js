@@ -66,6 +66,13 @@ class UvpCastApi {
         //     }
         // );
 
+		this.playerManager.addEventListener(
+			cast.framework.events.EventType.PLAYER_LOAD_COMPLETE,
+			event => {
+				console.log('[PLAYER_LOAD_COMPLETE]', event);
+			}
+		);
+
         this.playerManager.addEventListener(
             cast.framework.events.EventType.LOADED_METADATA,
             event => {
@@ -390,7 +397,7 @@ PLAY
 PLAYER_LOADING
 :
 "PLAYER_LOADING"
-PLAYER_LOAD_COMPLETE
+cast.framework.events.EventType.PLAYER_LOAD_COMPLETE
 :
 "PLAYER_LOAD_COMPLETE"
 PLAYER_PRELOADING
