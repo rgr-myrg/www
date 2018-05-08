@@ -225,8 +225,8 @@ class UvpCastApi {
 	}
 
 	startUpComscore() {
-		//ns_.comScore.setAppContext();
-		ns_.comScore.setPlatformAPI(ns_.PlatformAPIs.Chromecast);
+		ns_.comScore.setAppContext();
+		//ns_.comScore.setPlatformAPI(ns_.PlatformAPIs.Chromecast);
 		ns_.comScore.setCustomerC2("3005086");
 		ns_.comScore.setPublisherSecret("2cb08ca4d095dd734a374dff8422c2e5");
 		ns_.comScore.setAppName("Chromecast Receiver Test");
