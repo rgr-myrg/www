@@ -62,8 +62,8 @@ class UvpCastApi {
             request => {
                 console.log('[MessageType.LOAD]', request);
                 this.startUpMux();
-                this.insertAdBreak(request.media);
-
+				this.startUpConviva();
+				//this.insertAdBreak(request.media);
                 return request;
             }
         );
