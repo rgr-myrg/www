@@ -179,6 +179,29 @@ class UvpCastApi {
             "data": mux_metadata
         });
     }
+
+	startUpConviva() {
+		//Conviva.LivePass.init(ce4836fb66f6e081bcf6fea7df4531f22ac7ffbb);
+		Conviva.LivePass.toggleTraces(true);
+		var tags = { "tag1" : "val1" };
+        var settings = { };
+        settings.gatewayUrl = "TOUCHSTONE_SERVICE_URL"; // for test phase only
+        Conviva.LivePass.initWithSettings(ce4836fb66f6e081bcf6fea7df4531f22ac7ffbb, settings); //initWithSettings() and test key only during testing
+        var streamer = new Conviva.ConvivaCastV3StreamerProxy(this.playerManager);
+        var cci = new Conviva.ConvivaContentInfo();
+        cci.assetName = "Your_ASSET_NAME";
+        cci.tags = tags;
+        cci.defaultReportingBitrateKbps = 200; //in kbps
+        cci.defaultReportingResource = "OTHER";
+        cci.duration = 100;//in seconds
+        cci.isLive = false //boolean
+        cci.streamUrl = this.playerManager.getMediaInformation().contentId;
+        cci.playerName ="CHROMECAST";
+        cci.viewerId = "CONVIVAQE";
+        cci.encodedFps = 60; // In Hz (Hertz)
+        var extraOptions = { externalBitrateReporting: false};// by default external bitrate reporting is false
+        var sessionId = Conviva.LivePass.createSession(streamer, cci, extraOptions);
+	}
 }
 
 let uvpCastApi = new UvpCastApi();
