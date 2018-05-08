@@ -185,7 +185,7 @@ class UvpCastApi {
 		Conviva.LivePass.toggleTraces(true);
 		var tags = { "tag1" : "val1" };
         var settings = { };
-        settings.gatewayUrl = "TOUCHSTONE_SERVICE_URL"; // for test phase only
+        settings.gatewayUrl = "https://cbscom-test.testonly.conviva.com"; // for test phase only
         Conviva.LivePass.initWithSettings('ce4836fb66f6e081bcf6fea7df4531f22ac7ffbb', settings); //initWithSettings() and test key only during testing
         var streamer = new Conviva.ConvivaCastV3StreamerProxy(this.playerManager);
         var cci = new Conviva.ConvivaContentInfo();
