@@ -63,6 +63,8 @@ class UvpCastApi {
                 console.log('[MessageType.LOAD]', request);
                 this.startUpMux();
 				this.startUpConviva();
+				this.startUpNielsen();
+				this.startUpComscore();
 				//this.insertAdBreak(request.media);
                 return request;
             }
@@ -74,6 +76,17 @@ class UvpCastApi {
         //         console.log('[EventType.ALL]', event);
         //     }
         // );
+
+		// if (this.playerManager) {
+	    //   this.playerManager.addEventListener(cast.framework.events.EventType.LOAD_START, _s.onLoadstart);
+	    //   this.playerManager.addEventListener(cast.framework.events.EventType.LOADED_METADATA, _s.onLoadedMetadata);
+	    //   this.playerManager.addEventListener(cast.framework.events.EventType.ENDED, _s.onEnded);
+	    //   this.playerManager.addEventListener(cast.framework.events.EventType.PAUSE, _s.onPause);
+	    //   this.playerManager.addEventListener(cast.framework.events.EventType.SEEKING, _s.onSeeking);
+	    //   this.playerManager.addEventListener(cast.framework.events.EventType.SEEKED, _s.onSeekComplete);
+	    //   this.playerManager.addEventListener(cast.framework.events.EventType.ERROR, _s.onError);
+	    //   this.playerManager.addEventListener(cast.framework.events.EventType.BITRATE_CHANGED, _s.onBitrateChange);
+	    // }
 
 		this.playerManager.addEventListener(
 			cast.framework.events.EventType.PLAYER_LOAD_COMPLETE,
@@ -201,6 +214,18 @@ class UvpCastApi {
         cci.encodedFps = 60; // In Hz (Hertz)
         var extraOptions = { externalBitrateReporting: false};// by default external bitrate reporting is false
         var sessionId = Conviva.LivePass.createSession(streamer, cci, extraOptions);
+	}
+
+	startUpNielsen() {
+		let nSdkInstance = NOLBUNDLE.nlsQ(
+			"T0EA7CD2E-455C-4925-95F9-FC8A7E69BB99",
+			"myPlayerName",
+			{clientid: "us-200330", vcid: "c07", nol_sdkDebug: "debug"}
+		);
+	}
+
+	startUpComscore() {
+
 	}
 }
 
