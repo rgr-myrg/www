@@ -7,8 +7,6 @@ console.log('[MAIN] Start Up');
 
 // player div id = castMediaElement
 
-ADBMobile.analytics.trackState("State Name",{});
-
 let mux_metadata = {
 		property_key: "e943cd86834c363d0d06a3826",
 		page_type: '', // (see docs) 'watchpage', 'iframe', or leave empty
@@ -63,6 +61,8 @@ class UvpCastApi {
             cast.framework.messages.MessageType.LOAD,
             request => {
                 console.log('[MessageType.LOAD]', request);
+				ADBMobile.analytics.trackState("LOAD",request.media);
+
                 this.startUpMux();
 				this.startUpConviva();
 				this.startUpNielsen();
