@@ -6,6 +6,7 @@ console.log('[MAIN] Start Up');
 //console.log('[MAIN] context', context);
 
 // player div id = castMediaElement
+ADBMobile.analytics.trackState("State Name",{});
 
 let mux_metadata = {
 		property_key: "e943cd86834c363d0d06a3826",
@@ -65,6 +66,7 @@ class UvpCastApi {
 				this.startUpConviva();
 				this.startUpNielsen();
 				this.startUpComscore();
+				this.startUpADBMobile();
 				//this.insertAdBreak(request.media);
                 return request;
             }
@@ -233,6 +235,10 @@ class UvpCastApi {
 		ns_.comScore.setAppName("Chromecast Receiver Test");
 		ns_.comScore.setAppVersion("0.0.1");
 		ns_.comScore.onEnterForeground();
+	}
+
+	startUpADBMobile() {
+
 	}
 }
 
