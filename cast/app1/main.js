@@ -54,7 +54,7 @@ class UvpCastApi {
     addEventListeners() {
         this.context.addCustomMessageListener('urn:x-cast:com.cbsi.cast.message', customEvent => {
             console.log('[urn:x-cast:com.cbsi.cast.message]', customEvent);
-			window.ADBMobileConfig = customEvent.ADBMobileConfig;
+			window.ADBMobileConfig = customEvent.data.ADBMobileConfig;
 			this.startUpADBMobile();
           // handle customEvent.
         });
