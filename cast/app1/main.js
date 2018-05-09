@@ -54,6 +54,8 @@ class UvpCastApi {
     addEventListeners() {
         this.context.addCustomMessageListener('urn:x-cast:com.cbsi.cast.message', customEvent => {
             console.log('[urn:x-cast:com.cbsi.cast.message]', customEvent);
+			window.ADBMobileConfig = customEvent.ADBMobileConfig;
+			this.startUpADBMobile();
           // handle customEvent.
         });
 
@@ -67,7 +69,7 @@ class UvpCastApi {
 				this.startUpConviva();
 				this.startUpNielsen();
 				this.startUpComscore();
-				this.startUpADBMobile();
+				//this.startUpADBMobile();
 				//this.insertAdBreak(request.media);
                 return request;
             }
@@ -239,7 +241,11 @@ class UvpCastApi {
 	}
 
 	startUpADBMobile() {
-
+		let script = document.createElement('script');
+		script.src = 'lib/adbmobile-chromecast.min.js';
+		script.type = "text/javascript";
+		script.async = true;
+		document.querySelector('head').appendChild(script);
 	}
 }
 
