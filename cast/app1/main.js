@@ -198,6 +198,7 @@ class UvpCastApi {
         console.log('[videoElement]', videoElement);
 
 		this.tracking.onPlayerLoaded(videoElement);
+		this.tracking.onContentDataLoaded(mux_metadata);
         // Add mux
         // mux.monitor(videoElement, {
         //     "debug": true,
