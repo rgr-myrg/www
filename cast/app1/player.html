@@ -2,44 +2,6 @@
 <html>
 
 <head>
-    <script>
-    // var ADBMobileConfig = {
-    //     "enabled": true,
-    //     "marketingCloud": {
-    //         "org": "3CE342C75100435B0A490D4C@AdobeOrg"
-    //     },
-    //     "target": {
-    //         "clientCode": "",
-    //         "timeout": 5
-    //     },
-    //     "audienceManager": {
-    //         "server": "mobileservices.demdex.net"
-    //     },
-    //     "analytics": {
-    //         "rsids": "mobile1vhl.sample.player",
-    //         "server": "obumobile1.sc.omtrdc.net",
-    //         "ssl": false,
-    //         "offlineEnabled": false,
-    //         "charset": "UTF-8",
-    //         "lifecycleTimeout": 300,
-    //         "privacyDefault": "optedin",
-    //         "batchLimit": 0,
-    //         "timezone": "MDT",
-    //         "timezoneOffset": -360,
-    //         "referrerTimeout": 0,
-    //         "poi": []
-    //     },
-    //     "mediaHeartbeat": {
-    //         "server": "obumobile1.hb.omtrdc.net",
-    //         "publisher": "3CE342C75100435B0A490D4C@AdobeOrg",
-    //         "channel": "test-channel-chromecast",
-    //         "ssl": false,
-    //         "ovp": "chromecast-player",
-    //         "sdkVersion": "chromecast-sdk",
-    //         "playerName": "Chromecast"
-    //     }
-    // };
-    </script>
     <script
         type="text/javascript"
         src="//www.gstatic.com/cast/sdk/libs/caf_receiver/v3/cast_receiver_framework.js">
@@ -73,6 +35,7 @@
 <body>
     <!-- <cast-media-player id="castMediaPlayer"></cast-media-player> -->
     <video class="castMediaElement" id="myVideoContainer"></video>
+    <script type="text/javascript" src="tracking.js"></script>
     <script type="text/javascript" src="main.js"></script>
 </body>
 
