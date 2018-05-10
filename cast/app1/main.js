@@ -49,6 +49,7 @@ class UvpCastApi {
 		this.playerDataBinder = new cast.framework.ui.PlayerDataBinder({});
         this.context.start();
         this.isAdBreak = false;
+		this.tracking = new Tracking();
     }
 
     addEventListeners() {
@@ -188,7 +189,9 @@ class UvpCastApi {
         let videoElement = container.D;
 		*/
 
-        let videoElement = document.getElementById('myVideoContainer');
+        //let videoElement = document.getElementById('myVideoContainer');
+		// Hidden Cast Media Element
+		let videoElement = this.playerManager.P;
 
         console.log('[videoElement]', videoElement);
         // Add mux
