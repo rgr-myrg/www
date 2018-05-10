@@ -72,6 +72,7 @@ class UvpCastApi {
 				this.startUpNielsen();
 				this.startUpComscore();
 				//this.startUpADBMobile();
+
 				//this.insertAdBreak(request.media);
                 return request;
             }
@@ -195,6 +196,8 @@ class UvpCastApi {
 		let videoElement = this.playerManager.P;
 
         console.log('[videoElement]', videoElement);
+
+		this.tracking.onPlayerLoaded(videoElement);
         // Add mux
         mux.monitor(videoElement, {
             "debug": true,
