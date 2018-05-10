@@ -58,7 +58,7 @@ class UvpCastApi {
 			window.ADBMobileConfig = customEvent.data.ADBMobileConfig;
 			this.startUpADBMobile();
 
-		  	tracking.onTrackingConfig(customEvent.data.trackingConfig);
+		  	this.tracking.onTrackingConfig(customEvent.data.trackingConfig);
         });
 
         this.playerManager.setMessageInterceptor(
