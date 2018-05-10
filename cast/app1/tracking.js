@@ -287,9 +287,11 @@ var MuxAgent = /** @class */ (function (_super) {
         return _this;
     }
     MuxAgent.prototype.onPlayerLoaded = function (videoElement) {
+        console.log('[MuxAgent]', videoElement);
         this.videoElement = videoElement;
     };
     MuxAgent.prototype.onContentDataLoaded = function (data) {
+        console.log('[MuxAgent]', this.videoElement, data);
         if (window.mux) {
             window.mux.monitor(this.videoElement, {
                 debug: true,
