@@ -255,7 +255,7 @@ function onRequestSessionSuccess(e) {
       {
           name: 'onRequestSessionSuccess',
           ADBMobileConfig: ADBMobileConfig,
-          onTrackingConfig: trackingConfig
+          trackingConfig: trackingConfig
       },
       () => {
           console.log('[RPM] send message success');
