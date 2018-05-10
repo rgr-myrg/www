@@ -57,7 +57,8 @@ class UvpCastApi {
             console.log('[urn:x-cast:com.cbsi.cast.message]', customEvent);
 			window.ADBMobileConfig = customEvent.data.ADBMobileConfig;
 			this.startUpADBMobile();
-          // handle customEvent.
+
+		  	tracking.onTrackingConfig(customEvent.data.trackingConfig);
         });
 
         this.playerManager.setMessageInterceptor(

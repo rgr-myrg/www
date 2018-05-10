@@ -254,7 +254,8 @@ function onRequestSessionSuccess(e) {
       'urn:x-cast:com.cbsi.cast.message',
       {
           name: 'onRequestSessionSuccess',
-          ADBMobileConfig: ADBMobileConfig
+          ADBMobileConfig: ADBMobileConfig,
+          onTrackingConfig: trackingConfig
       },
       () => {
           console.log('[RPM] send message success');
