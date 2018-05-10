@@ -199,10 +199,10 @@ class UvpCastApi {
 
 		this.tracking.onPlayerLoaded(videoElement);
         // Add mux
-        mux.monitor(videoElement, {
-            "debug": true,
-            "data": mux_metadata
-        });
+        // mux.monitor(videoElement, {
+        //     "debug": true,
+        //     "data": mux_metadata
+        // });
     }
 
 	startUpConviva() {
