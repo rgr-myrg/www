@@ -28872,7 +28872,7 @@ uvpjs._ = _.noConflict();
 
     'use strict';
 
-    uvpjs.Configuration = {"env":"dev","hostname":"../","name":"UVPJS","version":"2.9.0","date":"05/16/18 12:18:29 PM (EDT)","path":"../build","playerName":"CBSI-PLAYER"};
+    uvpjs.Configuration = {"env":"dev","hostname":"../","name":"UVPJS","version":"2.9.0","date":"05/16/18 12:18:29 PM (EDT)","path":"../build/","playerName":"CBSI-PLAYER"};
 
 })(uvpjs);
 /* jshint ignore:end */
