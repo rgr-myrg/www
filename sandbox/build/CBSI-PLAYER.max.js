@@ -57683,6 +57683,7 @@ uvpjs.mediaCapabilities = uvpjs.MediaCapabilities()._detectEnvironment();
         },
 
         checkMute: function () {
+return;
             var vmute = this._videoEl.muted;
 
             if (vmute === this.currVolumeInfo.muted) return;
