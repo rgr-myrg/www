@@ -57685,7 +57685,7 @@ uvpjs.mediaCapabilities = uvpjs.MediaCapabilities()._detectEnvironment();
         checkMute: function () {
             var vmute = this._videoEl.muted;
 
-if (vmute === null || this.this.currVolumeInfo === null) {
+if (vmute === null || this.currVolumeInfo === null) {
     return;
 }
 
