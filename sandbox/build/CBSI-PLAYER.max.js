@@ -1,6 +1,6 @@
 /**
  * CBSI-PLAYER v2.9.0
- * Built 05/16/2018 at 12:18:30 PM (EDT)
+ * Built 05/16/2018 at 1:49:59 PM (EDT)
  * Includes:
  *   - hls.js v0.9.1
  */
@@ -28872,7 +28872,7 @@ uvpjs._ = _.noConflict();
 
     'use strict';
 
-    uvpjs.Configuration = {"env":"dev","hostname":"../","name":"UVPJS","version":"2.9.0","date":"05/16/18 12:18:29 PM (EDT)","path":"../build/","playerName":"CBSI-PLAYER"};
+    uvpjs.Configuration = {"env":"dev","hostname":"../","name":"UVPJS","version":"2.9.0","date":"05/16/18 1:49:58 PM (EDT)","path":"../build/","playerName":"CBSI-PLAYER"};
 
 })(uvpjs);
 /* jshint ignore:end */
@@ -57683,7 +57683,6 @@ uvpjs.mediaCapabilities = uvpjs.MediaCapabilities()._detectEnvironment();
         },
 
         checkMute: function () {
-return;
             var vmute = this._videoEl.muted;
 
             if (vmute === this.currVolumeInfo.muted) return;
@@ -62490,7 +62489,6 @@ return;
             this.streamingTag = null;
 
             this._isAd = false;
-            this._isPlaying = false;
             this._mc = null;
         },
 
@@ -62562,7 +62560,7 @@ return;
             callbackObj[eventTypes.LIVE_SEGMENT_START] = this._onLiveSegmentStart.bind(this);
             callbackObj[eventTypes.LIVE_SEGMENT_END] = this._onLiveSegmentEnd.bind(this);
             callbackObj[eventTypes.VIDEO_PROGRESS] = this._onVideoProgress.bind(this);
-            //callbackObj[eventTypes.VIDEO_STATE_CHANGE] = this._onVideoStateChange.bind(this);
+            callbackObj[eventTypes.VIDEO_STATE_CHANGE] = this._onVideoStateChange.bind(this);
 
             this.trackingMgr.registerEventCallbacks(callbackObj);
         },
@@ -62895,8 +62893,7 @@ return;
             this.debug && uvpjs.log(this.DEBUG_ID, 'ComScoreAgent _onVideoStateChange', evtObj);
 
             var newState = evtObj.payload.newState,
-                //isMobileIOSFullScreen = this._mc.isMobile() && this._mc.isIOS() && this.cviModel.isFullscreen;
-                isMobileIOSFullScreen = this._mc.isMobile() && this._mc.isIPhone() && this._mc.isIPad() && this.cviModel.isFullscreen;
+                isMobileIOSFullScreen = this._mc.isMobile() && this._mc.isIOS() && this.cviModel.isFullscreen;
 
             if (isMobileIOSFullScreen) {
                 if (newState === this._mc.PAUSED) {
