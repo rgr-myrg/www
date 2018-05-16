@@ -62562,7 +62562,7 @@ return;
             callbackObj[eventTypes.LIVE_SEGMENT_START] = this._onLiveSegmentStart.bind(this);
             callbackObj[eventTypes.LIVE_SEGMENT_END] = this._onLiveSegmentEnd.bind(this);
             callbackObj[eventTypes.VIDEO_PROGRESS] = this._onVideoProgress.bind(this);
-            callbackObj[eventTypes.VIDEO_STATE_CHANGE] = this._onVideoStateChange.bind(this);
+            //callbackObj[eventTypes.VIDEO_STATE_CHANGE] = this._onVideoStateChange.bind(this);
 
             this.trackingMgr.registerEventCallbacks(callbackObj);
         },
