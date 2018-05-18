@@ -1,0 +1,202 @@
+<!doctype html>
+
+<html>
+    <head>
+        <title>BasicPlayerSample</title>
+
+        <link rel="stylesheet" href="style/base.css" />
+
+        <script src="script/lib/jquery.min.js"></script>
+
+        <script src="script/lib/VisitorAPI.js"></script>
+        <script src="script/lib/AppMeasurement.js"></script>
+
+        <script src="script/lib/VideoHeartbeat.min.js"></script>
+
+        <script src="script/app/notification.center.js"></script>
+        <script src="script/app/configuration.js"></script>
+        <script src="script/app/player/video.player.js"></script>
+        <script src="script/app/analytics/video.analytics.provider.js"></script>
+
+        <script type="text/javascript">
+		var MediaHeartbeat = ADB.va.MediaHeartbeat;
+		var MediaHeartbeatConfig = ADB.va.MediaHeartbeatConfig;
+		var MediaHeartbeatDelegate = ADB.va.MediaHeartbeatDelegate;
+
+		//Media Heartbeat Config
+		var mediaConfig = new MediaHeartbeatConfig();
+		mediaConfig.trackingServer = "cbsinteractive.hb.omtrdc.net";
+		mediaConfig.playerName = "VTG SandBox Player";
+		mediaConfig.channel = "Video Channel";
+		mediaConfig.debugLogging = true;
+		mediaConfig.appVersion = "2.0";
+		mediaConfig.ssl = false;
+		mediaConfig.ovp = "";
+
+		// Media Heartbeat Delegate
+		var mediaDelegate = new MediaHeartbeatDelegate();
+
+		// Set mediaDelegate CurrentPlaybackTime
+		var playhead = 0;
+        var playheadInterval;
+
+		mediaDelegate.getCurrentPlaybackTime = function() {
+            //playhead += 1000;
+		    return playhead;
+		};
+
+		var mediaObject = MediaHeartbeat.createMediaObject("vtg:test:ref", "vtg:test:ref", 30000, MediaHeartbeat.StreamType.VOD);
+		var standardVideoMetadata = {};
+        standardVideoMetadata[MediaHeartbeat.VideoMetadataKeys.EPISODE] = "vtg:test:ref";
+        standardVideoMetadata[MediaHeartbeat.VideoMetadataKeys.SHOW] = "Sample Show";
+
+        mediaObject.setValue(MediaHeartbeat.MediaObjectKey.StandardVideoMetadata, standardVideoMetadata);
+
+        var visitor = new Visitor(Configuration.VISITOR.MARKETING_CLOUD_ORG_ID);
+        visitor.trackingServer = Configuration.VISITOR.TRACKING_SERVER;
+        visitor.setCustomerIDs({
+        	"userId": {
+        		"id": Configuration.VISITOR.DPID
+        	},
+        	"puuid": {
+        		"id": Configuration.VISITOR.DPUUID
+        	}
+        });
+
+        // Set-up the AppMeasurement component.
+        console.log('[RSID]', Configuration.APP_MEASUREMENT.RSID);
+        var appMeasurement = new AppMeasurement(Configuration.APP_MEASUREMENT.RSID);
+        appMeasurement.visitor = visitor;
+        appMeasurement.trackingServer = Configuration.APP_MEASUREMENT.TRACKING_SERVER;
+        appMeasurement.account = Configuration.APP_MEASUREMENT.RSID;
+        appMeasurement.pageName = Configuration.APP_MEASUREMENT.PAGE_NAME;
+        appMeasurement.charSet = "UTF-8";
+        appMeasurement.visitorID = "test-vid";
+		// Set mediaDelegate QoSObject - OPTIONAL
+	//	mediaDelegate.getQoSObject = function() {
+		    // return MediaHeartbeat.createQoSObject(video.bitrate,
+		    //                                       video.startuptime,
+		    //                                       video.fps,
+		    //                                       video.droppedframes);
+		//}
+		// Create mediaHeartbeat instance
+		var mediaHeartbeat = new MediaHeartbeat(mediaDelegate, mediaConfig, appMeasurement);
+
+//var adBreakObject = MediaHeartbeat.createAdBreakObject("<ADBREAK_NAME>", mediaDelegate.getCurrentPlaybackTime(), 0);
+var adBreakObject = MediaHeartbeat.createAdBreakObject("<ADBREAK_NAME>", 0, 0);
+
+var trackAdBreakStart = function() {
+	mediaHeartbeat.trackEvent(MediaHeartbeat.Event.AdBreakStart, adBreakObject);
+};
+var adObject = MediaHeartbeat.createAdObject("<AD_NAME>", "<AD_ID>", 1, 15);
+var adCustomMetadata = {
+    affiliate: "Sample affiliate",
+    campaign: "Sample ad campaign",
+    creative: "Sample creative"
+};
+var trackAdStart = function() {
+	mediaHeartbeat.trackEvent(MediaHeartbeat.Event.AdStart, adObject, adCustomMetadata);
+};
+// var trackAdPause = function() {
+// 	mediaHeartbeat.trackEvent(MediaHeartbeat.Event.AdPause, adObject, adCustomMetadata);
+// };
+var trackAdComplete = function() {
+	mediaHeartbeat.trackEvent(MediaHeartbeat.Event.AdComplete);
+};
+var trackAdBreakComplete = function() {
+	mediaHeartbeat.trackEvent(MediaHeartbeat.Event.AdBreakComplete);
+};
+
+var chapterObject =  MediaHeartbeat.createChapterObject("<CHAPTER_NAME>", 0, 30000, 0);
+var chapterCustomMetadata = {
+    segmentType: "Sample segment type",
+    segmentName: "Sample segment name",
+    segmentInfo: "Sample segment info"
+};
+
+var trackSessionStart = function() {
+	mediaHeartbeat.trackSessionStart(mediaObject, {});
+    // setInterval(() => {
+    //     __playhead__ += 1000;
+    // }, 1000);
+};
+var trackSessionEnd = function() {
+	mediaHeartbeat.trackSessionEnd();
+};
+var trackChapterStart = function() {
+	mediaHeartbeat.trackEvent(MediaHeartbeat.Event.ChapterStart,
+                                      chapterObject,
+                                      chapterCustomMetadata);
+};
+var trackPlay = function() {
+    playheadInterval = setInterval(() => {
+        playhead += 1000;
+    }, 1000);
+
+	mediaHeartbeat.trackPlay();
+};
+var trackPause = function() {
+    clearInterval(playheadInterval);
+	mediaHeartbeat.trackPause();
+};
+var trackComplete = function() {
+	mediaHeartbeat.trackComplete();
+};
+var trackChapterComplete = function() {
+	mediaHeartbeat.trackEvent(MediaHeartbeat.Event.ChapterComplete);
+};
+//https://marketing.adobe.com/resources/help/en_US/sc/appmeasurement/hbvideo/c_vhl_track-chap-segments.html
+		</script>
+    </head>
+
+    <body>
+
+    <h2>VideoHeartbeat Mock Player</h2>
+
+<a href="#" onclick="javascript: trackSessionStart();">trackSessionStart()</a><br/>
+<a href="#" onclick="javascript: trackChapterStart();">trackChapterStart()</a><br/>
+<a href="#" onclick="javascript: trackPlay();">trackPlay()</a><br/>
+<a href="#" onclick="javascript: trackPause();">trackPause()</a><br/>
+<a href="#" onclick="javascript: trackComplete();">trackComplete()</a><br/>
+<a href="#" onclick="javascript: trackAdBreakStart();">trackAdBreakStart()</a><br/>
+<a href="#" onclick="javascript: trackAdStart();">trackAdStart()</a><br/>
+<a href="#" onclick="javascript: trackAdPause();">trackAdPause()</a><br/>
+<a href="#" onclick="javascript: trackAdComplete();">trackAdComplete()</a><br/>
+<a href="#" onclick="javascript: trackAdBreakComplete();">trackAdBreakComplete()</a><br/>
+<a href="#" onclick="javascript: trackChapterComplete();">trackChapterComplete()</a><br/>
+<a href="#" onclick="javascript: trackSessionEnd();">trackSessionEnd()</a><br/>
+<a href="#" onclick="javascript: "></a><br/>
+<a href="#" onclick="javascript: "></a>
+    <!-- <div class="container">
+        <video id="movie" width="600" preload controls>
+            <source src="vid/clickbaby.mp4" type='video/mp4; codecs="avc1.42E01E, mp4a.40.2"'>
+            <source src="vid/clickbaby.webm" type='video/webm; codecs="vp8, vorbis"'>
+            <source src="vid/clickbaby.ogv" type='video/ogg; codes="theora, vorbis"'>
+        </video>
+        <div class="overlay" id="pub-label" hidden>P</div>
+    </div> -->
+    </body>
+    <script>
+        console.log('[RPM] Start Up');
+        // trackSessionStart();
+        // //trackPlay();
+        // trackAdBreakStart();
+        // trackAdStart();
+        // //trackPlay();
+        // setTimeout(() => {
+        //     trackAdComplete();
+        //     trackAdBreakComplete();
+        //     trackPlay();
+        //     setTimeout(() => {
+        //     //    location.reload();
+        //         trackComplete();
+        //         trackSessionEnd();
+        //     }, 15000);
+        // }, 15000);
+/*
+Timeline    -----------10----------20----------30----------40
+PREROLL HB  -P----------x----C
+CONTENT HB                    P-----x-----------x-----------x
+*/
+    </script>
+</html>
