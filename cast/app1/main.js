@@ -73,7 +73,7 @@ class UvpCastApi {
 				this.startUpComscore();
 				//this.startUpADBMobile();
 
-				//this.insertAdBreak(request.media);
+				this.insertAdBreak(request.media);
                 return request;
             }
         );
@@ -170,12 +170,14 @@ class UvpCastApi {
     }
 
     insertAdBreak(media) {
+		let preRoll = "https://redirector.gvt1.com/videoplayback/id/5bad011a1282b323/itag/15/source/gfp_video_ads/requiressl/yes/acao/yes/mime/video%2Fmp4/ip/0.0.0.0/ipbits/0/expire/1527053473/sparams/ip,ipbits,expire,id,itag,source,requiressl,acao,mime/signature/1DBB0236E3CD0A208DFC7CFDC4C9F8A7E5BEB939.54E361AB2FF7B427E4795227B39560AAD6EED6D9/key/ck2/file/file.mp4";
         media.breakClips = [{
             id: 'AdClip1',
             title: 'Test Ad',
             contentId: 'video/small.mp4',
             contentType: 'video/mp4',
-            posterUrl: '//cnet2.cbsistatic.com/img/xhT2E9JH6x380i0YQzrYQx-OROs=/770x433/2017/03/16/41a9fd65-d1a7-479c-a862-d00cc81146f4/news0316drone.jpg',
+			posterUrl: preRoll,
+            //posterUrl: '//cnet2.cbsistatic.com/img/xhT2E9JH6x380i0YQzrYQx-OROs=/770x433/2017/03/16/41a9fd65-d1a7-479c-a862-d00cc81146f4/news0316drone.jpg',
             whenSkippable: 2
         }];
         media.breaks = [{
