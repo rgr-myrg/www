@@ -3981,10 +3981,12 @@ class TrackingReceiver {
         console.log('[TRACKING] addEventListener');
         this.playerManager.addEventListener(cast.framework.events.EventType.PLAYER_LOAD_COMPLETE, (event) => {
             console.log('[TRACKING] PLAYER_LOAD_COMPLETE', event);
+            let videoElement = document.getElementById('myVideoContainer');
             this.tracking.model.BuildInfo.playerName = 'playerName';
             this.tracking.model.BuildInfo.playerVersion = 'playerVersion';
-            this.tracking.model.DomElementCollection.video = this.playerManager.P;
-            console.log('[TRACKING] PLAYER_LOAD_COMPLETE', this.playerManager);
+            if (videoElement) {
+                this.tracking.model.DomElementCollection.video = videoElement;
+            }
             console.log('[TRACKING] PLAYER_LOAD_COMPLETE', this.tracking.model.DomElementCollection.video);
             this.tracking.notify(cv_model_1.PlayerEvents.PLAYER_LOADED);
         });
