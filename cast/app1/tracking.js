@@ -3986,14 +3986,14 @@ class TrackingReceiver {
     addEventListeners() {
         console.log('[TRACKING] addEventListener');
         this.playerManager.addEventListener(cast.framework.events.EventType.PLAYER_LOAD_COMPLETE, (event) => {
-            console.log('[TRACKING] PLAYER_LOAD_COMPLETE', event);
+            console.log('[TRACKING] PLAYER_LOAD_COMPLETE event', event);
             let videoElement = document.getElementById('myVideoContainer');
             this.tracking.model.BuildInfo.playerName = 'playerName';
             this.tracking.model.BuildInfo.playerVersion = 'playerVersion';
             if (videoElement) {
                 this.tracking.model.DomElementCollection.video = videoElement;
             }
-            console.log('[TRACKING] PLAYER_LOAD_COMPLETE', this.tracking.model.DomElementCollection.video);
+            console.log('[TRACKING] PLAYER_LOAD_COMPLETE video', this.tracking.model.DomElementCollection.video);
             this.tracking.notify(cv_model_1.PlayerEvents.PLAYER_LOADED);
         });
         this.playerManager.addEventListener(cast.framework.events.EventType.LOADED_METADATA, (event) => {
@@ -4005,7 +4005,7 @@ class TrackingReceiver {
             this.tracking.model.ContentPlaybackState.duration = 30000;
             this.tracking.model.ResourceConfig.streamType = StreamType.VOD;
             this.tracking.model.ContentPlaybackState.cdn = 'Akamai';
-            this.tracking.notify(cv_model_1.PlayerEvents.PLAYER_LOADED);
+            this.tracking.notify(cv_model_1.PlayerEvents.CONTENT_DATA_LOADED);
         });
         this.playerManager.addEventListener(cast.framework.events.EventType.CLIP_STARTED, (event) => {
             console.log('[TRACKING] CLIP_STARTED', event);
