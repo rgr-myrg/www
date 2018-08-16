@@ -3969,7 +3969,7 @@ const StreamType = __webpack_require__(/*! cv-model/dist/src/enum/StreamType */ 
 class TrackingReceiver {
     constructor() {
         this.tracking = new Tracking_1.Tracking();
-        this.tracking.model.GlobalSettings.uvpc = uvpc;
+        this.tracking.model.GlobalSettings.uvpc = window.uvpc;
         this.tracking.notify(cv_model_1.PlayerEvents.TRACKING_CONFIG_READY);
         this.context = cast.framework.CastReceiverContext.getInstance();
         this.playerManager = this.context.getPlayerManager();
