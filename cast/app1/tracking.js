@@ -3987,6 +3987,7 @@ class TrackingReceiver {
             this.tracking.notify(cv_model_1.PlayerEvents.PLAYER_LOADED);
         });
         this.playerManager.addEventListener(cast.framework.events.EventType.LOADED_METADATA, (event) => {
+            console.log('[TRACKING] LOADED_METADATA', event);
             this.tracking.model.ContentMetadata.mediaId = 'mediaId';
             this.tracking.model.ContentMetadata.videoTitle = 'videoTitle';
             this.tracking.model.ContentMetadata.seriesTitle = 'seriesTitle';
@@ -3997,10 +3998,10 @@ class TrackingReceiver {
             this.tracking.notify(cv_model_1.PlayerEvents.PLAYER_LOADED);
         });
         this.playerManager.addEventListener(cast.framework.events.EventType.CLIP_STARTED, (event) => {
-            console.log('[TRACKING] CLIP_STARTED');
+            console.log('[TRACKING] CLIP_STARTED', event);
         });
         this.playerManager.addEventListener(cast.framework.events.EventType.PLAY, (event) => {
-            console.log('[TRACKING] PLAY');
+            console.log('[TRACKING] PLAY', event);
         });
         this.playerManager.addEventListener(cast.framework.events.EventType.PLAYING, (event) => {
             console.log('[TRACKING] PLAYING');
