@@ -3415,7 +3415,7 @@ var Tracking = /** @class */ (function (_super) {
     // constructor(public modelCollection: ModelCollection) {
     //     super({});
     // }
-    function Tracking() {console.log('[TT] Starts Up');
+    function Tracking() {
         var _this = _super.call(this, {}) || this;
         _this.isDebug = false;
         _this.agents = [];
@@ -3443,13 +3443,12 @@ var Tracking = /** @class */ (function (_super) {
         if (playerEvent === PlayerEvents.TRACKING_CONFIG_READY) {
             this.registerAgents();
         }
-        console.log('[TT] emit', playerEvent);
         this.emit(playerEvent);
     };
     Tracking.prototype.onError = function (errorInfo) {
         this.emit(PlayerEvents.VIDEO_PLAYBACK_ERROR, errorInfo);
     };
-    Tracking.prototype.registerAgents = function () {console.log('[TT] registerAgents');
+    Tracking.prototype.registerAgents = function () {
         var _this = this;
         var upvc = this.modelCollection.GlobalSettings.uvpc;
         //TODO Error handling if uvpc is empty or not an Array
@@ -3526,7 +3525,6 @@ var BaseAgent = /** @class */ (function () {
         var _this = this;
         this.debugLabel += ' ' + this.NAME;
         this.debug && this.logInfo('onRegisterDone');
-        console.log('[TT] ' + this.debugLabel + 'onRegisterDone');
         this.onRegister = function () {
             _this.debug && _this.logInfo('agent already registered');
         };
@@ -3639,7 +3637,6 @@ var MuxAgent = /** @class */ (function (_super) {
         this.onRegisterDone();
     };
     MuxAgent.prototype.onPlayerLoaded = function () {
-        console.log('[TT] ' + this.debugLabel + 'onPlayerLoaded', this.modelCollection.DomElementCollection.video);
         if (!this.modelCollection.DomElementCollection.video) {
             this.logError('Video element is unset');
             return;
@@ -3650,7 +3647,6 @@ var MuxAgent = /** @class */ (function (_super) {
         if (!(mux && typeof mux.monitor === 'function' && this.hasVideoElement)) {
             if (this.debug) {
                 this.logWarn('Unable to start mux monitor');
-                console.log('[TT] ' + this.debugLabel + ' Unable to start mux monitor');
             }
             return;
         }
@@ -3728,14 +3724,12 @@ var MuxAgent = /** @class */ (function (_super) {
         if (!this.vo || !this.modelCollection.DomElementCollection.video) {
             return;
         }
-        console.log('[TT] ' + this.debugLabel + ' startMuxMonitor ', this.debug);
         mux.monitor(this.modelCollection.DomElementCollection.video, {
             debug: this.debug,
             data: this.vo.formatMetadata(this.modelCollection)
         });
     };
     MuxAgent.prototype.sendEvent = function (eventName) {
-        console.log('[TT] ' + this.debugLabel, eventName, this.vo);
         if (!this.vo) {
             return;
         }
@@ -3976,26 +3970,45 @@ class TrackingReceiver {
     constructor() {
         this.tracking = new Tracking_1.Tracking();
         this.tracking.debug = true;
-        this.tracking.model.GlobalSettings.uvpc = window.uvpc;
-        this.tracking.notify(cv_model_1.PlayerEvents.TRACKING_CONFIG_READY);
+        this.setTrackingConfig();
         this.context = cast.framework.CastReceiverContext.getInstance();
         this.playerManager = this.context.getPlayerManager();
         this.addEventListeners();
         this.context.start();
     }
+    setTrackingConfig() {
+        // window.uvpc array is already available on the receiver page
+        this.tracking.model.GlobalSettings.uvpc = window.uvpc;
+        this.tracking.notify(cv_model_1.PlayerEvents.TRACKING_CONFIG_READY);
+    }
+    setPlayerInfo() {
+        this.tracking.model.BuildInfo.playerName = 'playerName';
+        this.tracking.model.BuildInfo.playerVersion = 'playerVersion';
+        let videoElement = document.getElementById('myVideoContainer');
+        if (videoElement) {
+            this.tracking.model.DomElementCollection.video = videoElement;
+            this.tracking.notify(cv_model_1.PlayerEvents.PLAYER_LOADED);
+        }
+    }
     addEventListeners() {
         console.log('[TRACKING] addEventListener');
-        this.playerManager.addEventListener(cast.framework.events.EventType.PLAYER_LOAD_COMPLETE, (event) => {
-            console.log('[TRACKING] PLAYER_LOAD_COMPLETE event', event);
-            let videoElement = document.getElementById('myVideoContainer');
-            this.tracking.model.BuildInfo.playerName = 'playerName';
-            this.tracking.model.BuildInfo.playerVersion = 'playerVersion';
-            if (videoElement) {
-                this.tracking.model.DomElementCollection.video = videoElement;
-            }
-            console.log('[TRACKING] PLAYER_LOAD_COMPLETE video', this.tracking.model.DomElementCollection.video);
-            this.tracking.notify(cv_model_1.PlayerEvents.PLAYER_LOADED);
-        });
+        // this.playerManager.addEventListener(
+        //     cast.framework.events.EventType.PLAYER_LOAD_COMPLETE,
+        //     (event: any) => {
+        //         console.log('[TRACKING] PLAYER_LOAD_COMPLETE', event);
+        //         let videoElement: HTMLElement | null = document.getElementById('myVideoContainer');
+        //
+        //         this.tracking.model.BuildInfo.playerName = 'playerName';
+        //         this.tracking.model.BuildInfo.playerVersion = 'playerVersion';
+        //
+        //         if (videoElement) {
+        //             this.tracking.model.DomElementCollection.video = videoElement;
+        //         }
+        //
+        //         console.log('[TRACKING] PLAYER_LOAD_COMPLETE', this.tracking.model.DomElementCollection.video);
+        //         this.tracking.notify(PlayerEvents.PLAYER_LOADED);
+        //     }
+        // );
         this.playerManager.addEventListener(cast.framework.events.EventType.LOADED_METADATA, (event) => {
             console.log('[TRACKING] LOADED_METADATA', event);
             this.tracking.model.ContentMetadata.mediaId = 'mediaId';
