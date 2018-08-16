@@ -3968,14 +3968,19 @@ const cv_model_1 = __webpack_require__(/*! cv-model */ "./node_modules/cv-model/
 const Tracking_1 = __webpack_require__(/*! cv-tracking/dist/Tracking */ "./node_modules/cv-tracking/dist/Tracking.js");
 const StreamType = __webpack_require__(/*! cv-model/dist/src/enum/StreamType */ "./node_modules/cv-model/dist/src/enum/StreamType.js");
 class TrackingReceiver {
+    //playerDataBinder: any;
     constructor() {
         this.tracking = new Tracking_1.Tracking();
         this.context = cast.framework.CastReceiverContext.getInstance();
         this.playerManager = this.context.getPlayerManager();
+        //this.playerDataBinder = new cast.framework.ui.PlayerDataBinder({});
+        this.addEventListeners();
         this.context.start();
     }
     addEventListeners() {
+        console.log('[TRACKING] addEventListener');
         this.playerManager.addEventListener(cast.framework.events.EventType.PLAYER_LOAD_COMPLETE, (event) => {
+            console.log('[TRACKING] PLAYER_LOAD_COMPLETE', event);
             this.tracking.model.BuildInfo.playerName = 'playerName';
             this.tracking.model.BuildInfo.playerVersion = 'playerVersion';
             this.tracking.model.DomElementCollection.video = this.playerManager.P;
