@@ -3415,7 +3415,7 @@ var Tracking = /** @class */ (function (_super) {
     // constructor(public modelCollection: ModelCollection) {
     //     super({});
     // }
-    function Tracking() {
+    function Tracking() {console.log('[TT] Starts Up');
         var _this = _super.call(this, {}) || this;
         _this.isDebug = false;
         _this.agents = [];
@@ -3443,12 +3443,13 @@ var Tracking = /** @class */ (function (_super) {
         if (playerEvent === PlayerEvents.TRACKING_CONFIG_READY) {
             this.registerAgents();
         }
+        console.log('[TT] emit', playerEvent);
         this.emit(playerEvent);
     };
     Tracking.prototype.onError = function (errorInfo) {
         this.emit(PlayerEvents.VIDEO_PLAYBACK_ERROR, errorInfo);
     };
-    Tracking.prototype.registerAgents = function () {
+    Tracking.prototype.registerAgents = function () {console.log('[TT] registerAgents');
         var _this = this;
         var upvc = this.modelCollection.GlobalSettings.uvpc;
         //TODO Error handling if uvpc is empty or not an Array
@@ -3525,6 +3526,7 @@ var BaseAgent = /** @class */ (function () {
         var _this = this;
         this.debugLabel += ' ' + this.NAME;
         this.debug && this.logInfo('onRegisterDone');
+        console.log('[TT] ' + this.debugLabel + 'onRegisterDone');
         this.onRegister = function () {
             _this.debug && _this.logInfo('agent already registered');
         };
@@ -3637,6 +3639,7 @@ var MuxAgent = /** @class */ (function (_super) {
         this.onRegisterDone();
     };
     MuxAgent.prototype.onPlayerLoaded = function () {
+        console.log('[TT] ' + this.debugLabel + 'onPlayerLoaded', this.modelCollection.DomElementCollection.video);
         if (!this.modelCollection.DomElementCollection.video) {
             this.logError('Video element is unset');
             return;
@@ -3647,6 +3650,7 @@ var MuxAgent = /** @class */ (function (_super) {
         if (!(mux && typeof mux.monitor === 'function' && this.hasVideoElement)) {
             if (this.debug) {
                 this.logWarn('Unable to start mux monitor');
+                console.log('[TT] ' + this.debugLabel + ' Unable to start mux monitor');
             }
             return;
         }
@@ -3724,12 +3728,14 @@ var MuxAgent = /** @class */ (function (_super) {
         if (!this.vo || !this.modelCollection.DomElementCollection.video) {
             return;
         }
+        console.log('[TT] ' + this.debugLabel + ' startMuxMonitor ', this.debug);
         mux.monitor(this.modelCollection.DomElementCollection.video, {
             debug: this.debug,
             data: this.vo.formatMetadata(this.modelCollection)
         });
     };
     MuxAgent.prototype.sendEvent = function (eventName) {
+        console.log('[TT] ' + this.debugLabel, eventName, this.vo);
         if (!this.vo) {
             return;
         }
