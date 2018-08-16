@@ -3971,6 +3971,7 @@ class TrackingReceiver {
         this.tracking = new Tracking_1.Tracking();
         this.tracking.debug = true;
         this.setTrackingConfig();
+        this.setPlayerInfo();
         this.context = cast.framework.CastReceiverContext.getInstance();
         this.playerManager = this.context.getPlayerManager();
         this.addEventListeners();
