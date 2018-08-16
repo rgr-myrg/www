@@ -3969,6 +3969,7 @@ const StreamType = __webpack_require__(/*! cv-model/dist/src/enum/StreamType */ 
 class TrackingReceiver {
     constructor() {
         this.tracking = new Tracking_1.Tracking();
+        this.tracking.debug = true;
         this.tracking.model.GlobalSettings.uvpc = window.uvpc;
         this.tracking.notify(cv_model_1.PlayerEvents.TRACKING_CONFIG_READY);
         this.context = cast.framework.CastReceiverContext.getInstance();
@@ -3983,6 +3984,7 @@ class TrackingReceiver {
             this.tracking.model.BuildInfo.playerName = 'playerName';
             this.tracking.model.BuildInfo.playerVersion = 'playerVersion';
             this.tracking.model.DomElementCollection.video = this.playerManager.P;
+            console.log('[TRACKING] PLAYER_LOAD_COMPLETE', this.playerManager);
             console.log('[TRACKING] PLAYER_LOAD_COMPLETE', this.tracking.model.DomElementCollection.video);
             this.tracking.notify(cv_model_1.PlayerEvents.PLAYER_LOADED);
         });

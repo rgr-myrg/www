@@ -264,6 +264,10 @@ class UvpCastApi {
 let trackingReceiver = new TrackingReceiver();
 trackingReceiver.tracking.debug = true;
 
+let container = document.getElementById('castMediaPlayer');
+let videoElement = container.D;
+console.log('[MAIN] videoElement', videoElement);
+
 window['__onGCastApiAvailable'] = function(isAvailable) {
     console.log('[MAIN] isAvailable', isAvailable);
     if (isAvailable) {
