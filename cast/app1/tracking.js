@@ -3524,10 +3524,9 @@ var BaseAgent = /** @class */ (function () {
     BaseAgent.prototype.onRegisterDone = function () {
         var _this = this;
         this.debugLabel += ' ' + this.NAME;
+        this.debug && this.logInfo('onRegisterDone');
         this.onRegister = function () {
-            if (_this.debug) {
-                _this.logInfo('agent already registered');
-            }
+            _this.debug && _this.logInfo('agent already registered');
         };
     };
     BaseAgent.prototype.logInfo = function () {
