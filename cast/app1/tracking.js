@@ -3967,12 +3967,12 @@ const cv_model_1 = __webpack_require__(/*! cv-model */ "./node_modules/cv-model/
 const Tracking_1 = __webpack_require__(/*! cv-tracking/dist/Tracking */ "./node_modules/cv-tracking/dist/Tracking.js");
 const StreamType = __webpack_require__(/*! cv-model/dist/src/enum/StreamType */ "./node_modules/cv-model/dist/src/enum/StreamType.js");
 class TrackingReceiver {
-    //playerDataBinder: any;
     constructor() {
         this.tracking = new Tracking_1.Tracking();
+        this.tracking.model.GlobalSettings.uvpc = uvpc;
+        this.tracking.notify(cv_model_1.PlayerEvents.TRACKING_CONFIG_READY);
         this.context = cast.framework.CastReceiverContext.getInstance();
         this.playerManager = this.context.getPlayerManager();
-        //this.playerDataBinder = new cast.framework.ui.PlayerDataBinder({});
         this.addEventListeners();
         this.context.start();
     }
@@ -3983,6 +3983,7 @@ class TrackingReceiver {
             this.tracking.model.BuildInfo.playerName = 'playerName';
             this.tracking.model.BuildInfo.playerVersion = 'playerVersion';
             this.tracking.model.DomElementCollection.video = this.playerManager.P;
+            console.log('[TRACKING] PLAYER_LOAD_COMPLETE', this.tracking.model.DomElementCollection.video);
             this.tracking.notify(cv_model_1.PlayerEvents.PLAYER_LOADED);
         });
         this.playerManager.addEventListener(cast.framework.events.EventType.LOADED_METADATA, (event) => {

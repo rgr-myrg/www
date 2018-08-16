@@ -262,7 +262,7 @@ class UvpCastApi {
 //let uvpCastApi = new UvpCastApi();
 
 let trackingReceiver = new TrackingReceiver();
-trackingReceiver.debug = true;
+trackingReceiver.tracking.debug = true;
 
 window['__onGCastApiAvailable'] = function(isAvailable) {
     console.log('[MAIN] isAvailable', isAvailable);
