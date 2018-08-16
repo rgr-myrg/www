@@ -1,4 +1,4 @@
-let upvc = [
+var upvc = [
     {
       'name': 'MuxQOSPluginJS',
       'category': 'qos',
