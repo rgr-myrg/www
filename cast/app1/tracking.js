@@ -4007,7 +4007,7 @@ class TrackingReceiver {
             if (event.currentMediaTime) {
                 this.tracking.model.ContentPlaybackState.playheadTime = event.currentMediaTime;
             }
-            this.tracking.debug && console.log('[Tracking] => ' + event.type);
+            this.tracking.debug && console.log('[Tracking] => ' + event.type, event);
             this.eventMap[event.type] && this.eventMap[event.type](event);
         });
     }
@@ -4067,6 +4067,9 @@ class TrackingReceiver {
         this.tracking.notify(cv_model_1.PlayerEvents.BITRATE_CHANGE);
     }
     onError(event) {
+        if (!(event.detailedErrorCode && event.error.message)) {
+            return;
+        }
         this.tracking.onError({
             code: event.detailedErrorCode,
             message: event.error.message,
