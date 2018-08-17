@@ -3527,6 +3527,7 @@ var BaseAgent = /** @class */ (function () {
         };
     };
     BaseAgent.prototype.logInfo = function () {
+        console.log(this.debugLabel, arguments);
         var args = [];
         for (var _i = 0; _i < arguments.length; _i++) {
             args[_i] = arguments[_i];
@@ -3535,6 +3536,7 @@ var BaseAgent = /** @class */ (function () {
         (_a = this.logger).log.apply(_a, [LogLevel.INFO, this.debugLabel].concat(args));
     };
     BaseAgent.prototype.logDebug = function () {
+        console.log(this.debugLabel, arguments);
         var args = [];
         for (var _i = 0; _i < arguments.length; _i++) {
             args[_i] = arguments[_i];
@@ -3991,23 +3993,25 @@ class TrackingReceiver {
     setEventMapping() {
         // https://developers.google.com/cast/docs/reference/caf_receiver/cast.framework.events
         this.eventMap = {
-            [cast.framework.events.EventType.LOADED_METADATA]: this.onLoadedMetadata,
-            [cast.framework.events.EventType.PLAYING]: this.onContentPlaying,
-            [cast.framework.events.EventType.PROGRESS]: this.onVideoProgress,
-            [cast.framework.events.EventType.PAUSE]: this.onContentPause,
-            [cast.framework.events.EventType.SEEKING]: this.onSeekStart,
-            [cast.framework.events.EventType.SEEKED]: this.onSeekComplete,
-            [cast.framework.events.EventType.CLIP_ENDED]: this.onContentEnd,
-            [cast.framework.events.EventType.BUFFERING]: this.onBuffering,
-            [cast.framework.events.EventType.BITRATE_CHANGED]: this.onBitRateChange,
-            [cast.framework.events.EventType.ERROR]: this.onError
+            [cast.framework.events.EventType.LOADED_METADATA]: this.onLoadedMetadata.bind(this),
+            [cast.framework.events.EventType.PLAYING]: this.onContentPlaying.bind(this),
+            [cast.framework.events.EventType.PROGRESS]: this.onVideoProgress.bind(this),
+            [cast.framework.events.EventType.PAUSE]: this.onContentPause.bind(this),
+            [cast.framework.events.EventType.SEEKING]: this.onSeekStart.bind(this),
+            [cast.framework.events.EventType.SEEKED]: this.onSeekComplete.bind(this),
+            [cast.framework.events.EventType.CLIP_ENDED]: this.onContentEnd.bind(this),
+            [cast.framework.events.EventType.BUFFERING]: this.onBuffering.bind(this),
+            [cast.framework.events.EventType.BITRATE_CHANGED]: this.onBitRateChange.bind(this),
+            [cast.framework.events.EventType.ERROR]: this.onError.bind(this)
         };
         this.playerManager.addEventListener(cast.framework.events.EventType.ALL, (event) => {
+            this.tracking.debug && console.log('[Tracking] => ' + event.type, event);
             if (event.currentMediaTime) {
                 this.tracking.model.ContentPlaybackState.playheadTime = event.currentMediaTime;
             }
-            this.tracking.debug && console.log('[Tracking] => ' + event.type, event);
-            this.eventMap[event.type] && this.eventMap[event.type].apply(this, event);
+            if (typeof this.eventMap[event.type] === 'function') {
+                this.eventMap[event.type].apply(this, event);
+            }
         });
     }
     setTrackingConfig() {
