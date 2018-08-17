@@ -4094,12 +4094,15 @@ class TrackingReceiver {
         this.tracking.notify(cv_model_1.PlayerEvents.BITRATE_CHANGE);
     }
     onError(event) {
-        if (!(event.detailedErrorCode && event.error.message)) {
-            return;
+        let code = -1;
+        let msg = 'Unspecified Error';
+        if (event && event.detailedErrorCode && event.error && event.error.message) {
+            code = event.detailedErrorCode;
+            msg = event.error.message;
         }
         this.tracking.onError({
-            code: event.detailedErrorCode,
-            message: event.error.message,
+            code: code,
+            message: msg,
             isFatal: false
         });
     }
