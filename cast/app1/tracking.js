@@ -3409,9 +3409,6 @@ var ModelCollection = __webpack_require__(/*! cv-model/dist/src/ModelCollection 
 var MuxAgent_1 = __webpack_require__(/*! ./agent/MuxAgent */ "./node_modules/cv-tracking/dist/agent/MuxAgent.js");
 var Tracking = /** @class */ (function (_super) {
     __extends(Tracking, _super);
-    // constructor(public modelCollection: ModelCollection) {
-    //     super({});
-    // }
     function Tracking() {
         var _this = _super.call(this, {}) || this;
         _this.isDebug = false;
@@ -3433,10 +3430,14 @@ var Tracking = /** @class */ (function (_super) {
         get: function () {
             return this.modelCollection;
         },
+        set: function (modelCollection) {
+            this.modelCollection = modelCollection;
+        },
         enumerable: true,
         configurable: true
     });
     Tracking.prototype.notify = function (playerEvent) {
+        this.isDebug && console.log('[Tracking] event ' + playerEvent);
         if (playerEvent === PlayerEvents.TRACKING_CONFIG_READY) {
             this.registerAgents();
         }
@@ -3977,14 +3978,16 @@ class TrackingReceiver {
     setEventMapping() {
         this.addEventListeners({
             [cast.framework.events.EventType.LOADED_METADATA]: this.onLoadedMetadata.bind(this),
+            [cast.framework.events.EventType.LOAD_START]: this.onResourceStart.bind(this),
             [cast.framework.events.EventType.PLAYING]: this.onContentPlaying.bind(this),
-            [cast.framework.events.EventType.PROGRESS]: this.onVideoProgress.bind(this),
+            [cast.framework.events.EventType.TIME_UPDATE]: this.onVideoProgress.bind(this),
             [cast.framework.events.EventType.PAUSE]: this.onContentPause.bind(this),
             [cast.framework.events.EventType.SEEKING]: this.onSeekStart.bind(this),
             [cast.framework.events.EventType.SEEKED]: this.onSeekComplete.bind(this),
             [cast.framework.events.EventType.CLIP_ENDED]: this.onContentEnd.bind(this),
             [cast.framework.events.EventType.BUFFERING]: this.onBuffering.bind(this),
             [cast.framework.events.EventType.BITRATE_CHANGED]: this.onBitRateChange.bind(this),
+            [cast.framework.events.EventType.MEDIA_FINISHED]: this.onResourceEnd.bind(this),
             [cast.framework.events.EventType.ERROR]: this.onError.bind(this)
         });
         // Debug Only
@@ -4022,6 +4025,9 @@ class TrackingReceiver {
         this.tracking.model.ContentPlaybackState.cdn = 'Akamai';
         this.tracking.notify(cv_model_1.PlayerEvents.CONTENT_DATA_LOADED);
     }
+    onResourceStart(event) {
+        this.tracking.notify(cv_model_1.PlayerEvents.RESOURCE_START);
+    }
     onContentPlaying(event) {
         this.tracking.notify(cv_model_1.PlayerEvents.CONTENT_PLAYING);
     }
@@ -4053,6 +4059,9 @@ class TrackingReceiver {
             });
         }
         this.tracking.notify(cv_model_1.PlayerEvents.CONTENT_END);
+    }
+    onResourceEnd(event) {
+        this.tracking.notify(cv_model_1.PlayerEvents.RESOURCE_END);
     }
     onBuffering(event) {
         if (!this.isBuffering) {
