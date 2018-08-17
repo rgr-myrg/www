@@ -145,12 +145,9 @@ module.exports = CoreEvent;
 "use strict";
 
 var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    }
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
     return function (d, b) {
         extendStatics(d, b);
         function __() { this.constructor = d; }
@@ -300,7 +297,7 @@ var Logger = (function () {
         if (logLevel > this.pLogLevel)
             return;
         if (this.useConsole) {
-            console.log.apply(items);
+            console.log.apply(console, items);
         }
         else {
             for (var i = 0, n = items.length; i < n; i++) {
@@ -3968,17 +3965,31 @@ const Tracking_1 = __webpack_require__(/*! cv-tracking/dist/Tracking */ "./node_
 const StreamType = __webpack_require__(/*! cv-model/dist/src/enum/StreamType */ "./node_modules/cv-model/dist/src/enum/StreamType.js");
 class TrackingReceiver {
     constructor() {
+        this.isBuffering = false;
+        // https://developers.google.com/cast/docs/reference/caf_receiver/cast.framework.events
+        this.eventMap = {
+            [cast.framework.events.EventType.LOADED_METADATA]: this.onLoadedMetadata,
+            [cast.framework.events.EventType.PLAYING]: this.onContentPlaying,
+            [cast.framework.events.EventType.PROGRESS]: this.onVideoProgress,
+            [cast.framework.events.EventType.PAUSE]: this.onContentPause,
+            [cast.framework.events.EventType.SEEKING]: this.onSeekStart,
+            [cast.framework.events.EventType.SEEKED]: this.onSeekComplete,
+            [cast.framework.events.EventType.CLIP_ENDED]: this.onContentEnd,
+            [cast.framework.events.EventType.BUFFERING]: this.onBuffering,
+            [cast.framework.events.EventType.BITRATE_CHANGED]: this.onBitRateChange,
+            [cast.framework.events.EventType.ERROR]: this.onError
+        };
+        this.context = cast.framework.CastReceiverContext.getInstance();
+        this.playerManager = this.context.getPlayerManager();
         this.tracking = new Tracking_1.Tracking();
         this.tracking.debug = true;
         this.setTrackingConfig();
         this.setPlayerInfo();
-        this.context = cast.framework.CastReceiverContext.getInstance();
-        this.playerManager = this.context.getPlayerManager();
-        this.addEventListeners();
+        this.addEventListener();
         this.context.start();
     }
     setTrackingConfig() {
-        // window.uvpc array is already available on the receiver page
+        // Assuming window.uvpc array is already available on the receiver page
         this.tracking.model.GlobalSettings.uvpc = window.uvpc;
         this.tracking.notify(cv_model_1.PlayerEvents.TRACKING_CONFIG_READY);
     }
@@ -3991,73 +4002,194 @@ class TrackingReceiver {
             this.tracking.notify(cv_model_1.PlayerEvents.PLAYER_LOADED);
         }
     }
+    addEventListener() {
+        this.playerManager.addEventListener(cast.framework.events.EventType.ALL, (event) => {
+            if (event.currentMediaTime) {
+                this.tracking.model.ContentPlaybackState.playheadTime = event.currentMediaTime;
+            }
+            this.tracking.debug && console.log('[Tracking] => ' + event.type);
+            this.eventMap[event.type] && this.eventMap[event.type](event);
+        });
+    }
+    onLoadedMetadata(event) {
+        // Populate metadata
+        this.tracking.model.ContentMetadata.mediaId = 'mediaId';
+        this.tracking.model.ContentMetadata.videoTitle = 'videoTitle';
+        this.tracking.model.ContentMetadata.seriesTitle = 'seriesTitle';
+        this.tracking.model.ContentMetadata.episodeFlag = false;
+        this.tracking.model.ContentPlaybackState.duration = 30000;
+        this.tracking.model.ResourceConfig.streamType = StreamType.VOD;
+        this.tracking.model.ContentPlaybackState.cdn = 'Akamai';
+        this.tracking.notify(cv_model_1.PlayerEvents.CONTENT_DATA_LOADED);
+    }
+    onContentPlaying(event) {
+        this.tracking.notify(cv_model_1.PlayerEvents.CONTENT_PLAYING);
+    }
+    onVideoProgress(event) {
+        if (this.isBuffering) {
+            this.tracking.notify(cv_model_1.PlayerEvents.BUFFER_COMPLETE);
+            this.isBuffering = false;
+        }
+        this.tracking.notify(cv_model_1.PlayerEvents.VIDEO_PROGRESS);
+    }
+    onContentPause(event) {
+        this.tracking.notify(cv_model_1.PlayerEvents.CONTENT_PAUSE);
+        if (event.ended) {
+            this.tracking.notify(cv_model_1.PlayerEvents.CONTENT_END);
+        }
+    }
+    onSeekStart(event) {
+        this.tracking.notify(cv_model_1.PlayerEvents.SEEK_START);
+    }
+    onSeekComplete(event) {
+        this.tracking.notify(cv_model_1.PlayerEvents.SEEK_COMPLETE);
+    }
+    onContentEnd(event) {
+        if (event.endedReason && event.endedReason === cast.framework.events.EndedReason.ERROR) {
+            this.tracking.onError({
+                code: 1,
+                message: 'error',
+                isFatal: false
+            });
+        }
+        this.tracking.notify(cv_model_1.PlayerEvents.CONTENT_END);
+    }
+    onBuffering(event) {
+        if (!this.isBuffering) {
+            this.tracking.notify(cv_model_1.PlayerEvents.BUFFER_START);
+            this.isBuffering = true;
+        }
+    }
+    onBitRateChange(event) {
+        if (event.totalBitrate) {
+            this.tracking.model.ContentPlaybackState.playbackBitrate = event.totalBitrate;
+        }
+        this.tracking.notify(cv_model_1.PlayerEvents.BITRATE_CHANGE);
+    }
+    onError(event) {
+        this.tracking.onError({
+            code: event.detailedErrorCode,
+            message: event.error.message,
+            isFatal: false
+        });
+    }
     addEventListeners() {
         console.log('[TRACKING] addEventListener');
+        //https://developers.google.com/cast/docs/reference/caf_receiver/cast.framework.events
         // this.playerManager.addEventListener(
-        //     cast.framework.events.EventType.PLAYER_LOAD_COMPLETE,
+        //     cast.framework.events.EventType.LOADED_METADATA,
         //     (event: any) => {
-        //         console.log('[TRACKING] PLAYER_LOAD_COMPLETE', event);
-        //         let videoElement: HTMLElement | null = document.getElementById('myVideoContainer');
+        //         console.log('[TRACKING] LOADED_METADATA', event);
+        //         this.tracking.model.ContentMetadata.mediaId = 'mediaId';
+        //         this.tracking.model.ContentMetadata.videoTitle = 'videoTitle';
+        //         this.tracking.model.ContentMetadata.seriesTitle = 'seriesTitle';
+        //         this.tracking.model.ContentMetadata.episodeFlag = false;
+        //         this.tracking.model.ContentPlaybackState.duration = 30000;
+        //         this.tracking.model.ResourceConfig.streamType = StreamType.VOD;
+        //         this.tracking.model.ContentPlaybackState.cdn = 'Akamai';
         //
-        //         this.tracking.model.BuildInfo.playerName = 'playerName';
-        //         this.tracking.model.BuildInfo.playerVersion = 'playerVersion';
-        //
-        //         if (videoElement) {
-        //             this.tracking.model.DomElementCollection.video = videoElement;
-        //         }
-        //
-        //         console.log('[TRACKING] PLAYER_LOAD_COMPLETE', this.tracking.model.DomElementCollection.video);
-        //         this.tracking.notify(PlayerEvents.PLAYER_LOADED);
+        //         this.tracking.notify(PlayerEvents.CONTENT_DATA_LOADED);
         //     }
         // );
-        this.playerManager.addEventListener(cast.framework.events.EventType.LOADED_METADATA, (event) => {
-            console.log('[TRACKING] LOADED_METADATA', event);
-            this.tracking.model.ContentMetadata.mediaId = 'mediaId';
-            this.tracking.model.ContentMetadata.videoTitle = 'videoTitle';
-            this.tracking.model.ContentMetadata.seriesTitle = 'seriesTitle';
-            this.tracking.model.ContentMetadata.episodeFlag = false;
-            this.tracking.model.ContentPlaybackState.duration = 30000;
-            this.tracking.model.ResourceConfig.streamType = StreamType.VOD;
-            this.tracking.model.ContentPlaybackState.cdn = 'Akamai';
-            this.tracking.notify(cv_model_1.PlayerEvents.CONTENT_DATA_LOADED);
-        });
-        this.playerManager.addEventListener(cast.framework.events.EventType.CLIP_STARTED, (event) => {
-            console.log('[TRACKING] CLIP_STARTED', event);
-        });
-        this.playerManager.addEventListener(cast.framework.events.EventType.PLAY, (event) => {
-            console.log('[TRACKING] PLAY', event);
-        });
-        this.playerManager.addEventListener(cast.framework.events.EventType.PLAYING, (event) => {
-            console.log('[TRACKING] PLAYING');
-        });
-        this.playerManager.addEventListener(cast.framework.events.EventType.PROGRESS, (event) => {
-            console.log('[TRACKING] PROGRESS');
-        });
-        this.playerManager.addEventListener(cast.framework.events.EventType.PAUSE, (event) => {
-            console.log('[TRACKING] PAUSE');
-        });
-        this.playerManager.addEventListener(cast.framework.events.EventType.SEEKING, (event) => {
-            console.log('[TRACKING] SEEKING');
-        });
-        this.playerManager.addEventListener(cast.framework.events.EventType.SEEKED, (event) => {
-            console.log('[TRACKING] SEEKED');
-        });
-        this.playerManager.addEventListener(cast.framework.events.EventType.CLIP_ENDED, (event) => {
-            console.log('[TRACKING] CLIP_ENDED');
-        });
+        // this.playerManager.addEventListener(
+        //     cast.framework.events.EventType.PLAYING,
+        //     (event: any) => {
+        //         console.log('[TRACKING] PLAYING');
+        //         this.tracking.model.ContentPlaybackState.playheadTime = event.currentMediaTime;
+        //         this.tracking.notify(PlayerEvents.CONTENT_PLAYING);
+        //     }
+        // );
+        // this.playerManager.addEventListener(
+        //     cast.framework.events.EventType.PROGRESS,
+        //     (event: any) => {
+        //         console.log('[TRACKING] PROGRESS');
+        //         this.tracking.model.ContentPlaybackState.playheadTime = event.currentMediaTime;
+        //         if (this.isBuffering) {
+        //             this.tracking.notify(PlayerEvents.BUFFER_COMPLETE);
+        //             this.isBuffering = false;
+        //         }
+        //
+        //         this.tracking.notify(PlayerEvents.VIDEO_PROGRESS);
+        //     }
+        // );
+        // this.playerManager.addEventListener(
+        //     cast.framework.events.EventType.PAUSE,
+        //     (event: any) => {
+        //         console.log('[TRACKING] PAUSE');
+        //         this.tracking.model.ContentPlaybackState.playheadTime = event.currentMediaTime;
+        //         this.tracking.notify(PlayerEvents.CONTENT_PAUSE);
+        //
+        //         if (event.ended) {
+        //             this.tracking.notify(PlayerEvents.CONTENT_END);
+        //         }
+        //     }
+        // );
+        // this.playerManager.addEventListener(
+        //     cast.framework.events.EventType.SEEKING,
+        //     (event: any) => {
+        //         console.log('[TRACKING] SEEKING');
+        //         this.tracking.model.ContentPlaybackState.playheadTime = event.currentMediaTime;
+        //         this.tracking.notify(PlayerEvents.SEEK_START);
+        //     }
+        // );
+        // this.playerManager.addEventListener(
+        //     cast.framework.events.EventType.SEEKED,
+        //     (event: any) => {
+        //         console.log('[TRACKING] SEEKED');
+        //         this.tracking.model.ContentPlaybackState.playheadTime = event.currentMediaTime;
+        //         this.tracking.notify(PlayerEvents.SEEK_COMPLETE);
+        //     }
+        // );
+        // this.playerManager.addEventListener(
+        //     cast.framework.events.EventType.CLIP_ENDED,
+        //     (event: any) => {
+        //         console.log('[TRACKING] CLIP_ENDED');
+        //         this.tracking.model.ContentPlaybackState.playheadTime = event.currentMediaTime;
+        //         if (event.endedReason === cast.framework.events.EndedReason.ERROR) {
+        //             this.tracking.onError({
+        //                 code: 1,
+        //                 message: 'error',
+        //                 isFatal: false
+        //             });
+        //         }
+        //
+        //         this.tracking.notify(PlayerEvents.CONTENT_END);
+        //     }
+        // );
         this.playerManager.addEventListener(cast.framework.events.EventType.ENDED, (event) => {
             console.log('[TRACKING] ENDED');
         });
-        this.playerManager.addEventListener(cast.framework.events.EventType.BUFFERING, (event) => {
-            console.log('[TRACKING] BUFFERING');
-        });
-        this.playerManager.addEventListener(cast.framework.events.EventType.BITRATE_CHANGED, (event) => {
-            console.log('[TRACKING] BITRATE_CHANGED');
-            this.tracking.notify(cv_model_1.PlayerEvents.BITRATE_CHANGE);
-        });
-        this.playerManager.addEventListener(cast.framework.events.EventType.ERROR, (event) => {
-            console.log('[TRACKING] ERROR');
-        });
+        // this.playerManager.addEventListener(
+        //     cast.framework.events.EventType.BUFFERING,
+        //     (event: any) => {
+        //         console.log('[TRACKING] BUFFERING');
+        //         if (!this.isBuffering) {
+        //             this.tracking.notify(PlayerEvents.BUFFER_START);
+        //             this.isBuffering = true;
+        //         }
+        //     }
+        // );
+        // this.playerManager.addEventListener(
+        //     cast.framework.events.EventType.BITRATE_CHANGED,
+        //     (event: any) => {
+        //         console.log('[TRACKING] BITRATE_CHANGED', event);
+        //         if (event.totalBitrate) {
+        //             this.tracking.model.ContentPlaybackState.playbackBitrate = event.totalBitrate;
+        //         }
+        //         this.tracking.notify(PlayerEvents.BITRATE_CHANGE);
+        //     }
+        // );
+        // this.playerManager.addEventListener(
+        //     cast.framework.events.EventType.ERROR,
+        //     (event: any) => {
+        //         console.log('[TRACKING] ERROR');
+        //         this.tracking.onError({
+        //             code: event.detailedErrorCode,
+        //             message: event.error.message,
+        //             isFatal: false
+        //         });
+        //     }
+        // );
     }
 }
 exports.TrackingReceiver = TrackingReceiver;
