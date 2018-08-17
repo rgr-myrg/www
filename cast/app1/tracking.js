@@ -3521,7 +3521,6 @@ var BaseAgent = /** @class */ (function () {
     BaseAgent.prototype.onRegisterDone = function () {
         var _this = this;
         this.debugLabel += ' ' + this.NAME;
-        console.log(this.debugLabel, 'onRegisterDone');
         this.debug && this.logInfo('onRegisterDone');
         this.onRegister = function () {
             _this.debug && _this.logInfo('agent already registered');
@@ -3546,6 +3545,7 @@ var BaseAgent = /** @class */ (function () {
         (_a = this.logger).log.apply(_a, [LogLevel.DEBUG, this.debugLabel].concat(args));
     };
     BaseAgent.prototype.logWarn = function () {
+        console.log(this.debugLabel, arguments);
         var args = [];
         for (var _i = 0; _i < arguments.length; _i++) {
             args[_i] = arguments[_i];
@@ -4078,10 +4078,10 @@ class TrackingReceiver {
         this.tracking.notify(cv_model_1.PlayerEvents.SEEK_COMPLETE);
     }
     onContentEnd(event) {
-        if (event.endedReason && event.endedReason === cast.framework.events.EndedReason.ERROR) {
+        if (event && event.endedReason && event.endedReason === cast.framework.events.EndedReason.ERROR) {
             this.tracking.onError({
-                code: 1,
-                message: 'error',
+                code: -1,
+                message: event.endedReason,
                 isFatal: false
             });
         }
