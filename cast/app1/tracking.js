@@ -3975,34 +3975,6 @@ class TrackingReceiver {
         this.context.start();
     }
     setEventMapping() {
-        // https://developers.google.com/cast/docs/reference/caf_receiver/cast.framework.events
-        // this.eventMap = {
-        //     [cast.framework.events.EventType.LOADED_METADATA]: this.onLoadedMetadata.bind(this),
-        //     [cast.framework.events.EventType.PLAYING]: this.onContentPlaying.bind(this),
-        //     [cast.framework.events.EventType.PROGRESS]: this.onVideoProgress.bind(this),
-        //     [cast.framework.events.EventType.PAUSE]: this.onContentPause.bind(this),
-        //     [cast.framework.events.EventType.SEEKING]: this.onSeekStart.bind(this),
-        //     [cast.framework.events.EventType.SEEKED]: this.onSeekComplete.bind(this),
-        //     [cast.framework.events.EventType.CLIP_ENDED]: this.onContentEnd.bind(this),
-        //     [cast.framework.events.EventType.BUFFERING]: this.onBuffering.bind(this),
-        //     [cast.framework.events.EventType.BITRATE_CHANGED]: this.onBitRateChange.bind(this),
-        //     [cast.framework.events.EventType.ERROR]: this.onError.bind(this)
-        // };
-        //
-        // this.playerManager.addEventListener(
-        //     cast.framework.events.EventType.ALL,
-        //     (event: any) => {
-        //         this.tracking.debug && console.log('[Tracking] => ' + event.type, event);
-        //
-        //         if (event && event.currentMediaTime) {
-        //             this.tracking.model.ContentPlaybackState.playheadTime = event.currentMediaTime;
-        //         }
-        //
-        //         if (typeof this.eventMap[event.type] === 'function') {
-        //             this.eventMap[event.type].apply(this, event);
-        //         }
-        //     }
-        // );
         this.addEventListeners({
             [cast.framework.events.EventType.LOADED_METADATA]: this.onLoadedMetadata.bind(this),
             [cast.framework.events.EventType.PLAYING]: this.onContentPlaying.bind(this),
@@ -4014,6 +3986,10 @@ class TrackingReceiver {
             [cast.framework.events.EventType.BUFFERING]: this.onBuffering.bind(this),
             [cast.framework.events.EventType.BITRATE_CHANGED]: this.onBitRateChange.bind(this),
             [cast.framework.events.EventType.ERROR]: this.onError.bind(this)
+        });
+        // Debug Only
+        this.tracking.debug && this.playerManager.addEventListener(cast.framework.events.EventType.ALL, (event) => {
+            console.log('[Tracking]', event.type, event);
         });
     }
     addEventListeners(listeners) {
