@@ -3988,11 +3988,8 @@ class TrackingReceiver {
             [cast.framework.events.EventType.BUFFERING]: this.onBuffering.bind(this),
             [cast.framework.events.EventType.BITRATE_CHANGED]: this.onBitRateChange.bind(this),
             [cast.framework.events.EventType.MEDIA_FINISHED]: this.onResourceEnd.bind(this),
-            [cast.framework.events.EventType.ERROR]: this.onError.bind(this)
-        });
-        // Debug Only
-        this.tracking.debug && this.playerManager.addEventListener(cast.framework.events.EventType.ALL, (event) => {
-            console.log('[Tracking]', event.type, event);
+            [cast.framework.events.EventType.ERROR]: this.onError.bind(this),
+            [cast.framework.events.EventType.ALL]: this.setPlayheadTime.bind(this)
         });
     }
     addEventListeners(listeners) {
@@ -4014,6 +4011,15 @@ class TrackingReceiver {
             this.tracking.notify(cv_model_1.PlayerEvents.PLAYER_LOADED);
         }
     }
+    setPlayheadTime(event) {
+        if (!event) {
+            return;
+        }
+        this.tracking.debug && console.log('[Tracking]', event.type, event);
+        if (event.currentMediaTime) {
+            this.tracking.model.ContentPlaybackState.playheadTime = event.currentMediaTime;
+        }
+    }
     onLoadedMetadata(event) {
         // Populate metadata
         this.tracking.model.ContentMetadata.mediaId = 'mediaId';
@@ -4032,6 +4038,10 @@ class TrackingReceiver {
         this.tracking.notify(cv_model_1.PlayerEvents.CONTENT_PLAYING);
     }
     onVideoProgress(event) {
+        // Only track progress when the playhead is moving
+        if (event.currentMediaTime === this.tracking.model.ContentPlaybackState.playheadTime) {
+            return;
+        }
         if (this.isBuffering) {
             this.tracking.notify(cv_model_1.PlayerEvents.BUFFER_COMPLETE);
             this.isBuffering = false;
