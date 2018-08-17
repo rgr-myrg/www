@@ -3964,8 +3964,31 @@ const cv_model_1 = __webpack_require__(/*! cv-model */ "./node_modules/cv-model/
 const Tracking_1 = __webpack_require__(/*! cv-tracking/dist/Tracking */ "./node_modules/cv-tracking/dist/Tracking.js");
 const StreamType = __webpack_require__(/*! cv-model/dist/src/enum/StreamType */ "./node_modules/cv-model/dist/src/enum/StreamType.js");
 class TrackingReceiver {
+    // https://developers.google.com/cast/docs/reference/caf_receiver/cast.framework.events
+    // eventMap: any = {
+    //     [cast.framework.events.EventType.LOADED_METADATA]: this.onLoadedMetadata,
+    //     [cast.framework.events.EventType.PLAYING]: this.onContentPlaying,
+    //     [cast.framework.events.EventType.PROGRESS]: this.onVideoProgress,
+    //     [cast.framework.events.EventType.PAUSE]: this.onContentPause,
+    //     [cast.framework.events.EventType.SEEKING]: this.onSeekStart,
+    //     [cast.framework.events.EventType.SEEKED]: this.onSeekComplete,
+    //     [cast.framework.events.EventType.CLIP_ENDED]: this.onContentEnd,
+    //     [cast.framework.events.EventType.BUFFERING]: this.onBuffering,
+    //     [cast.framework.events.EventType.BITRATE_CHANGED]: this.onBitRateChange,
+    //     [cast.framework.events.EventType.ERROR]: this.onError
+    // };
     constructor() {
         this.isBuffering = false;
+        this.context = cast.framework.CastReceiverContext.getInstance();
+        this.playerManager = this.context.getPlayerManager();
+        this.tracking = new Tracking_1.Tracking();
+        this.tracking.debug = true;
+        this.setEventMapping();
+        this.setTrackingConfig();
+        this.setPlayerInfo();
+        this.context.start();
+    }
+    setEventMapping() {
         // https://developers.google.com/cast/docs/reference/caf_receiver/cast.framework.events
         this.eventMap = {
             [cast.framework.events.EventType.LOADED_METADATA]: this.onLoadedMetadata,
@@ -3979,14 +4002,13 @@ class TrackingReceiver {
             [cast.framework.events.EventType.BITRATE_CHANGED]: this.onBitRateChange,
             [cast.framework.events.EventType.ERROR]: this.onError
         };
-        this.context = cast.framework.CastReceiverContext.getInstance();
-        this.playerManager = this.context.getPlayerManager();
-        this.tracking = new Tracking_1.Tracking();
-        this.tracking.debug = true;
-        this.setTrackingConfig();
-        this.setPlayerInfo();
-        this.addEventListener();
-        this.context.start();
+        this.playerManager.addEventListener(cast.framework.events.EventType.ALL, (event) => {
+            if (event.currentMediaTime) {
+                this.tracking.model.ContentPlaybackState.playheadTime = event.currentMediaTime;
+            }
+            this.tracking.debug && console.log('[Tracking] => ' + event.type, event);
+            this.eventMap[event.type] && this.eventMap[event.type](event);
+        });
     }
     setTrackingConfig() {
         // Assuming window.uvpc array is already available on the receiver page
@@ -4002,15 +4024,20 @@ class TrackingReceiver {
             this.tracking.notify(cv_model_1.PlayerEvents.PLAYER_LOADED);
         }
     }
-    addEventListener() {
-        this.playerManager.addEventListener(cast.framework.events.EventType.ALL, (event) => {
-            if (event.currentMediaTime) {
-                this.tracking.model.ContentPlaybackState.playheadTime = event.currentMediaTime;
-            }
-            this.tracking.debug && console.log('[Tracking] => ' + event.type, event);
-            this.eventMap[event.type] && this.eventMap[event.type](event);
-        });
-    }
+    // addEventListener(): void {
+    //     this.playerManager.addEventListener(
+    //         cast.framework.events.EventType.ALL,
+    //         (event: any) => {
+    //             if (event.currentMediaTime) {
+    //                 this.tracking.model.ContentPlaybackState.playheadTime = event.currentMediaTime;
+    //             }
+    //
+    //             this.tracking.debug && console.log('[Tracking] => ' + event.type, event);
+    //
+    //             this.eventMap[event.type] && this.eventMap[event.type](event);
+    //         }
+    //     );
+    // }
     onLoadedMetadata(event) {
         // Populate metadata
         this.tracking.model.ContentMetadata.mediaId = 'mediaId';
