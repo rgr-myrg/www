@@ -15,7 +15,7 @@ var uvpc = [
       ]
   },
   {
-  name: 'ADBMobile',
+  name: 'ADBMobileConfig',
   enabled: true,
   'params': [],
   config: {
@@ -54,3 +54,7 @@ var uvpc = [
     }
   }
 }];
+
+// ADBMobile Lib requires config to be available globally before the lib loads.
+
+var ADBMobileConfig = uvpc[1].config;
