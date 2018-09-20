@@ -1,4 +1,4 @@
-var upvc = [
+var uvpc = [
     {
         'name': 'MuxQOSPluginJS',
         'category': 'qos',
