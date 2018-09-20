@@ -87,8 +87,6 @@ let upvc = [
     }
 ];
 
-export = upvc;
-
 // ADBMobile Lib requires config to be available globally before the lib loads.
 
 var ADBMobileConfig = uvpc[1].config;
