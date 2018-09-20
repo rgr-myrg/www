@@ -4580,7 +4580,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var ComscoreVo_1 = __webpack_require__(/*! ./ComscoreVo */ "./node_modules/cv-tracking-comscore/dist/ComscoreVo.js");
 var cv_tracking_core_1 = __webpack_require__(/*! cv-tracking-core */ "./node_modules/cv-tracking-core/dist/index.js");
 var ns_ = __webpack_require__(/*! cv-tracking-comscore */ "./node_modules/cv-tracking-comscore/dist/comscore.js");
-console.log('=====', ns_);
 var ComscoreAgent = /** @class */ (function (_super) {
     __extends(ComscoreAgent, _super);
     function ComscoreAgent() {
@@ -5829,6 +5828,12 @@ class TrackingReceiver {
         this.tracking.model.ContentPlaybackState.duration = 30000;
         this.tracking.model.ResourceConfig.streamType = cv_tracking_api_1.StreamType.VOD;
         this.tracking.model.ContentPlaybackState.cdn = 'Akamai';
+        this.tracking.model.AdItem.adId = 'pre_roll_id';
+        this.tracking.model.AdItem.adDuration = 30;
+        this.tracking.model.ContentMetadata.cmsRefGuid = "cmsRefGuid";
+        this.tracking.model.ContentMetadata.seasonNumber = 5;
+        this.tracking.model.ContentMetadata.episodeNumber = 1;
+        this.tracking.model.ContentPlaybackState.duration = 600;
         this.tracking.notify(cv_tracking_api_1.PlayerEvents.CONTENT_DATA_LOADED);
     }
     onResourceStart(event) {
