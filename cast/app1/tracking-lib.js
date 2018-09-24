@@ -5762,19 +5762,29 @@ exports.ChromecastTracker = ChromecastTracker;
 Object.defineProperty(exports, "__esModule", { value: true });
 const cv_tracking_api_1 = __webpack_require__(/*! cv-tracking-api */ "./node_modules/cv-tracking-api/dist/index.js");
 const ChromecastTracker_1 = __webpack_require__(/*! ./ChromecastTracker */ "./ts/src/ChromecastTracker.ts");
-class TrackingReceiver {
+class TrackingReceiver extends ChromecastTracker_1.ChromecastTracker {
     constructor() {
+        super();
+        //playerManager: any;
+        //tracking: ChromecastTracker;
         this.isBuffering = false;
         this.context = cast.framework.CastReceiverContext.getInstance();
         this.playerManager = this.context.getPlayerManager();
-        this.tracking = new ChromecastTracker_1.ChromecastTracker();
-        this.tracking.debug = true;
-        this.setEventMapping();
-        this.setTrackingConfig();
-        this.setPlayerInfo();
+        // this.tracking = new ChromecastTracker();
+        // this.tracking.debug = true;
+        // this.tracking.playerManager = this.playerManager
+        // this.debug = true;
+        //
+        this.mapToCastEvents();
+        // this.setTrackingConfig();
+        // this.setPlayerInfo();
+        //this.context.start();
+    }
+    startCastReceiverContext() {
+        this.debug && console.log('[Tracking] Starting CastReceiverContext');
         this.context.start();
     }
-    setEventMapping() {
+    mapToCastEvents() {
         this.addEventListeners({
             [cast.framework.events.EventType.LOADED_METADATA]: this.onLoadedMetadata.bind(this),
             [cast.framework.events.EventType.LOAD_START]: this.onResourceStart.bind(this),
@@ -5796,114 +5806,121 @@ class TrackingReceiver {
             this.playerManager.addEventListener(eventType, listeners[eventType]);
         }
     }
-    setTrackingConfig() {
+    setTrackingConfig(uvpc) {
         // Assuming window.uvpc array is already available on the receiver page
-        this.tracking.model.GlobalSettings.uvpc = window.uvpc;
-        this.tracking.notify(cv_tracking_api_1.PlayerEvents.TRACKING_CONFIG_READY);
+        //this.tracking.model.GlobalSettings.uvpc = (<any> window).uvpc;
+        this.model.GlobalSettings.uvpc = uvpc;
+        this.notify(cv_tracking_api_1.PlayerEvents.TRACKING_CONFIG_READY);
     }
-    setPlayerInfo() {
-        this.tracking.model.BuildInfo.playerName = 'playerName';
-        this.tracking.model.BuildInfo.playerVersion = 'playerVersion';
-        let videoElement = document.getElementById('myVideoContainer');
+    setCastMediaElementId(containerId) {
+        // this.tracking.model.BuildInfo.playerName = 'playerName';
+        // this.tracking.model.BuildInfo.playerVersion = 'playerVersion';
+        let videoElement = document.getElementById('containerId');
         if (videoElement) {
-            this.tracking.model.DomElementCollection.video = videoElement;
-            this.tracking.notify(cv_tracking_api_1.PlayerEvents.PLAYER_LOADED);
+            this.model.DomElementCollection.video = videoElement;
+            this.notify(cv_tracking_api_1.PlayerEvents.PLAYER_LOADED);
+        }
+        else {
+            throw ('Error: ' + containerId + ' is not a valid HTMLElement');
         }
     }
     setPlayheadTime(event) {
         if (!event) {
             return;
         }
-        this.tracking.debug && console.log('[Tracking]', event.type, event);
+        this.debug && console.log('[Tracking]', event.type, event);
         if (event.currentMediaTime) {
-            this.tracking.model.ContentPlaybackState.playheadTime = event.currentMediaTime;
+            this.model.ContentPlaybackState.playheadTime = event.currentMediaTime;
         }
     }
     onLoadedMetadata(event) {
         // Populate metadata
-        this.tracking.model.ContentMetadata.mediaId = 'mediaId';
-        this.tracking.model.ContentMetadata.videoTitle = 'videoTitle';
-        this.tracking.model.ContentMetadata.seriesTitle = 'seriesTitle';
-        this.tracking.model.ContentMetadata.episodeFlag = false;
-        this.tracking.model.ContentPlaybackState.duration = 30000;
-        this.tracking.model.ResourceConfig.streamType = cv_tracking_api_1.StreamType.VOD;
-        this.tracking.model.ContentPlaybackState.cdn = 'Akamai';
-        this.tracking.model.AdItem.adId = 'pre_roll_id';
-        this.tracking.model.AdItem.adDuration = 30;
-        this.tracking.model.ContentMetadata.cmsRefGuid = "cmsRefGuid";
-        this.tracking.model.ContentMetadata.seasonNumber = 5;
-        this.tracking.model.ContentMetadata.episodeNumber = 1;
-        this.tracking.model.ContentPlaybackState.duration = 600;
-        this.tracking.notify(cv_tracking_api_1.PlayerEvents.CONTENT_DATA_LOADED);
+        // this.tracking.model.ContentMetadata.mediaId = 'mediaId';
+        // this.tracking.model.ContentMetadata.videoTitle = 'videoTitle';
+        // this.tracking.model.ContentMetadata.seriesTitle = 'seriesTitle';
+        // this.tracking.model.ContentMetadata.episodeFlag = false;
+        // this.tracking.model.ContentPlaybackState.duration = 30000;
+        // this.tracking.model.ResourceConfig.streamType = StreamType.VOD;
+        // this.tracking.model.ContentPlaybackState.cdn = 'Akamai';
+        //
+        // this.tracking.model.AdItem.adId = 'pre_roll_id';
+        // this.tracking.model.AdItem.adDuration = 30;
+        //
+        // this.tracking.model.ContentMetadata.cmsRefGuid = "cmsRefGuid";
+        //
+        // this.tracking.model.ContentMetadata.seasonNumber = 5;
+        // this.tracking.model.ContentMetadata.episodeNumber = 1;
+        // this.tracking.model.ContentPlaybackState.duration = 600;
+        this.notify(cv_tracking_api_1.PlayerEvents.CONTENT_DATA_LOADED);
     }
     onResourceStart(event) {
-        this.tracking.notify(cv_tracking_api_1.PlayerEvents.RESOURCE_START);
+        this.notify(cv_tracking_api_1.PlayerEvents.RESOURCE_START);
     }
     onAdBreakStart() {
-        this.tracking.notify(cv_tracking_api_1.PlayerEvents.AD_BREAK_START);
+        this.notify(cv_tracking_api_1.PlayerEvents.AD_BREAK_START);
     }
     onAdLoaded() {
-        this.tracking.notify(cv_tracking_api_1.PlayerEvents.AD_LOADED);
+        this.notify(cv_tracking_api_1.PlayerEvents.AD_LOADED);
     }
     onAdStart() {
-        this.tracking.notify(cv_tracking_api_1.PlayerEvents.AD_START);
+        this.notify(cv_tracking_api_1.PlayerEvents.AD_START);
     }
     onAdComplete() {
-        this.tracking.notify(cv_tracking_api_1.PlayerEvents.AD_COMPLETE);
+        this.notify(cv_tracking_api_1.PlayerEvents.AD_COMPLETE);
     }
     onAdBreakComplete() {
-        this.tracking.notify(cv_tracking_api_1.PlayerEvents.AD_BREAK_COMPLETE);
+        this.notify(cv_tracking_api_1.PlayerEvents.AD_BREAK_COMPLETE);
     }
     onContentPlaying(event) {
-        this.tracking.notify(cv_tracking_api_1.PlayerEvents.CONTENT_PLAYING);
+        this.notify(cv_tracking_api_1.PlayerEvents.CONTENT_PLAYING);
     }
     onVideoProgress(event) {
         // Only track progress when the playhead is moving
-        if (event.currentMediaTime === this.tracking.model.ContentPlaybackState.playheadTime) {
+        if (event.currentMediaTime === this.model.ContentPlaybackState.playheadTime) {
             return;
         }
         if (this.isBuffering) {
-            this.tracking.notify(cv_tracking_api_1.PlayerEvents.BUFFER_COMPLETE);
+            this.notify(cv_tracking_api_1.PlayerEvents.BUFFER_COMPLETE);
             this.isBuffering = false;
         }
-        this.tracking.notify(cv_tracking_api_1.PlayerEvents.VIDEO_PROGRESS);
+        this.notify(cv_tracking_api_1.PlayerEvents.VIDEO_PROGRESS);
     }
     onContentPause(event) {
-        this.tracking.notify(cv_tracking_api_1.PlayerEvents.CONTENT_PAUSE);
+        this.notify(cv_tracking_api_1.PlayerEvents.CONTENT_PAUSE);
         // if (event && event.ended) {
         //     this.tracking.notify(PlayerEvents.CONTENT_END);
         // }
     }
     onSeekStart(event) {
-        this.tracking.notify(cv_tracking_api_1.PlayerEvents.SEEK_START);
+        this.notify(cv_tracking_api_1.PlayerEvents.SEEK_START);
     }
     onSeekComplete(event) {
-        this.tracking.notify(cv_tracking_api_1.PlayerEvents.SEEK_COMPLETE);
+        this.notify(cv_tracking_api_1.PlayerEvents.SEEK_COMPLETE);
     }
     onContentEnd(event) {
         if (event && event.endedReason && event.endedReason === cast.framework.events.EndedReason.ERROR) {
-            this.tracking.onError({
+            this.onError({
                 code: -1,
                 message: event.endedReason,
                 isFatal: false
             });
         }
-        this.tracking.notify(cv_tracking_api_1.PlayerEvents.CONTENT_END);
+        this.notify(cv_tracking_api_1.PlayerEvents.CONTENT_END);
     }
     onResourceEnd(event) {
-        this.tracking.notify(cv_tracking_api_1.PlayerEvents.RESOURCE_END);
+        this.notify(cv_tracking_api_1.PlayerEvents.RESOURCE_END);
     }
     onBuffering(event) {
         if (!this.isBuffering) {
-            this.tracking.notify(cv_tracking_api_1.PlayerEvents.BUFFER_START);
+            this.notify(cv_tracking_api_1.PlayerEvents.BUFFER_START);
             this.isBuffering = true;
         }
     }
     onBitRateChange(event) {
         if (event.totalBitrate) {
-            this.tracking.model.ContentPlaybackState.playbackBitrate = event.totalBitrate;
+            this.model.ContentPlaybackState.playbackBitrate = event.totalBitrate;
         }
-        this.tracking.notify(cv_tracking_api_1.PlayerEvents.BITRATE_CHANGE);
+        this.notify(cv_tracking_api_1.PlayerEvents.BITRATE_CHANGE);
     }
     onError(event) {
         let code = -1;
@@ -5912,7 +5929,7 @@ class TrackingReceiver {
             code = event.detailedErrorCode;
             msg = event.error.message;
         }
-        this.tracking.onError({
+        this.onError({
             code: code,
             message: msg,
             isFatal: false

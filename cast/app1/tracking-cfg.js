@@ -4,14 +4,8 @@ var uvpc = [
         'category': 'qos',
         'enabled': true,
         'params': [
-            {
-            'name': 'propertyKey',
-            'value': '1778b90ad19424061a4c8920a'
-            },
-            {
-            'name': 'subPropertyId',
-            'value': 'test_sub_property'
-            }
+            {'name': 'propertyKey', 'value': '1778b90ad19424061a4c8920a'},
+            {'name': 'subPropertyId', 'value': 'test_sub_property'}
         ]
     },
     {
@@ -59,34 +53,15 @@ var uvpc = [
         "category": "qos",
         "enabled": true,
         "params": [
-            {
-                "name": "c2",
-                "value": "3002231"
-            },
-            {
-                "name": "c3",
-                "value": "partnerPlaceholder"
-            },
-            {
-                "name": "c4",
-                "value": "contentCreatorPlaceholder"
-            },
-            {
-                "name": "c6",
-                "value": "SeasonNumberEpisodeNumberPlaceholder"
-            },
-            {
-                "name": "partnerID",
-                "value": "cbs"
-            },
-            {
-                "name": "publishersSecret",
-                "value": "2cb08ca4d095dd734a374dff8422c2e5"
-            }
+            {"name": "c2", "value": "3002231"},
+            {"name": "c3", "value": "partnerPlaceholder"},
+            {"name": "c4", "value": "contentCreatorPlaceholder"},
+            {"name": "c6", "value": "SeasonNumberEpisodeNumberPlaceholder"},
+            {"name": "partnerID", "value": "cbs"},
+            {"name": "publishersSecret", "value": "2cb08ca4d095dd734a374dff8422c2e5"}
         ]
     }
 ];
 
-// ADBMobile Lib requires config to be available globally before the lib loads.
-
+// Important: ADBMobile Lib requires config to be available globally before the lib loads.
 var ADBMobileConfig = uvpc[1].config;

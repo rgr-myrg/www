@@ -261,9 +261,9 @@ class UvpCastApi {
 
 //let uvpCastApi = new UvpCastApi();
 
-let trackingReceiver = new TrackingReceiver();
-trackingReceiver.tracking.debug = true;
-console.log('[MAIN]', trackingReceiver.tracking);
+// let trackingReceiver = new TrackingReceiver();
+// trackingReceiver.tracking.debug = true;
+// console.log('[MAIN]', trackingReceiver.tracking);
 
 // let container = document.getElementById('castMediaPlayer');
 // let videoElement = container.P;
