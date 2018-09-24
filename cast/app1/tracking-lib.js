@@ -5815,7 +5815,7 @@ class TrackingReceiver extends ChromecastTracker_1.ChromecastTracker {
     setCastMediaElementId(containerId) {
         // this.tracking.model.BuildInfo.playerName = 'playerName';
         // this.tracking.model.BuildInfo.playerVersion = 'playerVersion';
-        let videoElement = document.getElementById('containerId');
+        let videoElement = document.getElementById(containerId);
         if (videoElement) {
             this.model.DomElementCollection.video = videoElement;
             this.notify(cv_tracking_api_1.PlayerEvents.PLAYER_LOADED);

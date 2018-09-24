@@ -1,7 +1,8 @@
 /*
  * Create an instance of the TrackingReceiver.
- * The TrackingReceiver will retrieve the CastReceiverContext and Cast Player Manager. This allows
- * the Tracking API to attach event listeners to Chromecast events.
+ *
+ * The TrackingReceiver will retrieve the CastReceiverContext and Cast Player Manager from CAF.
+ * This allows the Tracking API to attach event listeners to Chromecast events.
  * The CastReceiverContext and Player Manager can be accessed through the Tracking API
  * tracking.context and tracking.playerManager respectively if needed.
  */
