@@ -34,7 +34,7 @@ tracking.model.ContentPlaybackState.duration = 30000;
 tracking.model.ContentPlaybackState.cdn = 'Akamai';
 tracking.model.ContentPlaybackState.duration = 600;
 
-tracking.model.ResourceConfig.streamType = StreamType.VOD;
+tracking.model.ResourceConfig.streamType = 'VOD';
 
 // tracking.model.AdItem.adId = 'pre_roll_id';
 // tracking.model.AdItem.adDuration = 30;
