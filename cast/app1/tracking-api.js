@@ -39,5 +39,12 @@ tracking.model.ResourceConfig.streamType = 'VOD';
 // tracking.model.AdItem.adId = 'pre_roll_id';
 // tracking.model.AdItem.adDuration = 30;
 
+tracking.playerManager.addEventListener(
+    cast.framework.events.EventType.ALL,
+    event => {
+        console.log('[MAIN][EventType.ALL]', event);
+    }
+);
+
 /* Start the CastReceiverContext for content Playback */
-tracking.startCastReceiverContext();
+//tracking.startCastReceiverContext();
