@@ -39,5 +39,9 @@ tracking.model.ResourceConfig.streamType = 'VOD';
 // tracking.model.AdItem.adId = 'pre_roll_id';
 // tracking.model.AdItem.adDuration = 30;
 
+shaka.net.NetworkingEngine.registerScheme('http', (type, response) => {
+    console.log('shaka', type, response);
+});
+
 /* Start the CastReceiverContext for content Playback */
 tracking.startCastReceiverContext();
