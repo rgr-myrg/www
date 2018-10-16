@@ -41,7 +41,3 @@ tracking.model.ResourceConfig.streamType = 'VOD';
 
 /* Start the CastReceiverContext for content Playback */
 tracking.startCastReceiverContext();
-
-shaka.net.NetworkingEngine.registerScheme('http', (type, response) => {
-    console.log('shaka', type, response);
-});
