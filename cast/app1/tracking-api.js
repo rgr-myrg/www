@@ -47,4 +47,4 @@ tracking.playerManager.addEventListener(
 );
 
 /* Start the CastReceiverContext for content Playback */
-//tracking.startCastReceiverContext();
+tracking.startCastReceiverContext();
