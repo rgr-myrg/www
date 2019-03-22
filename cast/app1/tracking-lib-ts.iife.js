@@ -716,7 +716,7 @@ var Tracker = /** @class */ (function (_super) {
         // Modules list can be created at build time based on the tracking config (uvpc)
         // Or supplied at run time.
         _this.modules = [AdobeAgent, MuxAgent];
-        _this.version = 'tracking-lib-ts v0.0.13 Fri, 22 Mar 2019 14:15:33 GMT';
+        _this.version = 'tracking-lib-ts v0.0.13 Fri, 22 Mar 2019 14:50:50 GMT';
         _this.registrar = new Registrar(_this);
         return _this;
     }
@@ -904,7 +904,7 @@ var ChromecastTracker = /** @class */ (function (_super) {
     }
     ChromecastTracker.prototype.onCastEvent = function (castEventListener) {
         this.castEventListener = castEventListener;
-        this.playerManager.addEventListener(cast.events.EventType.ALL, this.onCastEventReceived.bind(this));
+        this.playerManager.addEventListener(cast.framework.events.EventType.ALL, this.onCastEventReceived.bind(this));
     };
     ChromecastTracker.prototype.onCastEventReceived = function (event) {
         if (!event) {
@@ -913,7 +913,7 @@ var ChromecastTracker = /** @class */ (function (_super) {
         if (event.currentMediaTime) {
             this.playheadTime = event.currentMediaTime;
         }
-        var EventType = cast.events.EventType;
+        var EventType = cast.framework.events.EventType;
         switch (event.type) {
             case EventType.BUFFERING:
                 if (!this.isBuffering) {
