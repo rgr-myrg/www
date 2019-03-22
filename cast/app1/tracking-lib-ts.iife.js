@@ -716,7 +716,7 @@ var Tracker = /** @class */ (function (_super) {
         // Modules list can be created at build time based on the tracking config (uvpc)
         // Or supplied at run time.
         _this.modules = [AdobeAgent, MuxAgent];
-        _this.version = 'tracking-lib-ts v0.0.13 Fri, 22 Mar 2019 19:05:57 GMT';
+        _this.version = 'tracking-lib-ts v0.0.13 Fri, 22 Mar 2019 19:37:26 GMT';
         _this.registrar = new Registrar(_this);
         return _this;
     }
@@ -830,6 +830,10 @@ var TrackingAgent = /** @class */ (function () {
         this.isDebug() && this.logger.log(this.config.name, notification);
         this.notification = notification;
         this.checkForAdPlay();
+        // Sync the playhead on every notification
+        if (this.metadataVo) {
+            this.metadataVo.playheadTime = this.getPlayheadTime();
+        }
         switch (notification.name) {
             case AppEvent.SessionStart:
                 if (notification.body) {
@@ -906,16 +910,12 @@ var ChromecastTracker = /** @class */ (function (_super) {
         var _this = this;
         this.playerManager.addEventListener(cast.framework.events.EventType.ALL, function (event) {
             _this.processCastEvent(event);
-            console.log('[Tracker]', event, _this.playheadTime);
             castEventCallback(event);
         });
     };
     ChromecastTracker.prototype.processCastEvent = function (event) {
         if (!event) {
             return;
-        }
-        if (event.currentMediaTime) {
-            this.playheadTime = event.currentMediaTime;
         }
         var EventType = cast.framework.events.EventType;
         switch (event.type) {
@@ -926,6 +926,9 @@ var ChromecastTracker = /** @class */ (function (_super) {
                 }
                 break;
             case EventType.TIME_UPDATE:
+                if (event.currentMediaTime) {
+                    this.playheadTime = event.currentMediaTime;
+                }
                 if (this.isBuffering) {
                     this.isBuffering = false;
                     this.track(AppEvent.BufferEnd);
@@ -979,14 +982,14 @@ var ChromecastTracker = /** @class */ (function (_super) {
                 break;
         }
     };
-    ChromecastTracker.prototype.setPlayheadTime = function (event) {
-        if (!event) {
-            return;
-        }
-        if (event.currentMediaTime) {
-            this.playheadTime = event.currentMediaTime;
-        }
-    };
+    // setPlayheadTime(event: CastEvent): void {
+    //     if (!event) {
+    //         return;
+    //     }
+    //     if (event.currentMediaTime) {
+    //         this.playheadTime = event.currentMediaTime;
+    //     }
+    // }
     ChromecastTracker.prototype.onPlayerError = function (event) {
         if (event && event.endedReason && event.endedReason === cast.framework.events.EndedReason.ERROR) {
             this.track(AppEvent.PlayerError, {
@@ -1215,6 +1218,7 @@ var AdobeVo = /** @class */ (function (_super) {
             eventType: eventName,
             playerTime: {
                 playhead: metadata.playheadTime,
+                //playhead: this.agent.getPlayheadTime(),
                 ts: (new Date()).getTime()
             },
             params: params
