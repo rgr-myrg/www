@@ -716,13 +716,13 @@ var Tracker = /** @class */ (function (_super) {
         // Modules list can be created at build time based on the tracking config (uvpc)
         // Or supplied at run time.
         _this.modules = [AdobeAgent, MuxAgent];
-        _this.version = 'tracking-lib-ts v0.0.13 Fri, 22 Mar 2019 20:59:34 GMT';
+        _this.version = 'tracking-lib-ts v0.0.13 Fri, 22 Mar 2019 22:07:02 GMT';
         _this.registrar = new Registrar(_this);
         return _this;
     }
     Tracker.prototype.track = function (eventName, data) {
         data = typeof data === 'object' && data ? data : {};
-        data.playheadTime = this.getPlayheadTime();
+        //data.playheadTime = this.getPlayheadTime();
         data.timestamp = (new Date()).getTime();
         this.isDebug() && this.logger.log('Tracker', eventName, data);
         _super.prototype.notify.call(this, { name: eventName, body: data });
@@ -734,16 +734,16 @@ var Tracker = /** @class */ (function (_super) {
     Tracker.prototype.setPlayerId = function (playerId) {
         this.playerId = playerId;
     };
-    Tracker.prototype.setPlayheadDelegate = function (getPlayheadTime) {
-        this.getPlayheadTime = function () {
-            var position = getPlayheadTime();
-            if (isNaN(position)) {
-                throw 'Error: Playhead isNaN';
-            }
-            return position;
-        };
-        _super.prototype.notify.call(this, { name: AppEvent.PlayheadTime, body: this.getPlayheadTime });
-    };
+    // setPlayheadDelegate(getPlayheadTime: Function): void {
+    //     this.getPlayheadTime = (): number => {
+    //         const position: number = getPlayheadTime();
+    //         if (isNaN(position)) {
+    //             throw 'Error: Playhead isNaN';
+    //         }
+    //         return position;
+    //     };
+    //     super.notify({name: AppEvent.PlayheadTime, body: this.getPlayheadTime});
+    // }
     Tracker.prototype.setContextData = function (data) {
         _super.prototype.notify.call(this, { name: AppEvent.ContextData, body: data });
     };
@@ -754,9 +754,9 @@ var Tracker = /** @class */ (function (_super) {
         Log.getDefault().setLogger(logger);
         this.logger = Log.getDefault().getLogger();
     };
-    Tracker.prototype.getPlayheadTime = function () {
-        return -1;
-    };
+    // getPlayheadTime(): number {
+    //     return -1;
+    // }
     Tracker.prototype.isDebug = function () {
         return this.debug && this.logger ? true : false;
     };
@@ -799,6 +799,8 @@ var TrackingAgent = /** @class */ (function () {
         this.hasSdk = false;
         this.contextData = {};
         this.liveSegmentData = {};
+        //playheadTime: number = -1;
+        //getPlayheadTime!: Function;
         this.isAdPlaying = false;
         this.logger = Log.getDefault().getLogger();
         this.debug = config.hasOwnProperty('debug') && config.debug;
@@ -831,9 +833,9 @@ var TrackingAgent = /** @class */ (function () {
         this.notification = notification;
         this.checkForAdPlay();
         // Sync the playhead on every notification
-        if (this.metadataVo) {
-            this.metadataVo.playheadTime = this.getPlayheadTime();
-        }
+        // if (this.metadataVo) {
+        //     this.metadataVo.playheadTime = this.playheadTime;
+        // }
         switch (notification.name) {
             case AppEvent.SessionStart:
                 if (notification.body) {
@@ -850,9 +852,14 @@ var TrackingAgent = /** @class */ (function () {
             case AppEvent.ContextData:
                 this.contextData = notification.body;
                 break;
-            case AppEvent.PlayheadTime:
-                this.getPlayheadTime = notification.body;
+            case AppEvent.VideoProgress:
+                if (this.metadataVo) {
+                    this.metadataVo.playheadTime = notification.body.playheadTime;
+                }
                 break;
+            // case AppEvent.PlayheadTime:
+            //     this.playheadTime = <Function> notification.body;
+            //     break;
             case AppEvent.LiveSegmentStart:
                 this.liveSegmentData = notification.body;
                 break;
@@ -895,7 +902,7 @@ var ChromecastTracker = /** @class */ (function (_super) {
     __extends(ChromecastTracker, _super);
     function ChromecastTracker() {
         var _this = _super.call(this) || this;
-        _this.playheadTime = -1;
+        //playheadTime: number = -1;
         _this.isBuffering = false;
         _this.isAdPlaying = false;
         _this.isPaused = false;
@@ -903,10 +910,10 @@ var ChromecastTracker = /** @class */ (function (_super) {
         _this.context = cast.framework.CastReceiverContext.getInstance();
         _this.playerManager = _this.context.getPlayerManager();
         _this.playerManager.addEventListener(cast.framework.events.EventType.ALL, _this.processCastEvent.bind(_this));
-        _this.setPlayheadDelegate(function () {
-            return _this.playheadTime;
-        });
         return _this;
+        // this.setPlayheadDelegate(() => {
+        //     return this.playheadTime;
+        // });
     }
     ChromecastTracker.prototype.on = function (eventName, data) {
         this.eventData[eventName] = data;
@@ -943,7 +950,8 @@ var ChromecastTracker = /** @class */ (function (_super) {
                 break;
             case EventType.TIME_UPDATE:
                 if (event.currentMediaTime) {
-                    this.playheadTime = event.currentMediaTime;
+                    //this.playheadTime = event.currentMediaTime;
+                    this.track(AppEvent.VideoProgress, { playheadTime: event.currentMediaTime });
                 }
                 if (this.isBuffering) {
                     this.isBuffering = false;
@@ -1234,7 +1242,6 @@ var AdobeVo = /** @class */ (function (_super) {
             eventType: eventName,
             playerTime: {
                 playhead: metadata.playheadTime,
-                //playhead: this.agent.getPlayheadTime(),
                 ts: (new Date()).getTime()
             },
             params: params
