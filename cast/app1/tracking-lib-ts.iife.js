@@ -716,7 +716,7 @@ var Tracker = /** @class */ (function (_super) {
         // Modules list can be created at build time based on the tracking config (uvpc)
         // Or supplied at run time.
         _this.modules = [AdobeAgent, MuxAgent];
-        _this.version = 'tracking-lib-ts v0.0.13 Fri, 22 Mar 2019 22:07:02 GMT';
+        _this.version = 'tracking-lib-ts v0.0.13 Fri, 22 Mar 2019 22:17:55 GMT';
         _this.registrar = new Registrar(_this);
         return _this;
     }
@@ -1241,7 +1241,7 @@ var AdobeVo = /** @class */ (function (_super) {
         return {
             eventType: eventName,
             playerTime: {
-                playhead: metadata.playheadTime,
+                playhead: metadata && metadata.playheadTime ? metadata.playheadTime : -1,
                 ts: (new Date()).getTime()
             },
             params: params
