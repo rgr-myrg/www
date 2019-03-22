@@ -716,7 +716,7 @@ var Tracker = /** @class */ (function (_super) {
         // Modules list can be created at build time based on the tracking config (uvpc)
         // Or supplied at run time.
         _this.modules = [AdobeAgent, MuxAgent];
-        _this.version = 'tracking-lib-ts v0.0.13 Fri, 22 Mar 2019 18:42:06 GMT';
+        _this.version = 'tracking-lib-ts v0.0.13 Fri, 22 Mar 2019 19:05:57 GMT';
         _this.registrar = new Registrar(_this);
         return _this;
     }
@@ -903,14 +903,14 @@ var ChromecastTracker = /** @class */ (function (_super) {
         return _this;
     }
     ChromecastTracker.prototype.onCastEvent = function (castEventCallback) {
-        //this.castEventListener = castEventListener;
         var _this = this;
         this.playerManager.addEventListener(cast.framework.events.EventType.ALL, function (event) {
+            _this.processCastEvent(event);
             console.log('[Tracker]', event, _this.playheadTime);
             castEventCallback(event);
         });
     };
-    ChromecastTracker.prototype.onCastEventReceived = function (event) {
+    ChromecastTracker.prototype.processCastEvent = function (event) {
         if (!event) {
             return;
         }
@@ -978,7 +978,6 @@ var ChromecastTracker = /** @class */ (function (_super) {
                 this.onPlayerError(event);
                 break;
         }
-        //    this.castEventListener(event);
     };
     ChromecastTracker.prototype.setPlayheadTime = function (event) {
         if (!event) {
@@ -1000,20 +999,6 @@ var ChromecastTracker = /** @class */ (function (_super) {
     return ChromecastTracker;
 }(Tracker));
 exports.ChromecastTracker = ChromecastTracker;
-// const tracker: ChromecastTracker = new ChromecastTracker();
-// tracker.setConfig({});
-// tracker.onCastEvent((event: CastEvent) => {
-//     switch (event.type) {
-//         case cast.events.EventType.LOAD_START:
-//             this.track('sessionStart', {
-//             });
-//             break;
-//         case cast.events.EventType.CLIP_STARTED:
-//             this.track('contentStart', {
-//             });
-//             break;
-//     }
-// });
 var AdobeAgent = /** @class */ (function (_super) {
     __extends(AdobeAgent, _super);
     function AdobeAgent() {
