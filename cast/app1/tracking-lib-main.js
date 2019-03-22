@@ -66,5 +66,5 @@ tracker.setContextData({
 // });
 
 tracker.onCastEvent(event => {
-    console.console.log('[#####]', event);
+    console.log('[#####]', event);
 });
