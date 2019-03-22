@@ -39,28 +39,28 @@ tracker.setContextData({
     visitorId: '<your-visitor-id>'
 });
 
-tracker.onCastEvent(event => {
-    switch (event.type) {
-        case cast.events.EventType.LOAD_START:
-            this.track('sessionStart', {
-                playerInitTime: (new Date()).getTime(),
-                playerName: '<your-player-name>',
-                playerVersion: '<your-player-version>',
-                sessionId: '<your-session-id>',
-                videoElement: document.getElementById('castMediaElementId')
-            });
-            break;
-
-        case cast.events.EventType.CLIP_STARTED:
-            this.track('contentStart', {
-                assetURL: 'cbs.com/shows',
-                duration: 5000,
-                mediaId: 'aaEb-cF09-0g17-r63t',
-                videoTitle: 'CBS Sports - Superbowl',
-                seriesTitle: 'Superbowl',
-                isLive: false,
-                episodeFlag: false
-            });
-            break;
-    }
-});
+// tracker.onCastEvent(event => {
+//     switch (event.type) {
+//         case cast.events.EventType.LOAD_START:
+//             this.track('sessionStart', {
+//                 playerInitTime: (new Date()).getTime(),
+//                 playerName: '<your-player-name>',
+//                 playerVersion: '<your-player-version>',
+//                 sessionId: '<your-session-id>',
+//                 videoElement: document.getElementById('castMediaElementId')
+//             });
+//             break;
+//
+//         case cast.events.EventType.CLIP_STARTED:
+//             this.track('contentStart', {
+//                 assetURL: 'cbs.com/shows',
+//                 duration: 5000,
+//                 mediaId: 'aaEb-cF09-0g17-r63t',
+//                 videoTitle: 'CBS Sports - Superbowl',
+//                 seriesTitle: 'Superbowl',
+//                 isLive: false,
+//                 episodeFlag: false
+//             });
+//             break;
+//     }
+// });
