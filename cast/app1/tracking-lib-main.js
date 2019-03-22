@@ -64,3 +64,5 @@ tracker.setContextData({
 //             break;
 //     }
 // });
+
+tracker.onCastEvent(event => {});
