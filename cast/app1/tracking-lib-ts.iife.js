@@ -716,7 +716,7 @@ var Tracker = /** @class */ (function (_super) {
         // Modules list can be created at build time based on the tracking config (uvpc)
         // Or supplied at run time.
         _this.modules = [AdobeAgent, MuxAgent];
-        _this.version = 'tracking-lib-ts v0.0.13 Fri, 22 Mar 2019 19:37:26 GMT';
+        _this.version = 'tracking-lib-ts v0.0.13 Fri, 22 Mar 2019 20:59:34 GMT';
         _this.registrar = new Registrar(_this);
         return _this;
     }
@@ -899,19 +899,29 @@ var ChromecastTracker = /** @class */ (function (_super) {
         _this.isBuffering = false;
         _this.isAdPlaying = false;
         _this.isPaused = false;
+        _this.eventData = {};
         _this.context = cast.framework.CastReceiverContext.getInstance();
         _this.playerManager = _this.context.getPlayerManager();
+        _this.playerManager.addEventListener(cast.framework.events.EventType.ALL, _this.processCastEvent.bind(_this));
         _this.setPlayheadDelegate(function () {
             return _this.playheadTime;
         });
         return _this;
     }
-    ChromecastTracker.prototype.onCastEvent = function (castEventCallback) {
-        var _this = this;
-        this.playerManager.addEventListener(cast.framework.events.EventType.ALL, function (event) {
-            _this.processCastEvent(event);
-            castEventCallback(event);
-        });
+    ChromecastTracker.prototype.on = function (eventName, data) {
+        this.eventData[eventName] = data;
+    };
+    // onCastEvent(castEventCallback: Function): void {
+    //     this.playerManager.addEventListener(
+    //         cast.framework.events.EventType.ALL,
+    //         (event: CastEvent): void => {
+    //             this.processCastEvent(event);
+    //             castEventCallback(event);
+    //         }
+    //     );
+    // }
+    ChromecastTracker.prototype.trackData = function (name) {
+        this.track(name, this.eventData[name]);
     };
     ChromecastTracker.prototype.processCastEvent = function (event) {
         if (!event) {
@@ -919,6 +929,12 @@ var ChromecastTracker = /** @class */ (function (_super) {
         }
         var EventType = cast.framework.events.EventType;
         switch (event.type) {
+            case EventType.LOAD_START:
+                this.trackData(AppEvent.SessionStart);
+                break;
+            case EventType.CLIP_STARTED:
+                this.trackData(AppEvent.ContentStart);
+                break;
             case EventType.BUFFERING:
                 if (!this.isBuffering) {
                     this.isBuffering = true;
