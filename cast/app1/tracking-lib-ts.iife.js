@@ -716,7 +716,7 @@ var Tracker = /** @class */ (function (_super) {
         // Modules list can be created at build time based on the tracking config (uvpc)
         // Or supplied at run time.
         _this.modules = [AdobeAgent, MuxAgent];
-        _this.version = 'tracking-lib-ts v0.0.13 Fri, 22 Mar 2019 22:17:55 GMT';
+        _this.version = 'tracking-lib-ts v0.0.13 Sat, 23 Mar 2019 22:33:06 GMT';
         _this.registrar = new Registrar(_this);
         return _this;
     }
@@ -902,118 +902,106 @@ var ChromecastTracker = /** @class */ (function (_super) {
     __extends(ChromecastTracker, _super);
     function ChromecastTracker() {
         var _this = _super.call(this) || this;
-        //playheadTime: number = -1;
         _this.isBuffering = false;
         _this.isAdPlaying = false;
         _this.isPaused = false;
-        _this.eventData = {};
+        _this.eventDataMap = {};
         _this.context = cast.framework.CastReceiverContext.getInstance();
         _this.playerManager = _this.context.getPlayerManager();
-        _this.playerManager.addEventListener(cast.framework.events.EventType.ALL, _this.processCastEvent.bind(_this));
+        // this.playerManager.addEventListener(
+        //     cast.framework.events.EventType.ALL,
+        //     this.processCastEvent.bind(this)
+        // );
+        _this.addEventListeners();
         return _this;
-        // this.setPlayheadDelegate(() => {
-        //     return this.playheadTime;
-        // });
     }
+    ChromecastTracker.prototype.addEventListeners = function () {
+        var _this = this;
+        var _a;
+        var type = cast.framework.events.EventType;
+        var eventMap = (_a = {},
+            _a[type.LOAD_START] = this.onLoadStart,
+            _a[type.CLIP_STARTED] = this.onClipStarted,
+            _a[type.BUFFERING] = this.onBuffering,
+            _a[type.TIME_UPDATE] = this.onTimeUpdate,
+            _a[type.BREAK_CLIP_STARTED] = this.onBreakClipStarted,
+            _a[type.BREAK_CLIP_ENDED] = this.onBreakClipEnded,
+            _a[type.BREAK_ENDED] = this.onBreakEnded,
+            _a[type.PLAYING] = this.onPlaying,
+            _a[type.PAUSE] = this.onPause,
+            _a[type.SEEKING] = this.onSeeking,
+            _a[type.SEEKED] = this.onSeeked,
+            _a[type.BITRATE_CHANGED] = this.onBitRateChanged,
+            _a[type.CLIP_ENDED] = this.onClipEnded,
+            _a[type.MEDIA_FINISHED] = this.onMediaFinished,
+            _a[type.ERROR] = this.onPlayerError,
+            _a);
+        Object.keys(eventMap).forEach(function (key) {
+            _this.playerManager.addEventListener(key, eventMap[key].bind(_this));
+        });
+    };
     ChromecastTracker.prototype.on = function (eventName, data) {
-        this.eventData[eventName] = data;
+        this.eventDataMap[eventName] = data;
     };
-    // onCastEvent(castEventCallback: Function): void {
-    //     this.playerManager.addEventListener(
-    //         cast.framework.events.EventType.ALL,
-    //         (event: CastEvent): void => {
-    //             this.processCastEvent(event);
-    //             castEventCallback(event);
-    //         }
-    //     );
-    // }
-    ChromecastTracker.prototype.trackData = function (name) {
-        this.track(name, this.eventData[name]);
+    ChromecastTracker.prototype.onLoadStart = function (_e) {
+        this.trackWithDataMap(AppEvent.SessionStart);
     };
-    ChromecastTracker.prototype.processCastEvent = function (event) {
-        if (!event) {
-            return;
-        }
-        var EventType = cast.framework.events.EventType;
-        switch (event.type) {
-            case EventType.LOAD_START:
-                this.trackData(AppEvent.SessionStart);
-                break;
-            case EventType.CLIP_STARTED:
-                this.trackData(AppEvent.ContentStart);
-                break;
-            case EventType.BUFFERING:
-                if (!this.isBuffering) {
-                    this.isBuffering = true;
-                    this.track(AppEvent.BufferStart);
-                }
-                break;
-            case EventType.TIME_UPDATE:
-                if (event.currentMediaTime) {
-                    //this.playheadTime = event.currentMediaTime;
-                    this.track(AppEvent.VideoProgress, { playheadTime: event.currentMediaTime });
-                }
-                if (this.isBuffering) {
-                    this.isBuffering = false;
-                    this.track(AppEvent.BufferEnd);
-                }
-                break;
-            case EventType.BREAK_CLIP_STARTED:
-                this.isAdPlaying = true;
-                break;
-            case EventType.BREAK_CLIP_ENDED:
-                this.isAdPlaying = false;
-                this.track(AppEvent.AdEnd);
-                break;
-            case EventType.BREAK_ENDED:
-                this.isAdPlaying = false;
-                this.track(AppEvent.AdBreakEnd);
-                break;
-            case EventType.CLIP_STARTED:
-                break;
-            case EventType.PLAYING:
-                if (this.isPaused) {
-                    this.isPaused = false;
-                    this.track(this.isAdPlaying ? AppEvent.AdResume : AppEvent.ContentResume);
-                }
-                break;
-            case EventType.PAUSE:
-                if (!this.isPaused) {
-                    this.isPaused = true;
-                    this.track(this.isAdPlaying ? AppEvent.AdPause : AppEvent.ContentPause);
-                }
-                break;
-            case EventType.PROGRESS:
-                this.track(AppEvent.VideoProgress);
-                break;
-            case EventType.SEEKING:
-                this.track(AppEvent.SeekStart);
-                break;
-            case EventType.SEEKED:
-                this.track(AppEvent.SeekEnd);
-                break;
-            case EventType.BITRATE_CHANGED:
-                this.track(AppEvent.BitrateChange, { currentBitrate: event.totalBitrate });
-                break;
-            case EventType.CLIP_ENDED:
-                this.track(AppEvent.ContentEnd);
-                break;
-            case EventType.MEDIA_FINISHED:
-                this.track(AppEvent.SessionEnd);
-                break;
-            case EventType.ERROR:
-                this.onPlayerError(event);
-                break;
+    ChromecastTracker.prototype.onClipStarted = function (_e) {
+        this.trackWithDataMap(AppEvent.ContentStart);
+    };
+    ChromecastTracker.prototype.onBuffering = function (_e) {
+        if (!this.isBuffering) {
+            this.isBuffering = true;
+            this.track(AppEvent.BufferStart);
         }
     };
-    // setPlayheadTime(event: CastEvent): void {
-    //     if (!event) {
-    //         return;
-    //     }
-    //     if (event.currentMediaTime) {
-    //         this.playheadTime = event.currentMediaTime;
-    //     }
-    // }
+    ChromecastTracker.prototype.onTimeUpdate = function (e) {
+        if (e.currentMediaTime) {
+            this.track(AppEvent.VideoProgress, { playheadTime: e.currentMediaTime });
+        }
+        if (this.isBuffering) {
+            this.isBuffering = false;
+            this.track(AppEvent.BufferEnd);
+        }
+    };
+    ChromecastTracker.prototype.onBreakClipStarted = function (_e) {
+        this.isAdPlaying = true;
+    };
+    ChromecastTracker.prototype.onBreakClipEnded = function (_e) {
+        this.isAdPlaying = false;
+        this.track(AppEvent.AdEnd);
+    };
+    ChromecastTracker.prototype.onBreakEnded = function (_e) {
+        this.isAdPlaying = false;
+        this.track(AppEvent.AdBreakEnd);
+    };
+    ChromecastTracker.prototype.onPlaying = function (_e) {
+        if (this.isPaused) {
+            this.isPaused = false;
+            this.track(this.isAdPlaying ? AppEvent.AdResume : AppEvent.ContentResume);
+        }
+    };
+    ChromecastTracker.prototype.onPause = function (_e) {
+        if (!this.isPaused) {
+            this.isPaused = true;
+            this.track(this.isAdPlaying ? AppEvent.AdPause : AppEvent.ContentPause);
+        }
+    };
+    ChromecastTracker.prototype.onSeeking = function (_e) {
+        this.track(AppEvent.SeekStart);
+    };
+    ChromecastTracker.prototype.onSeeked = function (_e) {
+        this.track(AppEvent.SeekEnd);
+    };
+    ChromecastTracker.prototype.onBitRateChanged = function (e) {
+        this.track(AppEvent.BitrateChange, { currentBitrate: e.totalBitrate });
+    };
+    ChromecastTracker.prototype.onClipEnded = function (_e) {
+        this.track(AppEvent.ContentEnd);
+    };
+    ChromecastTracker.prototype.onMediaFinished = function (_e) {
+        this.track(AppEvent.SessionEnd);
+    };
     ChromecastTracker.prototype.onPlayerError = function (event) {
         if (event && event.endedReason && event.endedReason === cast.framework.events.EndedReason.ERROR) {
             this.track(AppEvent.PlayerError, {
@@ -1022,6 +1010,9 @@ var ChromecastTracker = /** @class */ (function (_super) {
                 isFatal: false
             });
         }
+    };
+    ChromecastTracker.prototype.trackWithDataMap = function (name) {
+        this.track(name, this.eventDataMap[name]);
     };
     return ChromecastTracker;
 }(Tracker));

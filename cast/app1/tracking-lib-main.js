@@ -20,7 +20,7 @@
         }
     },
     Adobe: {
-        enabled: true,
+        enabled: false,
         params: {
             prodApiServer: 'cbs-stage.hb-api.omtrdc.net',
             devApiServer: 'cbs-dev.hb-api.omtrdc.net',
@@ -38,32 +38,6 @@ tracker.setContextData({
     userId: '<your-user-id>',
     visitorId: '<your-visitor-id>'
 });
-
-// tracker.onCastEvent(event => {
-//     switch (event.type) {
-//         case cast.events.EventType.LOAD_START:
-//             tracker.track('sessionStart', {
-//                 playerInitTime: (new Date()).getTime(),
-//                 playerName: '<your-player-name>',
-//                 playerVersion: '<your-player-version>',
-//                 sessionId: '<your-session-id>',
-//                 videoElement: document.getElementById('castMediaElementId')
-//             });
-//             break;
-// 
-//         case cast.events.EventType.CLIP_STARTED:
-//             tracker.track('contentStart', {
-//                 assetURL: 'cbs.com/shows',
-//                 duration: 5000,
-//                 mediaId: 'aaEb-cF09-0g17-r63t',
-//                 videoTitle: 'CBS Sports - Superbowl',
-//                 seriesTitle: 'Superbowl',
-//                 isLive: false,
-//                 episodeFlag: false
-//             });
-//             break;
-//     }
-// });
 
 tracker.on('sessionStart', {
     playerInitTime: (new Date()).getTime(),
