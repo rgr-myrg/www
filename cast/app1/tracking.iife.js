@@ -716,7 +716,7 @@ var Tracker = /** @class */ (function (_super) {
         // Modules list can be created at build time based on the tracking config (uvpc)
         // Or supplied at run time.
         _this.modules = [AdobeAgent, MuxAgent];
-        _this.version = 'tracking v0.0.14 Sun, 24 Mar 2019 22:05:03 GMT';
+        _this.version = 'tracking v0.0.14 Sun, 24 Mar 2019 22:20:54 GMT';
         _this.registrar = new Registrar(_this);
         return _this;
     }
@@ -876,7 +876,7 @@ var ChromecastTracker = /** @class */ (function (_super) {
         _this.isBuffering = false;
         _this.isAdPlaying = false;
         _this.isPaused = false;
-        _this.eventDataMap = {};
+        _this.eventCallback = {};
         _this.context = cast.framework.CastReceiverContext.getInstance();
         _this.playerManager = _this.context.getPlayerManager();
         _this.addEventListeners();
@@ -908,7 +908,7 @@ var ChromecastTracker = /** @class */ (function (_super) {
         });
     };
     ChromecastTracker.prototype.on = function (eventName, callback) {
-        this.eventDataMap[eventName] = callback;
+        this.eventCallback[eventName] = callback;
     };
     ChromecastTracker.prototype.onLoadStart = function (_e) {
         this.trackEvent(AppEvent.SessionStart, { playerManager: this.playerManager });
@@ -982,12 +982,12 @@ var ChromecastTracker = /** @class */ (function (_super) {
     ChromecastTracker.prototype.trackEvent = function (name, data) {
         var payload = data || {};
         // Merge data from callback
-        if (typeof this.eventDataMap[name] === 'function') {
-            var eventData_1 = this.eventDataMap[name]();
+        if (typeof this.eventCallback[name] === 'function') {
+            var eventData_1 = this.eventCallback[name]();
             Object.keys(eventData_1).forEach(function (key) {
                 payload[key] = eventData_1[key];
             });
-            delete this.eventDataMap[name];
+            delete this.eventCallback[name];
         }
         // Sync up the tracker with the latest playhead position on every event
         payload.playheadTime = this.playheadTime;
