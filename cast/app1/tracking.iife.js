@@ -599,6 +599,9 @@ var PlayerInfoVo = /** @class */ (function (_super) {
     ], PlayerInfoVo.prototype, "userId", void 0);
     __decorate([
         Data()
+    ], PlayerInfoVo.prototype, "playerManager", void 0);
+    __decorate([
+        Data()
     ], PlayerInfoVo.prototype, "videoElement", void 0);
     return PlayerInfoVo;
 }(DataAccess));
@@ -713,7 +716,7 @@ var Tracker = /** @class */ (function (_super) {
         // Modules list can be created at build time based on the tracking config (uvpc)
         // Or supplied at run time.
         _this.modules = [AdobeAgent, MuxAgent];
-        _this.version = 'tracking v0.0.13 Sun, 24 Mar 2019 21:21:45 GMT';
+        _this.version = 'tracking v0.0.14 Sun, 24 Mar 2019 22:05:03 GMT';
         _this.registrar = new Registrar(_this);
         return _this;
     }
@@ -904,11 +907,11 @@ var ChromecastTracker = /** @class */ (function (_super) {
             _this.playerManager.addEventListener(key, eventMap[key].bind(_this));
         });
     };
-    ChromecastTracker.prototype.on = function (eventName, data) {
-        this.eventDataMap[eventName] = data;
+    ChromecastTracker.prototype.on = function (eventName, callback) {
+        this.eventDataMap[eventName] = callback;
     };
     ChromecastTracker.prototype.onLoadStart = function (_e) {
-        this.trackEvent(AppEvent.SessionStart);
+        this.trackEvent(AppEvent.SessionStart, { playerManager: this.playerManager });
     };
     ChromecastTracker.prototype.onClipStarted = function (_e) {
         this.trackEvent(AppEvent.ContentStart);
@@ -977,7 +980,15 @@ var ChromecastTracker = /** @class */ (function (_super) {
         }
     };
     ChromecastTracker.prototype.trackEvent = function (name, data) {
-        var payload = data || this.eventDataMap[name] || {};
+        var payload = data || {};
+        // Merge data from callback
+        if (typeof this.eventDataMap[name] === 'function') {
+            var eventData_1 = this.eventDataMap[name]();
+            Object.keys(eventData_1).forEach(function (key) {
+                payload[key] = eventData_1[key];
+            });
+            delete this.eventDataMap[name];
+        }
         // Sync up the tracker with the latest playhead position on every event
         payload.playheadTime = this.playheadTime;
         _super.prototype.track.call(this, name, payload);
