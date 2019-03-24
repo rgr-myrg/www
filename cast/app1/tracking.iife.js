@@ -425,9 +425,6 @@ var MetadataVo = /** @class */ (function (_super) {
         Data(false)
     ], MetadataVo.prototype, "ozTamOptOut", void 0);
     __decorate([
-        Data(-1)
-    ], MetadataVo.prototype, "playheadTime", void 0);
-    __decorate([
         Data()
     ], MetadataVo.prototype, "playbackFramerate", void 0);
     __decorate([
@@ -716,13 +713,12 @@ var Tracker = /** @class */ (function (_super) {
         // Modules list can be created at build time based on the tracking config (uvpc)
         // Or supplied at run time.
         _this.modules = [AdobeAgent, MuxAgent];
-        _this.version = 'tracking-lib-ts v0.0.13 Sat, 23 Mar 2019 22:33:06 GMT';
+        _this.version = 'tracking v0.0.13 Sun, 24 Mar 2019 21:21:45 GMT';
         _this.registrar = new Registrar(_this);
         return _this;
     }
     Tracker.prototype.track = function (eventName, data) {
-        data = typeof data === 'object' && data ? data : {};
-        //data.playheadTime = this.getPlayheadTime();
+        data = data || {};
         data.timestamp = (new Date()).getTime();
         this.isDebug() && this.logger.log('Tracker', eventName, data);
         _super.prototype.notify.call(this, { name: eventName, body: data });
@@ -731,19 +727,6 @@ var Tracker = /** @class */ (function (_super) {
         this.config = config;
         this.registrar.registerAgents();
     };
-    Tracker.prototype.setPlayerId = function (playerId) {
-        this.playerId = playerId;
-    };
-    // setPlayheadDelegate(getPlayheadTime: Function): void {
-    //     this.getPlayheadTime = (): number => {
-    //         const position: number = getPlayheadTime();
-    //         if (isNaN(position)) {
-    //             throw 'Error: Playhead isNaN';
-    //         }
-    //         return position;
-    //     };
-    //     super.notify({name: AppEvent.PlayheadTime, body: this.getPlayheadTime});
-    // }
     Tracker.prototype.setContextData = function (data) {
         _super.prototype.notify.call(this, { name: AppEvent.ContextData, body: data });
     };
@@ -754,17 +737,10 @@ var Tracker = /** @class */ (function (_super) {
         Log.getDefault().setLogger(logger);
         this.logger = Log.getDefault().getLogger();
     };
-    // getPlayheadTime(): number {
-    //     return -1;
-    // }
     Tracker.prototype.isDebug = function () {
         return this.debug && this.logger ? true : false;
     };
     // destroy(): void {
-    //     for (let i = this.observers.length; i--;) {
-    //         let observer: any = this.observers[i];
-    //         observer.destroy && observer.destroy();
-    //     }
     //     (<any> this.config) = null;
     //     (<any> this.logger) = null;
     //     (<any> this.modules) = null;
@@ -799,8 +775,7 @@ var TrackingAgent = /** @class */ (function () {
         this.hasSdk = false;
         this.contextData = {};
         this.liveSegmentData = {};
-        //playheadTime: number = -1;
-        //getPlayheadTime!: Function;
+        this.playheadTime = 0;
         this.isAdPlaying = false;
         this.logger = Log.getDefault().getLogger();
         this.debug = config.hasOwnProperty('debug') && config.debug;
@@ -833,9 +808,9 @@ var TrackingAgent = /** @class */ (function () {
         this.notification = notification;
         this.checkForAdPlay();
         // Sync the playhead on every notification
-        // if (this.metadataVo) {
-        //     this.metadataVo.playheadTime = this.playheadTime;
-        // }
+        if (notification.body.playheadTime) {
+            this.playheadTime = notification.body.playheadTime;
+        }
         switch (notification.name) {
             case AppEvent.SessionStart:
                 if (notification.body) {
@@ -852,14 +827,6 @@ var TrackingAgent = /** @class */ (function () {
             case AppEvent.ContextData:
                 this.contextData = notification.body;
                 break;
-            case AppEvent.VideoProgress:
-                if (this.metadataVo) {
-                    this.metadataVo.playheadTime = notification.body.playheadTime;
-                }
-                break;
-            // case AppEvent.PlayheadTime:
-            //     this.playheadTime = <Function> notification.body;
-            //     break;
             case AppEvent.LiveSegmentStart:
                 this.liveSegmentData = notification.body;
                 break;
@@ -890,10 +857,10 @@ var TrackingAgent = /** @class */ (function () {
     TrackingAgent.prototype.hasContentCompleted = function () {
         var metadata = this.metadataVo;
         // Live doesn't have duration
-        if (metadata.isLive) {
+        if (metadata && metadata.isLive) {
             return false;
         }
-        return metadata.playheadTime >= metadata.duration * 0.95;
+        return this.playheadTime >= metadata.duration * 0.95;
     };
     return TrackingAgent;
 }());
@@ -902,16 +869,13 @@ var ChromecastTracker = /** @class */ (function (_super) {
     __extends(ChromecastTracker, _super);
     function ChromecastTracker() {
         var _this = _super.call(this) || this;
+        _this.playheadTime = 0;
         _this.isBuffering = false;
         _this.isAdPlaying = false;
         _this.isPaused = false;
         _this.eventDataMap = {};
         _this.context = cast.framework.CastReceiverContext.getInstance();
         _this.playerManager = _this.context.getPlayerManager();
-        // this.playerManager.addEventListener(
-        //     cast.framework.events.EventType.ALL,
-        //     this.processCastEvent.bind(this)
-        // );
         _this.addEventListeners();
         return _this;
     }
@@ -944,24 +908,25 @@ var ChromecastTracker = /** @class */ (function (_super) {
         this.eventDataMap[eventName] = data;
     };
     ChromecastTracker.prototype.onLoadStart = function (_e) {
-        this.trackWithDataMap(AppEvent.SessionStart);
+        this.trackEvent(AppEvent.SessionStart);
     };
     ChromecastTracker.prototype.onClipStarted = function (_e) {
-        this.trackWithDataMap(AppEvent.ContentStart);
+        this.trackEvent(AppEvent.ContentStart);
     };
     ChromecastTracker.prototype.onBuffering = function (_e) {
         if (!this.isBuffering) {
             this.isBuffering = true;
-            this.track(AppEvent.BufferStart);
+            this.trackEvent(AppEvent.BufferStart);
         }
     };
     ChromecastTracker.prototype.onTimeUpdate = function (e) {
-        if (e.currentMediaTime) {
-            this.track(AppEvent.VideoProgress, { playheadTime: e.currentMediaTime });
-        }
         if (this.isBuffering) {
             this.isBuffering = false;
-            this.track(AppEvent.BufferEnd);
+            this.trackEvent(AppEvent.BufferEnd);
+        }
+        if (e.currentMediaTime) {
+            this.playheadTime = e.currentMediaTime;
+            this.trackEvent(AppEvent.VideoProgress);
         }
     };
     ChromecastTracker.prototype.onBreakClipStarted = function (_e) {
@@ -969,50 +934,53 @@ var ChromecastTracker = /** @class */ (function (_super) {
     };
     ChromecastTracker.prototype.onBreakClipEnded = function (_e) {
         this.isAdPlaying = false;
-        this.track(AppEvent.AdEnd);
+        this.trackEvent(AppEvent.AdEnd);
     };
     ChromecastTracker.prototype.onBreakEnded = function (_e) {
         this.isAdPlaying = false;
-        this.track(AppEvent.AdBreakEnd);
+        this.trackEvent(AppEvent.AdBreakEnd);
     };
     ChromecastTracker.prototype.onPlaying = function (_e) {
         if (this.isPaused) {
             this.isPaused = false;
-            this.track(this.isAdPlaying ? AppEvent.AdResume : AppEvent.ContentResume);
+            this.trackEvent(this.isAdPlaying ? AppEvent.AdResume : AppEvent.ContentResume);
         }
     };
     ChromecastTracker.prototype.onPause = function (_e) {
         if (!this.isPaused) {
             this.isPaused = true;
-            this.track(this.isAdPlaying ? AppEvent.AdPause : AppEvent.ContentPause);
+            this.trackEvent(this.isAdPlaying ? AppEvent.AdPause : AppEvent.ContentPause);
         }
     };
     ChromecastTracker.prototype.onSeeking = function (_e) {
-        this.track(AppEvent.SeekStart);
+        this.trackEvent(AppEvent.SeekStart);
     };
     ChromecastTracker.prototype.onSeeked = function (_e) {
-        this.track(AppEvent.SeekEnd);
+        this.trackEvent(AppEvent.SeekEnd);
     };
     ChromecastTracker.prototype.onBitRateChanged = function (e) {
-        this.track(AppEvent.BitrateChange, { currentBitrate: e.totalBitrate });
+        this.trackEvent(AppEvent.BitrateChange, { currentBitrate: e.totalBitrate });
     };
     ChromecastTracker.prototype.onClipEnded = function (_e) {
-        this.track(AppEvent.ContentEnd);
+        this.trackEvent(AppEvent.ContentEnd);
     };
     ChromecastTracker.prototype.onMediaFinished = function (_e) {
-        this.track(AppEvent.SessionEnd);
+        this.trackEvent(AppEvent.SessionEnd);
     };
     ChromecastTracker.prototype.onPlayerError = function (event) {
         if (event && event.endedReason && event.endedReason === cast.framework.events.EndedReason.ERROR) {
-            this.track(AppEvent.PlayerError, {
+            this.trackEvent(AppEvent.PlayerError, {
                 errorCode: event.detailedErrorCode,
                 errorMessage: event.endedReason,
                 isFatal: false
             });
         }
     };
-    ChromecastTracker.prototype.trackWithDataMap = function (name) {
-        this.track(name, this.eventDataMap[name]);
+    ChromecastTracker.prototype.trackEvent = function (name, data) {
+        var payload = data || this.eventDataMap[name] || {};
+        // Sync up the tracker with the latest playhead position on every event
+        payload.playheadTime = this.playheadTime;
+        _super.prototype.track.call(this, name, payload);
     };
     return ChromecastTracker;
 }(Tracker));
@@ -1021,7 +989,7 @@ var AdobeAgent = /** @class */ (function (_super) {
     __extends(AdobeAgent, _super);
     function AdobeAgent() {
         var _this = _super !== null && _super.apply(this, arguments) || this;
-        _this.hasSessionStart = false;
+        _this.hasAdobeSession = false;
         _this.isPaused = false;
         _this.hasSdk = true;
         return _this;
@@ -1052,6 +1020,9 @@ var AdobeAgent = /** @class */ (function (_super) {
                 this.trackEvent('adBreakComplete');
                 break;
             case AppEvent.ContentStart:
+                if (!this.hasAdobeSession) {
+                    this.requestAdobeSession();
+                }
                 this.trackEvent('play');
                 break;
             case AppEvent.ContentPause:
@@ -1077,15 +1048,15 @@ var AdobeAgent = /** @class */ (function (_super) {
         }
     };
     AdobeAgent.prototype.trackEvent = function (eventName) {
-        if (!this.hasSessionStart) {
-            this.trackSessionStart();
-        }
+        // if (!this.hasAdobeSession) {
+        //     this.requestAdobeSession();
+        // }
         this.eventQueue.add(eventName);
         this.processEventQueue();
     };
     AdobeAgent.prototype.processEventQueue = function () {
         var _this = this;
-        if (!this.hasSessionStart) {
+        if (!this.hasAdobeSession) {
             return;
         }
         this.eventQueue.forEach(function (item) {
@@ -1107,14 +1078,14 @@ var AdobeAgent = /** @class */ (function (_super) {
             this.startHbTracking();
         }
     };
-    AdobeAgent.prototype.trackSessionStart = function () {
+    AdobeAgent.prototype.requestAdobeSession = function () {
         var _this = this;
         var options = {
             path: AdobeVo.SESSION_PATH,
             data: this.vo.getSessionStartData(),
             method: 'POST'
         };
-        this.isDebug() && this.logger.info(this.config.name, 'sessionStart', options);
+        this.isDebug() && this.logger.info(this.config.name, options);
         this.restClient.request(options).then(function (response) {
             if (response.statusCode === 404) {
                 throw ('Error: Server response 404');
@@ -1124,7 +1095,7 @@ var AdobeAgent = /** @class */ (function (_super) {
             if (!location) {
                 throw ('Error: Location not found');
             }
-            _this.hasSessionStart = true;
+            _this.hasAdobeSession = true;
             _this.apiPath = _this.vo.getApiPath(location);
             _this.isDebug() && _this.logger.info(_this.config.name, _this.apiPath);
             _this.processEventQueue();
@@ -1196,7 +1167,7 @@ var AdobeVo = /** @class */ (function (_super) {
             'media.ad.podFriendlyName': metadata.adBreakType,
             'media.ad.podIndex': metadata.adBreakPosition,
             'media.ad.podPosition': metadata.adBreakPosition,
-            'media.ad.podSecond': metadata.playheadTime
+            'media.ad.podSecond': this.agent.playheadTime
         };
     };
     // https://marketing.adobe.com/resources/help/en_US/sc/appmeasurement/hbvideo/mc-api-req-params.html
@@ -1232,7 +1203,7 @@ var AdobeVo = /** @class */ (function (_super) {
         return {
             eventType: eventName,
             playerTime: {
-                playhead: metadata && metadata.playheadTime ? metadata.playheadTime : -1,
+                playhead: this.agent.playheadTime,
                 ts: (new Date()).getTime()
             },
             params: params
