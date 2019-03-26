@@ -716,7 +716,7 @@ var Tracker = /** @class */ (function (_super) {
         // Modules list can be created at build time based on the tracking config (uvpc)
         // Or supplied at run time.
         _this.modules = [AdobeAgent, MuxAgent];
-        _this.version = 'tracking v0.0.14 Tue, 26 Mar 2019 00:52:20 GMT';
+        _this.version = 'tracking v0.0.14 Tue, 26 Mar 2019 01:11:55 GMT';
         _this.registrar = new Registrar(_this);
         return _this;
     }
@@ -930,6 +930,9 @@ var ChromecastTracker = /** @class */ (function (_super) {
         if (this.isBuffering) {
             this.isBuffering = false;
             this.trackEvent(AppEvent.BufferEnd);
+        }
+        if (this.isPaused) {
+            return;
         }
         if (e.currentMediaTime) {
             this.playheadTime = e.currentMediaTime;
