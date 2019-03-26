@@ -716,7 +716,7 @@ var Tracker = /** @class */ (function (_super) {
         // Modules list can be created at build time based on the tracking config (uvpc)
         // Or supplied at run time.
         _this.modules = [AdobeAgent, MuxAgent];
-        _this.version = 'tracking v0.0.14 Sun, 24 Mar 2019 22:20:54 GMT';
+        _this.version = 'tracking v0.0.14 Mon, 25 Mar 2019 21:39:31 GMT';
         _this.registrar = new Registrar(_this);
         return _this;
     }
@@ -891,6 +891,7 @@ var ChromecastTracker = /** @class */ (function (_super) {
             _a[type.CLIP_STARTED] = this.onClipStarted,
             _a[type.BUFFERING] = this.onBuffering,
             _a[type.TIME_UPDATE] = this.onTimeUpdate,
+            _a[type.BREAK_STARTED] = this.onBreakStarted,
             _a[type.BREAK_CLIP_STARTED] = this.onBreakClipStarted,
             _a[type.BREAK_CLIP_ENDED] = this.onBreakClipEnded,
             _a[type.BREAK_ENDED] = this.onBreakEnded,
@@ -911,7 +912,10 @@ var ChromecastTracker = /** @class */ (function (_super) {
         this.eventCallback[eventName] = callback;
     };
     ChromecastTracker.prototype.onLoadStart = function (_e) {
-        this.trackEvent(AppEvent.SessionStart, { playerManager: this.playerManager });
+        this.trackEvent(AppEvent.SessionStart, {
+            playerManager: this.playerManager,
+            playerInitTime: (new Date()).getTime()
+        });
     };
     ChromecastTracker.prototype.onClipStarted = function (_e) {
         this.trackEvent(AppEvent.ContentStart);
@@ -932,8 +936,12 @@ var ChromecastTracker = /** @class */ (function (_super) {
             this.trackEvent(AppEvent.VideoProgress);
         }
     };
+    ChromecastTracker.prototype.onBreakStarted = function (_e) {
+        this.trackEvent(AppEvent.AdBreakStart);
+    };
     ChromecastTracker.prototype.onBreakClipStarted = function (_e) {
         this.isAdPlaying = true;
+        this.trackEvent(AppEvent.AdStart);
     };
     ChromecastTracker.prototype.onBreakClipEnded = function (_e) {
         this.isAdPlaying = false;
@@ -984,10 +992,12 @@ var ChromecastTracker = /** @class */ (function (_super) {
         // Merge data from callback
         if (typeof this.eventCallback[name] === 'function') {
             var eventData_1 = this.eventCallback[name]();
-            Object.keys(eventData_1).forEach(function (key) {
-                payload[key] = eventData_1[key];
-            });
-            delete this.eventCallback[name];
+            if (typeof eventData_1 === 'object') {
+                Object.keys(eventData_1).forEach(function (key) {
+                    payload[key] = eventData_1[key];
+                });
+                delete this.eventCallback[name];
+            }
         }
         // Sync up the tracker with the latest playhead position on every event
         payload.playheadTime = this.playheadTime;
@@ -1153,20 +1163,28 @@ var AdobeVo = /** @class */ (function (_super) {
         var metadata = this.agent.metadataVo;
         var eventData = this.getPayload('sessionStart');
         eventData.params = {
-            'media.playerName': playerInfo.playerName,
             'analytics.trackingServer': this.trackingServer,
             'analytics.reportSuite': this.reportSuite,
             'analytics.visitorId': this.getValue('visitorId', this.agent.contextData) || '',
+            'analytics.enableSSL': this.enableSSL,
+            'visitor.marketingCloudOrgId': this.marketingCloudOrgId,
+            'media.playerName': playerInfo.playerName,
             'media.contentType': metadata.isLive ? 'Live' : 'VOD',
             'media.length': metadata.duration,
             'media.id': metadata.mediaId,
-            'visitor.marketingCloudOrgId': this.marketingCloudOrgId,
             'media.name': metadata.videoTitle,
             'media.channel': this.channel,
             'media.sdkVersion': playerInfo.playerVersion,
-            'analytics.enableSSL': this.enableSSL,
-            // session was closed and then resumed at a later time, e.g., the user left the video
-            // but eventually came back, and the player resumed the video from the playhead where it was stopped,
+            'media.show': metadata.seriesTitle,
+            'media.season': metadata.season,
+            'media.episode': metadata.episode,
+            'media.genre': metadata.category,
+            'media.network': this.channel,
+            // Set to 0 for Full Episode, 2 for Clip
+            'media.showType': metadata.episodeFlag ? 0 : 2,
+            // Set to true if the session was closed and then resumed at a later time, e.g., 
+            // the user left the video but eventually came back, and the player resumed the 
+            // video from the playhead where it was stopped
             'media.resume': false
         };
         eventData.customMetadata = this.agent.contextData;

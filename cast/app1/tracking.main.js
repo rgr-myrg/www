@@ -41,21 +41,24 @@ tracker.setContextData({
 
 tracker.on('sessionStart', () => {
     return {
-        playerInitTime: (new Date()).getTime(),
-        playerName: '<your-player-name>',
-        playerVersion: '<your-player-version>',
-        sessionId: '<your-session-id>',
+        playerName: '<the-player-name>',
+        playerVersion: '<the-player-version>',
+        sessionId: '<the-session-id>',
+        userId: '<the-user-id>',
         videoElement: document.getElementById('castMediaElementId')
     }
 });
 
 tracker.on('contentStart', () => {
     return {
-        assetURL: 'cbs.com/shows',
+        assetURL: '<the-asset-url>',
+        mediaId: '<the-media-id>',
         duration: 5000,
-        mediaId: 'aaEb-cF09-0g17-r63t',
-        videoTitle: 'CBS Sports - Superbowl',
-        seriesTitle: 'Superbowl',
+        videoTitle: '<the-video-title>',
+        seriesTitle: '<the-series-title>',
+        season: 1,
+        episode: 3,
+        category: '<the-genre>',
         isLive: false,
         episodeFlag: false
     }
