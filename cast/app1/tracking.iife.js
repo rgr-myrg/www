@@ -716,7 +716,7 @@ var Tracker = /** @class */ (function (_super) {
         // Modules list can be created at build time based on the tracking config (uvpc)
         // Or supplied at run time.
         _this.modules = [AdobeAgent, MuxAgent];
-        _this.version = 'tracking v0.0.14 Tue, 26 Mar 2019 01:11:55 GMT';
+        _this.version = 'tracking v0.0.14 Tue, 26 Mar 2019 01:39:56 GMT';
         _this.registrar = new Registrar(_this);
         return _this;
     }
@@ -807,7 +807,7 @@ var TrackingAgent = /** @class */ (function () {
         }
     };
     TrackingAgent.prototype.processNotification = function (notification) {
-        this.isDebug() && this.logger.log(this.config.name, notification);
+        //this.isDebug() && this.logger.log(this.config.name, notification);
         this.notification = notification;
         this.checkForAdPlay();
         // Sync the playhead on every notification
@@ -931,6 +931,7 @@ var ChromecastTracker = /** @class */ (function (_super) {
             this.isBuffering = false;
             this.trackEvent(AppEvent.BufferEnd);
         }
+        // Don't send progress events if paused
         if (this.isPaused) {
             return;
         }
@@ -1072,9 +1073,6 @@ var AdobeAgent = /** @class */ (function (_super) {
         }
     };
     AdobeAgent.prototype.trackEvent = function (eventName) {
-        // if (!this.hasAdobeSession) {
-        //     this.requestAdobeSession();
-        // }
         this.eventQueue.add(eventName);
         this.processEventQueue();
     };
