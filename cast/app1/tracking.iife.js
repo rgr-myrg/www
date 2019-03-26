@@ -716,7 +716,7 @@ var Tracker = /** @class */ (function (_super) {
         // Modules list can be created at build time based on the tracking config (uvpc)
         // Or supplied at run time.
         _this.modules = [AdobeAgent, MuxAgent];
-        _this.version = 'tracking v0.0.14 Mon, 25 Mar 2019 21:39:31 GMT';
+        _this.version = 'tracking v0.0.14 Tue, 26 Mar 2019 00:52:20 GMT';
         _this.registrar = new Registrar(_this);
         return _this;
     }
@@ -1124,6 +1124,9 @@ var AdobeAgent = /** @class */ (function (_super) {
     };
     AdobeAgent.prototype.startHbTracking = function () {
         var _this = this;
+        if (!this.hasAdobeSession) {
+            return;
+        }
         this.isDebug() && this.logger.info(this.config.name, 'hbInterval', this.vo.hbInterval);
         this.timer.start(function () {
             _this.trackEvent('ping');
@@ -1176,12 +1179,12 @@ var AdobeVo = /** @class */ (function (_super) {
             'media.channel': this.channel,
             'media.sdkVersion': playerInfo.playerVersion,
             'media.show': metadata.seriesTitle,
-            'media.season': metadata.season,
-            'media.episode': metadata.episode,
+            'media.season': metadata.season.toString(),
+            'media.episode': metadata.episode.toString(),
             'media.genre': metadata.category,
             'media.network': this.channel,
             // Set to 0 for Full Episode, 2 for Clip
-            'media.showType': metadata.episodeFlag ? 0 : 2,
+            'media.showType': metadata.episodeFlag ? '0' : '2',
             // Set to true if the session was closed and then resumed at a later time, e.g., 
             // the user left the video but eventually came back, and the player resumed the 
             // video from the playhead where it was stopped
