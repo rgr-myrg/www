@@ -43,11 +43,14 @@
 
 <body>
     <!-- <cast-media-player id="castMediaPlayer"></cast-media-player> -->
-    <video class="castMediaElement" id="myVideoContainer"></video>
+    <video class="castMediaElement" id="castMediaElementId"></video>
 
-    <script type="text/javascript" src="tracking-cfg.js"></script>
-    <script type="text/javascript" src="tracking-lib.js"></script>
-    <script type="text/javascript" src="tracking-api.js"></script>
+    <script type="text/javascript" src="tracking.iife.js"></script>
+    <script type="text/javascript" src="tracking.main.js"></script>
+    <script type="text/javascript">
+        /* Start the CastReceiverContext for content Playback */
+        cast.framework.CastReceiverContext.getInstance().start();
+    </script>
 </body>
 
 </html>
