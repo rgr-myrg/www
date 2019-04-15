@@ -84,9 +84,7 @@ function Destroyable() {
             typeof this.onBeforeDestroy === 'function' && this.onBeforeDestroy();
             Object.keys(this).forEach(function (key) {
                 if (typeof _this[key] !== 'function') {
-                    typeof _this[key].destroy === 'function' && _this[key].destroy();
                     _this[key] = null;
-                    delete _this[key];
                 }
             });
         };
@@ -160,6 +158,9 @@ var Observable = /** @class */ (function () {
         this.observers = this.observers.filter(function (item) { return item !== observer; });
     };
     Observable.prototype.notify = function (notification) {
+        if (!this.observers) {
+            return;
+        }
         for (var i = this.observers.length; i--;) {
             var observer = this.observers[i];
             observer.onNotify.call(observer, notification);
@@ -646,14 +647,13 @@ var AppEvent;
     AppEvent["MidQuartile"] = "midQuartile";
     AppEvent["PlayerError"] = "playerError";
     AppEvent["PlayerLoaded"] = "playerLoaded";
-    AppEvent["PlayheadTime"] = "playheadTime";
     AppEvent["QosEvent"] = "qosEvent";
     AppEvent["SeekEnd"] = "seekEnd";
     AppEvent["SeekStart"] = "seekStart";
     AppEvent["SessionEnd"] = "sessionEnd";
     AppEvent["SessionStart"] = "sessionStart";
     AppEvent["ThirdQuartile"] = "thirdQuartile";
-    AppEvent["VideoProgress"] = "videoProgress";
+    AppEvent["PlayheadUpdate"] = "playheadUpdate";
 })(AppEvent = exports.AppEvent || (exports.AppEvent = {}));
 var BuildInfo;
 (function (BuildInfo) {
@@ -715,15 +715,15 @@ var Tracker = /** @class */ (function (_super) {
         _this.debug = false;
         // Modules list can be created at build time based on the tracking config (uvpc)
         // Or supplied at run time.
-        _this.modules = [AdobeAgent, MuxAgent];
-        _this.version = 'tracking v0.0.14 Tue, 26 Mar 2019 01:39:56 GMT';
+        _this.modules = [AdobeAgent, MuxAgent, OzTamAgent];
+        _this.version = 'tracking v0.0.15 Mon, 15 Apr 2019 15:12:01 GMT';
         _this.registrar = new Registrar(_this);
         return _this;
     }
     Tracker.prototype.track = function (eventName, data) {
         data = data || {};
         data.timestamp = (new Date()).getTime();
-        this.isDebug() && this.logger.log('Tracker', eventName, data);
+        this.isDebug() && this.logger.log('[Tracker]', eventName, data);
         _super.prototype.notify.call(this, { name: eventName, body: data });
     };
     Tracker.prototype.setConfig = function (config) {
@@ -743,15 +743,6 @@ var Tracker = /** @class */ (function (_super) {
     Tracker.prototype.isDebug = function () {
         return this.debug && this.logger ? true : false;
     };
-    // destroy(): void {
-    //     (<any> this.config) = null;
-    //     (<any> this.logger) = null;
-    //     (<any> this.modules) = null;
-    //     (<any> this.observers) = null;
-    //     (<any> this.playerId) = null;
-    //     (<any> this.registrar) = null;
-    //     (<any> this.version) = null;
-    // }
     /**
      * Destroys each observer from the collection. This method is invoked before
      * the object is destroyed via Destroyable decorator
@@ -937,7 +928,7 @@ var ChromecastTracker = /** @class */ (function (_super) {
         }
         if (e.currentMediaTime) {
             this.playheadTime = e.currentMediaTime;
-            this.trackEvent(AppEvent.VideoProgress);
+            this.trackEvent(AppEvent.PlayheadUpdate);
         }
     };
     ChromecastTracker.prototype.onBreakStarted = function (_e) {
@@ -1061,7 +1052,7 @@ var AdobeAgent = /** @class */ (function (_super) {
                 this.pauseHbTracking();
                 break;
             case AppEvent.ContentResume:
-            case AppEvent.VideoProgress:
+            case AppEvent.PlayheadUpdate:
                 if (this.isPaused) {
                     this.isPaused = false;
                     this.trackEvent('play');
@@ -1092,9 +1083,9 @@ var AdobeAgent = /** @class */ (function (_super) {
             data: this.vo.getPayload(eventName),
             method: 'POST'
         };
-        this.isDebug() && this.logger.info(this.config.name, eventName, options);
+        this.isDebug() && this.logger.log(this.config.name, eventName, options);
         this.restClient.request(options).then(function (response) {
-            _this.isDebug() && _this.logger.info(_this.config.name, 'statusCode', response.statusCode);
+            _this.isDebug() && _this.logger.log(_this.config.name, 'statusCode', response.statusCode);
         });
         if (eventName === 'play') {
             this.startHbTracking();
@@ -1107,7 +1098,7 @@ var AdobeAgent = /** @class */ (function (_super) {
             data: this.vo.getSessionStartData(),
             method: 'POST'
         };
-        this.isDebug() && this.logger.info(this.config.name, options);
+        this.isDebug() && this.logger.log(this.config.name, options);
         this.restClient.request(options).then(function (response) {
             if (response.statusCode === 404) {
                 throw ('Error: Server response 404');
@@ -1119,7 +1110,7 @@ var AdobeAgent = /** @class */ (function (_super) {
             }
             _this.hasAdobeSession = true;
             _this.apiPath = _this.vo.getApiPath(location);
-            _this.isDebug() && _this.logger.info(_this.config.name, _this.apiPath);
+            _this.isDebug() && _this.logger.log(_this.config.name, _this.apiPath);
             _this.processEventQueue();
         });
     };
@@ -1128,13 +1119,13 @@ var AdobeAgent = /** @class */ (function (_super) {
         if (!this.hasAdobeSession) {
             return;
         }
-        this.isDebug() && this.logger.info(this.config.name, 'hbInterval', this.vo.hbInterval);
+        this.isDebug() && this.logger.log(this.config.name, 'hbInterval', this.vo.hbInterval);
         this.timer.start(function () {
             _this.trackEvent('ping');
         });
     };
     AdobeAgent.prototype.pauseHbTracking = function () {
-        this.isDebug() && this.logger.info(this.config.name, 'hb paused');
+        this.isDebug() && this.logger.log(this.config.name, 'hb paused');
         this.timer.stop();
     };
     AdobeAgent.prototype.trackSessionEnd = function () {
@@ -1314,7 +1305,7 @@ var MuxAgent = /** @class */ (function (_super) {
                 this.isAdPaused = true;
                 this.trackAdEvent('adpause');
                 break;
-            case AppEvent.VideoProgress:
+            case AppEvent.PlayheadUpdate:
             case AppEvent.AdResume:
                 if (this.isAdPaused) {
                     this.isAdPaused = false;
@@ -1390,7 +1381,16 @@ var MuxAgent = /** @class */ (function (_super) {
         }
         this.startMuxMonitor() && this.mux.emit(this.playerInfoVo.videoElement, 'error', this.vo.getErrorInfo());
     };
+    /**
+     * This method is invoked before the object is destroyed via Destroyable decorator
+     *
+     * @returns {void}
+     * @memberof MuxAgent
+     */
     MuxAgent.prototype.onBeforeDestroy = function () {
+        if (!this.hasMonitor) {
+            return;
+        }
         this.mux.removeDashJS();
         this.mux.removeHLSJS();
         this.mux.destroyMonitor(this.vo.getVideoElement());
@@ -1497,6 +1497,161 @@ var MuxVo = /** @class */ (function (_super) {
     return MuxVo;
 }(DataAccess));
 exports.MuxVo = MuxVo;
+var OzTamAgent = /** @class */ (function (_super) {
+    __extends(OzTamAgent, _super);
+    function OzTamAgent() {
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.hasSessionStart = false;
+        _this.isStopped = false;
+        return _this;
+    }
+    OzTamAgent.prototype.onRegister = function () {
+        this.vo = new OzTamVo(this);
+    };
+    OzTamAgent.prototype.onSdkLoaded = function () {
+        _super.prototype.onSdkLoaded.call(this);
+        this.ozTamService = View.getVar('OzTAMService');
+    };
+    OzTamAgent.prototype.onNotify = function (notification) {
+        _super.prototype.onNotify.call(this, notification);
+        if (this.vo.isOzTamOptOut()) {
+            this.isDebug() && this.logger.log(this.config.name, 'OzTam OptOut');
+            return;
+        }
+        switch (notification.name) {
+            case AppEvent.ContentStart:
+                this.onContentStart();
+                break;
+            case AppEvent.SeekStart:
+                this.ozTamInstance.seekBegin();
+                break;
+            case AppEvent.SeekEnd:
+                this.ozTamInstance.seekComplete();
+                this.isStopped = true;
+                break;
+            case AppEvent.ContentPause:
+            case AppEvent.BufferStart:
+                this.isStopped = true;
+                this.ozTamInstance.haltProgress();
+            case AppEvent.ContentEnd:
+                this.ozTamInstance.complete();
+                break;
+            case AppEvent.ContentResume:
+            case AppEvent.PlayheadUpdate:
+                if (this.isStopped) {
+                    this.isStopped = false;
+                    this.ozTamInstance.resumeProgress();
+                }
+                break;
+        }
+    };
+    OzTamAgent.prototype.onContentStart = function () {
+        if (!this.hasSessionStart) {
+            this.startOzTamService();
+            this.startOzTamSession();
+            this.hasSessionStart = true;
+        }
+        this.ozTamInstance.beginPlayback(this.mediaInfo.mediaId, this.mediaInfo.url, this.mediaInfo.mediaDuration, this.mediaInfo.mediaPositionFunction, this.mediaInfo.properties, this.mediaInfo.mediaType);
+    };
+    OzTamAgent.prototype.startOzTamService = function () {
+        var ozTamConfig = this.vo.getConfigInfo();
+        this.ozTamInstance = new this.ozTamService(ozTamConfig.publisherId, ozTamConfig.vendorVersion, ozTamConfig.productionMode, ozTamConfig.verboseLogging, ozTamConfig.useHTTPS);
+    };
+    OzTamAgent.prototype.startOzTamSession = function () {
+        this.mediaInfo = this.vo.getMediaInfo();
+        this.ozTamInstance.startSession(this.mediaInfo.mediaId, this.mediaInfo.url, this.mediaInfo.mediaDuration, this.mediaInfo.mediaType);
+    };
+    OzTamAgent.NAME = 'OzTam';
+    __decorate([
+        Override()
+    ], OzTamAgent.prototype, "onRegister", null);
+    __decorate([
+        Override()
+    ], OzTamAgent.prototype, "onSdkLoaded", null);
+    __decorate([
+        Override()
+    ], OzTamAgent.prototype, "onNotify", null);
+    OzTamAgent = __decorate([
+        Injectable({
+            src: 'sdk/oztam-service.js',
+            name: 'OzTAMService',
+            type: 'function'
+        }),
+        Destroyable()
+    ], OzTamAgent);
+    return OzTamAgent;
+}(TrackingAgent));
+exports.OzTamAgent = OzTamAgent;
+var OzTamVo = /** @class */ (function (_super) {
+    __extends(OzTamVo, _super);
+    function OzTamVo(agent) {
+        var _this = _super.call(this, agent.config.params) || this;
+        _this.agent = agent;
+        return _this;
+    }
+    OzTamVo.prototype.getConfigInfo = function () {
+        return {
+            publisherId: this.publisherId,
+            vendorVersion: this.getVendorVersion(),
+            productionMode: !this.agent.debug,
+            verboseLogging: this.agent.debug,
+            useHTTPS: top.location.href.search(/^https/) > -1
+        };
+    };
+    OzTamVo.prototype.getVendorVersion = function () {
+        var playerInfo = this.agent.playerInfoVo;
+        var platformInfo = playerInfo.isMobile ? 'Mobile-Web' : 'Desktop-Web';
+        if (BuildInfo.isChromecast()) {
+            platformInfo = 'Chromecast';
+        }
+        return [
+            this.platform,
+            platformInfo,
+            playerInfo.playerVersion
+        ].join('_');
+    };
+    OzTamVo.prototype.getMediaInfo = function () {
+        var _this = this;
+        var metadata = this.agent.metadataVo;
+        return {
+            mediaId: metadata.ozTamMediaId || metadata.mediaId,
+            url: metadata.assetUrl,
+            mediaDuration: metadata.duration,
+            mediaType: metadata.isLive ? 'live' : 'vod',
+            mediaPositionFunction: function () { return _this.agent.playheadTime; },
+            properties: this.getPropertyDictionary()
+        };
+    };
+    OzTamVo.prototype.getPropertyDictionary = function () {
+        var playerInfo = this.agent.playerInfoVo;
+        var metadata = this.agent.metadataVo;
+        var property = {};
+        if (metadata.ozTamMediaId) {
+            property.altMediaId = metadata.mediaId;
+        }
+        if (playerInfo.userId) {
+            property.demo1 = playerInfo.userId;
+        }
+        return property;
+    };
+    OzTamVo.prototype.isOzTamOptOut = function () {
+        if (!this.agent.metadataVo) {
+            return false;
+        }
+        return this.agent.metadataVo.ozTamOptOut;
+    };
+    __decorate([
+        exports.ModuleParam()
+    ], OzTamVo.prototype, "publisherId", void 0);
+    __decorate([
+        exports.ModuleParam()
+    ], OzTamVo.prototype, "platform", void 0);
+    OzTamVo = __decorate([
+        Destroyable()
+    ], OzTamVo);
+    return OzTamVo;
+}(DataAccess));
+exports.OzTamVo = OzTamVo;
 
 },{}]},{},[1])(1)
 });

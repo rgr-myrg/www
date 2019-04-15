@@ -30,6 +30,14 @@
             channel: 'AU-AllAccess',
             enableSSL: true
         }
+    },
+    OzTam: {
+        enabled: true,
+        category: 'tracking',
+        params: {
+            publisherId: 'OzTamPublisherId',
+            platform: 'TenAllAccess'
+        }
     }
 });
 
@@ -43,9 +51,10 @@ tracker.on('sessionStart', () => {
     return {
         playerName: '<the-player-name>',
         playerVersion: '<the-player-version>',
-        sessionId: '<the-session-id>',
+        sessionId: (new Date()).getTime(),
         userId: '<the-user-id>',
-        videoElement: document.getElementById('castMediaElementId')
+        videoElement: document.getElementById('castMediaElementId'),
+        isMobile: false
     }
 });
 
@@ -53,6 +62,7 @@ tracker.on('contentStart', () => {
     return {
         assetURL: '<the-asset-url>',
         mediaId: '<the-media-id>',
+        ozTamMediaId: '<the-oztam-media-id>',
         duration: 5000,
         videoTitle: '<the-video-title>',
         seriesTitle: '<the-series-title>',
@@ -60,6 +70,7 @@ tracker.on('contentStart', () => {
         episode: 3,
         category: '<the-genre>',
         isLive: false,
-        episodeFlag: false
+        episodeFlag: false,
+        ozTamOptOut: false
     }
 });
