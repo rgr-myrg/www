@@ -716,7 +716,7 @@ var Tracker = /** @class */ (function (_super) {
         // Modules list can be created at build time based on the tracking config (uvpc)
         // Or supplied at run time.
         _this.modules = [AdobeAgent, ConvivaCastAgent, OzTamAgent];
-        _this.version = 'tracking v0.0.15 Thu, 18 Apr 2019 01:37:46 GMT';
+        _this.version = 'tracking v0.0.15 Thu, 18 Apr 2019 01:59:55 GMT';
         _this.registrar = new Registrar(_this);
         return _this;
     }
@@ -897,6 +897,9 @@ var ChromecastTracker = /** @class */ (function (_super) {
             _a[type.ERROR] = this.onPlayerError,
             _a);
         this.playerManager.addEventListener(cast.framework.events.EventType.ALL, function (event) {
+            if (event.type === type.LOAD_START) {
+                _this.hasLoadStart = true;
+            }
             if (!_this.hasLoadStart) {
                 return;
             }
@@ -911,14 +914,11 @@ var ChromecastTracker = /** @class */ (function (_super) {
     ChromecastTracker.prototype.on = function (eventName, callback) {
         this.eventCallback[eventName] = callback;
     };
-    ChromecastTracker.prototype.onCafEvent = function (name) {
-    };
     ChromecastTracker.prototype.onLoadStart = function (e) {
         this.trackEvent(AppEvent.SessionStart, {
             playerManager: this.playerManager,
             playerInitTime: (new Date()).getTime()
         });
-        this.hasLoadStart = true;
     };
     ChromecastTracker.prototype.onClipStarted = function (e) {
         this.trackEvent(AppEvent.ContentStart);
