@@ -715,8 +715,8 @@ var Tracker = /** @class */ (function (_super) {
         _this.debug = false;
         // Modules list can be created at build time based on the tracking config (uvpc)
         // Or supplied at run time.
-        _this.modules = [AdobeAgent, MuxAgent, OzTamAgent];
-        _this.version = 'tracking v0.0.15 Mon, 15 Apr 2019 15:12:01 GMT';
+        _this.modules = [AdobeAgent, ConvivaCastAgent, OzTamAgent];
+        _this.version = 'tracking v0.0.15 Thu, 18 Apr 2019 01:37:46 GMT';
         _this.registrar = new Registrar(_this);
         return _this;
     }
@@ -864,6 +864,7 @@ var ChromecastTracker = /** @class */ (function (_super) {
     function ChromecastTracker() {
         var _this = _super.call(this) || this;
         _this.playheadTime = 0;
+        _this.hasLoadStart = false;
         _this.isBuffering = false;
         _this.isAdPlaying = false;
         _this.isPaused = false;
@@ -895,23 +896,34 @@ var ChromecastTracker = /** @class */ (function (_super) {
             _a[type.MEDIA_FINISHED] = this.onMediaFinished,
             _a[type.ERROR] = this.onPlayerError,
             _a);
-        Object.keys(eventMap).forEach(function (key) {
-            _this.playerManager.addEventListener(key, eventMap[key].bind(_this));
+        this.playerManager.addEventListener(cast.framework.events.EventType.ALL, function (event) {
+            if (!_this.hasLoadStart) {
+                return;
+            }
+            if (eventMap[event.type]) {
+                eventMap[event.type].call(_this, event);
+            }
         });
+        // Object.keys(eventMap).forEach(key => {
+        //     this.playerManager.addEventListener(key, eventMap[key].bind(this));
+        // });
     };
     ChromecastTracker.prototype.on = function (eventName, callback) {
         this.eventCallback[eventName] = callback;
     };
-    ChromecastTracker.prototype.onLoadStart = function (_e) {
+    ChromecastTracker.prototype.onCafEvent = function (name) {
+    };
+    ChromecastTracker.prototype.onLoadStart = function (e) {
         this.trackEvent(AppEvent.SessionStart, {
             playerManager: this.playerManager,
             playerInitTime: (new Date()).getTime()
         });
+        this.hasLoadStart = true;
     };
-    ChromecastTracker.prototype.onClipStarted = function (_e) {
+    ChromecastTracker.prototype.onClipStarted = function (e) {
         this.trackEvent(AppEvent.ContentStart);
     };
-    ChromecastTracker.prototype.onBuffering = function (_e) {
+    ChromecastTracker.prototype.onBuffering = function (e) {
         if (!this.isBuffering) {
             this.isBuffering = true;
             this.trackEvent(AppEvent.BufferStart);
@@ -931,46 +943,46 @@ var ChromecastTracker = /** @class */ (function (_super) {
             this.trackEvent(AppEvent.PlayheadUpdate);
         }
     };
-    ChromecastTracker.prototype.onBreakStarted = function (_e) {
+    ChromecastTracker.prototype.onBreakStarted = function (e) {
         this.trackEvent(AppEvent.AdBreakStart);
     };
-    ChromecastTracker.prototype.onBreakClipStarted = function (_e) {
+    ChromecastTracker.prototype.onBreakClipStarted = function (e) {
         this.isAdPlaying = true;
         this.trackEvent(AppEvent.AdStart);
     };
-    ChromecastTracker.prototype.onBreakClipEnded = function (_e) {
+    ChromecastTracker.prototype.onBreakClipEnded = function (e) {
         this.isAdPlaying = false;
         this.trackEvent(AppEvent.AdEnd);
     };
-    ChromecastTracker.prototype.onBreakEnded = function (_e) {
+    ChromecastTracker.prototype.onBreakEnded = function (e) {
         this.isAdPlaying = false;
         this.trackEvent(AppEvent.AdBreakEnd);
     };
-    ChromecastTracker.prototype.onPlaying = function (_e) {
+    ChromecastTracker.prototype.onPlaying = function (e) {
         if (this.isPaused) {
             this.isPaused = false;
             this.trackEvent(this.isAdPlaying ? AppEvent.AdResume : AppEvent.ContentResume);
         }
     };
-    ChromecastTracker.prototype.onPause = function (_e) {
+    ChromecastTracker.prototype.onPause = function (e) {
         if (!this.isPaused) {
             this.isPaused = true;
             this.trackEvent(this.isAdPlaying ? AppEvent.AdPause : AppEvent.ContentPause);
         }
     };
-    ChromecastTracker.prototype.onSeeking = function (_e) {
+    ChromecastTracker.prototype.onSeeking = function (e) {
         this.trackEvent(AppEvent.SeekStart);
     };
-    ChromecastTracker.prototype.onSeeked = function (_e) {
+    ChromecastTracker.prototype.onSeeked = function (e) {
         this.trackEvent(AppEvent.SeekEnd);
     };
     ChromecastTracker.prototype.onBitRateChanged = function (e) {
         this.trackEvent(AppEvent.BitrateChange, { currentBitrate: e.totalBitrate });
     };
-    ChromecastTracker.prototype.onClipEnded = function (_e) {
+    ChromecastTracker.prototype.onClipEnded = function (e) {
         this.trackEvent(AppEvent.ContentEnd);
     };
-    ChromecastTracker.prototype.onMediaFinished = function (_e) {
+    ChromecastTracker.prototype.onMediaFinished = function (e) {
         this.trackEvent(AppEvent.SessionEnd);
     };
     ChromecastTracker.prototype.onPlayerError = function (event) {
@@ -1264,239 +1276,200 @@ var AdobeVo = /** @class */ (function (_super) {
     return AdobeVo;
 }(DataAccess));
 exports.AdobeVo = AdobeVo;
-var MuxAgent = /** @class */ (function (_super) {
-    __extends(MuxAgent, _super);
-    function MuxAgent() {
-        var _this = _super !== null && _super.apply(this, arguments) || this;
-        _this.hasMonitor = false;
-        _this.isAdPaused = false;
-        return _this;
+var ConvivaCastAgent = /** @class */ (function (_super) {
+    __extends(ConvivaCastAgent, _super);
+    function ConvivaCastAgent() {
+        return _super !== null && _super.apply(this, arguments) || this;
     }
-    MuxAgent.prototype.onRegister = function () {
-        this.vo = new MuxVo(this);
+    ConvivaCastAgent.prototype.onRegister = function () {
+        this.vo = new ConvivaCastVo(this);
     };
-    MuxAgent.prototype.onSdkLoaded = function () {
+    ConvivaCastAgent.prototype.onSdkLoaded = function () {
         _super.prototype.onSdkLoaded.call(this);
-        this.mux = View.getVar('mux');
+        this.Conviva = View.getVar('Conviva');
     };
-    MuxAgent.prototype.onNotify = function (notification) {
+    ConvivaCastAgent.prototype.onNotify = function (notification) {
         _super.prototype.onNotify.call(this, notification);
+        this.processNotification(notification);
         switch (notification.name) {
-            case AppEvent.ContentStart:
-                if (this.hasMonitor) {
-                    this.trackEvent('videochange');
-                }
-                this.startMuxMonitor();
+            case AppEvent.PlayerLoaded:
+                this.createConvivaSession();
                 break;
-            case AppEvent.DashJsLoaded:
-                this.onDashJsLoaded();
-                break;
-            case AppEvent.HlsJsLoaded:
-                this.onHlsJsLoaded();
-                break;
-            case AppEvent.AdLoaded:
-                this.trackAdEvent('adplay');
+            case AppEvent.AdBreakStart:
+                this.onAdBreakStart();
                 break;
             case AppEvent.AdStart:
-                this.trackAdEvent('adplaying');
+                this.Conviva.LivePass.adStart(this.convivaSessionId);
                 break;
-            case AppEvent.AdClick:
-            case AppEvent.AdPause:
-                this.isAdPaused = true;
-                this.trackAdEvent('adpause');
-                break;
-            case AppEvent.PlayheadUpdate:
-            case AppEvent.AdResume:
-                if (this.isAdPaused) {
-                    this.isAdPaused = false;
-                    this.trackAdEvent('adplay');
-                    this.trackAdEvent('adplaying');
-                }
-                break;
-            case AppEvent.AdSkip:
             case AppEvent.AdEnd:
-                this.trackAdEvent('adended');
+                this.Conviva.LivePass.adEnd(this.convivaSessionId);
                 break;
-            case AppEvent.AdRequest:
-            case AppEvent.AdResponse:
-            case AppEvent.AdBreakStart:
-            case AppEvent.AdError:
             case AppEvent.AdBreakEnd:
-            case AppEvent.AdFirstQuartile:
-            case AppEvent.AdMidPoint:
-            case AppEvent.AdThirdQuartile:
-                this.trackAdEvent(notification.name.toLowerCase());
+                this.onAdBreakEnd();
+                break;
+            case AppEvent.BitrateChange:
+                this.Conviva.LivePass.setBitrate(this.convivaSessionId, this.metadataVo.currentBitrate);
+                break;
+            case AppEvent.SessionEnd:
+                this.onSessionEnd();
                 break;
             case AppEvent.PlayerError:
                 this.onPlayerError();
                 break;
         }
     };
-    MuxAgent.prototype.trackEvent = function (eventName) {
-        this.startMuxMonitor() && this.mux.emit(this.playerInfoVo.videoElement, eventName, this.vo.getMuxMetadata());
-    };
-    MuxAgent.prototype.trackAdEvent = function (eventName) {
-        this.startMuxMonitor() && this.mux.emit(this.playerInfoVo.videoElement, eventName, this.vo.getAdData());
-    };
-    MuxAgent.prototype.startMuxMonitor = function () {
-        if (!this.hasSdk) {
-            this.isDebug() && this.logger.warn('Sdk not loaded');
-            return false;
-        }
-        if (!this.playerInfoVo.videoElement) {
-            this.isDebug() && this.logger.warn('videoElement missing');
-            return false;
-        }
-        if (!this.hasMonitor) {
-            this.mux.monitor(this.vo.getVideoElement(), this.vo.getMuxOptions());
-            this.hasMonitor = true;
-        }
-        return this.hasMonitor;
-    };
-    MuxAgent.prototype.onDashJsLoaded = function () {
-        var dashJsPlayer = this.vo.getDashJsPlayer();
-        if (!dashJsPlayer) {
+    ConvivaCastAgent.prototype.createConvivaSession = function () {
+        if (!this.vo.isSet('playerManager', this.notification.body)) {
+            this.isDebug() && this.logger.log('playerManger not provided');
             return;
         }
-        this.startMuxMonitor() && this.mux.addDashJS({
-            dashjs: dashJsPlayer
-        });
-    };
-    MuxAgent.prototype.onHlsJsLoaded = function () {
-        var hlsJsPlayer = this.vo.getHlsJsPlayer();
-        var hlsJsLib = View.getVar('Hls');
-        if (!hlsJsPlayer || !hlsJsLib) {
-            return;
+        if (this.debug) {
+            this.Conviva.LivePass.toggleTraces(true);
+            this.Conviva.LivePass.initWithSettings(this.vo.customerKey, this.vo.getInitOptions());
         }
-        this.startMuxMonitor() && this.mux.addHLSJS({
-            hlsjs: hlsJsPlayer,
-            Hls: hlsJsLib
-        });
-    };
-    MuxAgent.prototype.onPlayerError = function () {
-        if (!this.vo.isFatalError()) {
-            // Per Mux: This event should only be used for fatal errors.
-            // Do not mux.emit "errors" that do not result in playback failure.
-            return;
+        else {
+            this.Conviva.LivePass.init(this.vo.customerKey);
         }
-        this.startMuxMonitor() && this.mux.emit(this.playerInfoVo.videoElement, 'error', this.vo.getErrorInfo());
+        this.castPlayerManager = this.notification.body.playerManager;
+        this.convivaStreamer = new this.Conviva.ConvivaCastV3StreamerProxy(this.castPlayerManager);
+        this.convivaSessionId = this.Conviva.LivePass.createSession(this.convivaStreamer, this.vo.getContentInfo(), this.vo.getSessionOptions());
     };
-    /**
-     * This method is invoked before the object is destroyed via Destroyable decorator
-     *
-     * @returns {void}
-     * @memberof MuxAgent
-     */
-    MuxAgent.prototype.onBeforeDestroy = function () {
-        if (!this.hasMonitor) {
-            return;
+    ConvivaCastAgent.prototype.onAdBreakStart = function () {
+        // Detach streamer as soon as main content stops playing
+        this.Conviva.LivePass.detachStreamer(this.convivaSessionId);
+        this.adBreakInfo = this.vo.getAdBreakInfo();
+        this.Conviva.LivePass.sendSessionEvent(this.convivaSessionId, 'Conviva.PodStart', this.adBreakInfo);
+    };
+    ConvivaCastAgent.prototype.onAdBreakEnd = function () {
+        // Remove duration from info object. Not needed for 'PodEnd' event
+        this.adBreakInfo.podDuration && delete this.adBreakInfo.podDuration;
+        this.Conviva.LivePass.sendSessionEvent(this.convivaSessionId, 'Conviva.PodEnd', this.adBreakInfo);
+        // Attach streamer as soon as Ads stop playing
+        this.Conviva.LivePass.attachStreamer(this.convivaSessionId, this.convivaStreamer);
+    };
+    ConvivaCastAgent.prototype.onBitRateChange = function () {
+        this.Conviva.LivePass.setBitrate(this.convivaSessionId, this.metadataVo.currentBitrate);
+    };
+    ConvivaCastAgent.prototype.onPlayerError = function () {
+        var error = this.vo.getConvivaError();
+        this.Conviva.LivePass.reportError(error.sessionId, error.message, error.type);
+        if (this.errorVo.isFatal) {
+            this.Conviva.LivePass.cleanupSession(this.convivaSessionId);
+            this.createConvivaSession();
         }
-        this.mux.removeDashJS();
-        this.mux.removeHLSJS();
-        this.mux.destroyMonitor(this.vo.getVideoElement());
     };
-    MuxAgent.NAME = 'Mux';
+    ConvivaCastAgent.prototype.onSessionEnd = function () {
+        this.hasContentCompleted() && this.Conviva.LivePass.cleanupSession(this.convivaSessionId);
+    };
+    ConvivaCastAgent.NAME = 'ConvivaCast';
     __decorate([
         Override()
-    ], MuxAgent.prototype, "onRegister", null);
+    ], ConvivaCastAgent.prototype, "onRegister", null);
     __decorate([
         Override()
-    ], MuxAgent.prototype, "onSdkLoaded", null);
+    ], ConvivaCastAgent.prototype, "onSdkLoaded", null);
     __decorate([
         Override()
-    ], MuxAgent.prototype, "onNotify", null);
-    MuxAgent = __decorate([
+    ], ConvivaCastAgent.prototype, "onNotify", null);
+    ConvivaCastAgent = __decorate([
         Injectable({
-            src: '//src.litix.io/core/2/mux.js',
-            name: 'mux',
+            src: 'sdk/conviva-chromecast.js',
+            name: 'Conviva',
             type: 'function'
         }),
         Destroyable()
-    ], MuxAgent);
-    return MuxAgent;
+    ], ConvivaCastAgent);
+    return ConvivaCastAgent;
 }(TrackingAgent));
-exports.MuxAgent = MuxAgent;
-var MuxVo = /** @class */ (function (_super) {
-    __extends(MuxVo, _super);
-    function MuxVo(agent) {
+exports.ConvivaCastAgent = ConvivaCastAgent;
+var ConvivaCastVo = /** @class */ (function (_super) {
+    __extends(ConvivaCastVo, _super);
+    function ConvivaCastVo(agent) {
         var _this = _super.call(this, agent.config.params) || this;
         _this.agent = agent;
         return _this;
     }
-    MuxVo.prototype.getVideoElement = function () {
-        return this.agent.playerInfoVo.videoElement;
-    };
-    MuxVo.prototype.getMuxOptions = function () {
+    ConvivaCastVo.prototype.getInitOptions = function () {
         return {
-            debug: this.agent.debug,
-            data: this.getMuxMetadata()
+            gatewayUrl: this.agent.debug ? this.testServerUrl : this.prodServerUrl
         };
     };
-    MuxVo.prototype.getMuxMetadata = function () {
-        var session = this.agent.playerInfoVo;
+    ConvivaCastVo.prototype.getSessionOptions = function () {
+        var _a;
+        return _a = {},
+            _a[this.agent.Conviva.LivePass.OPTION_EXTERNAL_BITRATE_REPORTING] = true,
+            _a;
+    };
+    ConvivaCastVo.prototype.getContentInfo = function () {
+        var playerInfo = this.agent.playerInfoVo;
+        var metadata = this.agent.metadataVo;
+        var info = new Conviva.ConvivaContentInfo();
+        info.playerName = playerInfo.playerName;
+        info.streamUrl = metadata.assetUrl;
+        info.assetName = metadata.videoTitle;
+        info.duration = metadata.duration;
+        info.defaultReportingBitrateKbps = metadata.currentBitrate;
+        info.defaultReportingResource = metadata.cdn;
+        info.encodedFps = metadata.playbackFramerate;
+        info.isLive = metadata.isLive;
+        info.viewerId = playerInfo.userId;
+        info.tags = {
+            accessType: playerInfo.userStatus || 'anon',
+            contentId: metadata.mediaId || 'N/A',
+            contentType: info.isLive ? 'LIVE' : 'VOD',
+            isEpisode: metadata.episodeFlag,
+            Partner_ID: playerInfo.partner,
+            Player_Version: playerInfo.playerVersion,
+            seriesTitle: metadata.seriesTitle,
+            episodeTitle: metadata.episodeTitle || metadata.videoTitle,
+            app: playerInfo.playerName,
+            appVersion: playerInfo.playerVersion,
+            appRegion: playerInfo.userCountry || 'us',
+            drm: playerInfo.drmEnabled,
+            drmType: playerInfo.drmType || 'N/A',
+            connectionType: playerInfo.userConnectionType || 'unknown',
+            winDimension: View.getScreenSize()
+        };
+        return info;
+    };
+    ConvivaCastVo.prototype.getAdBreakInfo = function () {
         var metadata = this.agent.metadataVo;
         return {
-            env_key: this.envKey,
-            page_type: '',
-            viewer_user_id: session.userId,
-            experiment_name: this.experimentName,
-            sub_property_id: this.subPropertyId,
-            player_name: session.playerName,
-            player_version: session.playerVersion,
-            player_init_time: session.playerInitTime,
-            video_id: metadata.mediaId,
-            video_title: metadata.videoTitle,
-            video_series: metadata.seriesTitle,
-            video_producer: '',
-            video_content_type: metadata.episodeFlag ? 'episode' : 'clip',
-            video_language_code: '',
-            video_variant_name: '',
-            video_variant_id: '',
-            video_duration: metadata.duration,
-            video_stream_type: metadata.isLive ? 'live' : 'on-demand',
-            video_encoding_variant: '',
-            video_cdn: metadata.cdn
+            podDuration: metadata.adBreakDuration,
+            podIndex: metadata.adBreakPosition,
+            podPosition: metadata.adBreakType + '-roll'
         };
     };
-    MuxVo.prototype.getAdData = function () {
-        var metadata = this.agent.metadataVo;
+    ConvivaCastVo.prototype.getConvivaError = function () {
+        var errorVo = this.agent.errorVo;
+        var errorType = this.agent.Conviva.StreamerError;
         return {
-            ad_tag_url: metadata.adAssetUrl,
-            ad_asset_url: metadata.adAssetUrl
+            sessionId: this.agent.convivaSessionId,
+            message: [errorVo.code, errorVo.message].join(':'),
+            type: errorVo.isFatal ? errorType.SEVERITY_FATAL : errorType.SEVERITY_WARNING
         };
     };
-    MuxVo.prototype.getErrorInfo = function () {
-        var data = this.agent.notification.body;
-        return {
-            player_error_code: this.isSet('errorCode', data) ? data.errorCode : -1,
-            player_error_message: this.getValue('errorMessage', data)
-        };
-    };
-    MuxVo.prototype.getDashJsPlayer = function () {
-        return this.getValue('dashJsPlayer', this.agent.notification.body);
-    };
-    MuxVo.prototype.getHlsJsPlayer = function () {
-        return this.getValue('hlsJsPlayer', this.agent.notification.body);
-    };
-    MuxVo.prototype.isFatalError = function () {
-        var data = this.agent.notification.body;
-        return this.isSet('isFatal', data);
-    };
-    __decorate([
-        exports.ModuleParam('ec83cce4c209447a2af3d62f2')
-    ], MuxVo.prototype, "envKey", void 0);
     __decorate([
         exports.ModuleParam()
-    ], MuxVo.prototype, "experimentName", void 0);
+    ], ConvivaCastVo.prototype, "customerId", void 0);
     __decorate([
         exports.ModuleParam()
-    ], MuxVo.prototype, "subPropertyId", void 0);
-    MuxVo = __decorate([
+    ], ConvivaCastVo.prototype, "customerKey", void 0);
+    __decorate([
+        exports.ModuleParam(5)
+    ], ConvivaCastVo.prototype, "heartbeatInterval", void 0);
+    __decorate([
+        exports.ModuleParam()
+    ], ConvivaCastVo.prototype, "testServerUrl", void 0);
+    __decorate([
+        exports.ModuleParam()
+    ], ConvivaCastVo.prototype, "prodServerUrl", void 0);
+    ConvivaCastVo = __decorate([
         Destroyable()
-    ], MuxVo);
-    return MuxVo;
+    ], ConvivaCastVo);
+    return ConvivaCastVo;
 }(DataAccess));
-exports.MuxVo = MuxVo;
+exports.ConvivaCastVo = ConvivaCastVo;
 var OzTamAgent = /** @class */ (function (_super) {
     __extends(OzTamAgent, _super);
     function OzTamAgent() {
