@@ -716,7 +716,7 @@ var Tracker = /** @class */ (function (_super) {
         // Modules list can be created at build time based on the tracking config (uvpc)
         // Or supplied at run time.
         _this.modules = [AdobeAgent, ConvivaCastAgent, OzTamAgent];
-        _this.version = 'tracking v0.0.15 Thu, 18 Apr 2019 02:31:22 GMT';
+        _this.version = 'tracking v0.0.15 Thu, 18 Apr 2019 02:38:51 GMT';
         _this.registrar = new Registrar(_this);
         return _this;
     }
@@ -896,20 +896,23 @@ var ChromecastTracker = /** @class */ (function (_super) {
             _a[type.MEDIA_FINISHED] = this.onMediaFinished,
             _a[type.ERROR] = this.onPlayerError,
             _a);
-        this.playerManager.addEventListener(cast.framework.events.EventType.ALL, function (event) {
-            if (event.type === type.LOAD_START) {
-                _this.hasLoadStart = true;
-            }
-            if (!_this.hasLoadStart) {
-                return;
-            }
-            if (eventMap[event.type]) {
-                eventMap[event.type].call(_this, event);
-            }
+        // this.playerManager.addEventListener(
+        //     cast.framework.events.EventType.ALL,
+        //     (event: CastEvent) => {
+        //         if (event.type === type.LOAD_START) {
+        //             this.hasLoadStart = true;
+        //         }
+        //         if (!this.hasLoadStart) {
+        //             return;
+        //         }
+        //         if (eventMap[event.type]) {
+        //             (<Function> eventMap[event.type]).call(this, event);
+        //         }
+        //     }
+        // );
+        Object.keys(eventMap).forEach(function (key) {
+            _this.playerManager.addEventListener(key, eventMap[key].bind(_this));
         });
-        // Object.keys(eventMap).forEach(key => {
-        //     this.playerManager.addEventListener(key, eventMap[key].bind(this));
-        // });
     };
     ChromecastTracker.prototype.on = function (eventName, callback) {
         this.eventCallback[eventName] = callback;
