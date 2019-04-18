@@ -35,7 +35,7 @@
         enabled: true,
         category: 'tracking',
         params: {
-            publisherId: 'OzTamPublisherId',
+            publisherId: '779e3a9f-0ad4-4288-ae57-b4fba8259c1f',
             platform: 'TenAllAccess'
         }
     },
@@ -45,8 +45,8 @@
         params: {
             customerId: 'c3.CBS',
             customerKey: 'ce4836fb66f6e081bcf6fea7df4531f22ac7ffbb',
-            testServerUrl: '//cbscom-test.testonly.conviva.com',
-            prodServerUrl: '//cbscom-test.testonly.conviva.com'
+            testServerUrl: 'cbscom-test.testonly.conviva.com',
+            prodServerUrl: 'cbscom-test.testonly.conviva.com'
         }
     }
 });
@@ -63,6 +63,10 @@ tracker.on('sessionStart', () => {
         playerVersion: '<the-player-version>',
         sessionId: (new Date()).getTime(),
         userId: '<the-user-id>',
+        partner: '<partner>',
+        userCountry: 'au',
+        drmEnabled: false,
+        userConnectionType: 'desktop',
         videoElement: document.getElementById('castMediaElementId'),
         isMobile: false
     }
@@ -72,7 +76,7 @@ tracker.on('contentStart', () => {
     return {
         assetURL: '<the-asset-url>',
         mediaId: '<the-media-id>',
-        ozTamMediaId: '<the-oztam-media-id>',
+        ozTamMediaId: 'oz-f0f6155f6efa-6589-8dw9',
         duration: 653,
         videoTitle: '<the-video-title>',
         seriesTitle: '<the-series-title>',
