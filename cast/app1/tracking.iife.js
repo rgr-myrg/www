@@ -646,7 +646,7 @@ var AppEvent;
     AppEvent["LiveSegmentEnd"] = "LiveSegmentEnd";
     AppEvent["MidQuartile"] = "midQuartile";
     AppEvent["PlayerError"] = "playerError";
-    AppEvent["PlayerLoaded"] = "playerLoaded";
+    //PlayerLoaded = 'playerLoaded',
     AppEvent["QosEvent"] = "qosEvent";
     AppEvent["SeekEnd"] = "seekEnd";
     AppEvent["SeekStart"] = "seekStart";
@@ -716,7 +716,7 @@ var Tracker = /** @class */ (function (_super) {
         // Modules list can be created at build time based on the tracking config (uvpc)
         // Or supplied at run time.
         _this.modules = [AdobeAgent, ConvivaCastAgent, OzTamAgent];
-        _this.version = 'tracking v0.0.15 Thu, 18 Apr 2019 15:52:40 GMT';
+        _this.version = 'tracking v0.0.15 Thu, 18 Apr 2019 20:30:31 GMT';
         _this.registrar = new Registrar(_this);
         return _this;
     }
@@ -1281,7 +1281,7 @@ var ConvivaCastAgent = /** @class */ (function (_super) {
         _super.prototype.onNotify.call(this, notification);
         this.processNotification(notification);
         switch (notification.name) {
-            case AppEvent.PlayerLoaded:
+            case AppEvent.SessionStart:
                 this.createConvivaSession();
                 break;
             case AppEvent.AdBreakStart:
@@ -1584,7 +1584,6 @@ var OzTamVo = /** @class */ (function (_super) {
         };
     };
     OzTamVo.prototype.getPlayheadTime = function () {
-        console.log('OzTamVo playhead', Math.floor(this.agent.playheadTime));
         return Math.floor(this.agent.playheadTime);
     };
     OzTamVo.prototype.getPropertyDictionary = function () {
