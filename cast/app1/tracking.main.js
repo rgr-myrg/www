@@ -73,7 +73,7 @@ tracker.on('contentStart', () => {
         assetURL: '<the-asset-url>',
         mediaId: '<the-media-id>',
         ozTamMediaId: '<the-oztam-media-id>',
-        duration: 5000,
+        duration: 653,
         videoTitle: '<the-video-title>',
         seriesTitle: '<the-series-title>',
         season: 1,
