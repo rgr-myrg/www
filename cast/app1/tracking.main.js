@@ -12,7 +12,7 @@
 
  tracker.setConfig({
     Mux: {
-        enabled: true,
+        enabled: false,
         params: {
             experimentName: 'AllAccess Chromecast Player',
             propertyKey: 'ec83cce4c209447a2af3d62f2',
@@ -37,6 +37,16 @@
         params: {
             publisherId: 'OzTamPublisherId',
             platform: 'TenAllAccess'
+        }
+    },
+    ConvivaCast: {
+        enabled: true,
+        category: 'tracking',
+        params: {
+            customerId: 'c3.CBS',
+            customerKey: 'ce4836fb66f6e081bcf6fea7df4531f22ac7ffbb',
+            testServerUrl: '//cbscom-test.testonly.conviva.com',
+            prodServerUrl: '//cbscom-test.testonly.conviva.com'
         }
     }
 });

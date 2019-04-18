@@ -716,7 +716,7 @@ var Tracker = /** @class */ (function (_super) {
         // Modules list can be created at build time based on the tracking config (uvpc)
         // Or supplied at run time.
         _this.modules = [AdobeAgent, ConvivaCastAgent, OzTamAgent];
-        _this.version = 'tracking v0.0.15 Thu, 18 Apr 2019 01:59:55 GMT';
+        _this.version = 'tracking v0.0.15 Thu, 18 Apr 2019 02:31:22 GMT';
         _this.registrar = new Registrar(_this);
         return _this;
     }
@@ -1496,24 +1496,24 @@ var OzTamAgent = /** @class */ (function (_super) {
                 this.onContentStart();
                 break;
             case AppEvent.SeekStart:
-                this.ozTamInstance.seekBegin();
+                this.ozTamInstance && this.ozTamInstance.seekBegin();
                 break;
             case AppEvent.SeekEnd:
-                this.ozTamInstance.seekComplete();
+                this.ozTamInstance && this.ozTamInstance.seekComplete();
                 this.isStopped = true;
                 break;
             case AppEvent.ContentPause:
             case AppEvent.BufferStart:
                 this.isStopped = true;
-                this.ozTamInstance.haltProgress();
+                this.ozTamInstance && this.ozTamInstance.haltProgress();
             case AppEvent.ContentEnd:
-                this.ozTamInstance.complete();
+                this.ozTamInstance && this.ozTamInstance.complete();
                 break;
             case AppEvent.ContentResume:
             case AppEvent.PlayheadUpdate:
                 if (this.isStopped) {
                     this.isStopped = false;
-                    this.ozTamInstance.resumeProgress();
+                    this.ozTamInstance && this.ozTamInstance.resumeProgress();
                 }
                 break;
         }
@@ -1524,7 +1524,7 @@ var OzTamAgent = /** @class */ (function (_super) {
             this.startOzTamSession();
             this.hasSessionStart = true;
         }
-        this.ozTamInstance.beginPlayback(this.mediaInfo.mediaId, this.mediaInfo.url, this.mediaInfo.mediaDuration, this.mediaInfo.mediaPositionFunction, this.mediaInfo.properties, this.mediaInfo.mediaType);
+        this.ozTamInstance && this.ozTamInstance.beginPlayback(this.mediaInfo.mediaId, this.mediaInfo.url, this.mediaInfo.mediaDuration, this.mediaInfo.mediaPositionFunction, this.mediaInfo.properties, this.mediaInfo.mediaType);
     };
     OzTamAgent.prototype.startOzTamService = function () {
         var ozTamConfig = this.vo.getConfigInfo();
@@ -1532,7 +1532,7 @@ var OzTamAgent = /** @class */ (function (_super) {
     };
     OzTamAgent.prototype.startOzTamSession = function () {
         this.mediaInfo = this.vo.getMediaInfo();
-        this.ozTamInstance.startSession(this.mediaInfo.mediaId, this.mediaInfo.url, this.mediaInfo.mediaDuration, this.mediaInfo.mediaType);
+        this.ozTamInstance && this.ozTamInstance.startSession(this.mediaInfo.mediaId, this.mediaInfo.url, this.mediaInfo.mediaDuration, this.mediaInfo.mediaType);
     };
     OzTamAgent.NAME = 'OzTam';
     __decorate([
