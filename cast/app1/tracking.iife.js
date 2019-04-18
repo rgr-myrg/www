@@ -286,6 +286,10 @@ var View;
         return typeof window === 'object';
     }
     View.isWindow = isWindow;
+    function isTop() {
+        return typeof top === 'object';
+    }
+    View.isTop = isTop;
     function isVar(name, type) {
         var hier = name.split('.');
         // Check two levels deep. Ex: typeof window['ns_']['comScore']
@@ -325,6 +329,13 @@ var View;
         document.getElementsByTagName('head')[0].appendChild(script);
     }
     View.appendToWindow = appendToWindow;
+    function getProtocol() {
+        if (!isTop()) {
+            return '';
+        }
+        return top.location.href.search(/^https/) > -1 ? 'https://' : 'http://';
+    }
+    View.getProtocol = getProtocol;
 })(View = exports.View || (exports.View = {}));
 var ErrorVo = /** @class */ (function (_super) {
     __extends(ErrorVo, _super);
@@ -716,7 +727,7 @@ var Tracker = /** @class */ (function (_super) {
         // Modules list can be created at build time based on the tracking config (uvpc)
         // Or supplied at run time.
         _this.modules = [AdobeAgent, ConvivaCastAgent, OzTamAgent];
-        _this.version = 'tracking v0.0.15 Thu, 18 Apr 2019 21:19:05 GMT';
+        _this.version = 'tracking v0.0.15 Thu, 18 Apr 2019 22:07:48 GMT';
         _this.registrar = new Registrar(_this);
         return _this;
     }
@@ -1383,8 +1394,12 @@ var ConvivaCastVo = /** @class */ (function (_super) {
         return _this;
     }
     ConvivaCastVo.prototype.getInitOptions = function () {
+        var gatewayUrl = this.agent.debug ? this.testServerUrl : this.prodServerUrl;
+        if (gatewayUrl.search(/^http/) === -1) {
+            gatewayUrl = View.getProtocol() + gatewayUrl;
+        }
         return {
-            gatewayUrl: this.agent.debug ? this.testServerUrl : this.prodServerUrl
+            gatewayUrl: gatewayUrl
         };
     };
     ConvivaCastVo.prototype.getSessionOptions = function () {
