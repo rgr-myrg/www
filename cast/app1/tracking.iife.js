@@ -716,7 +716,7 @@ var Tracker = /** @class */ (function (_super) {
         // Modules list can be created at build time based on the tracking config (uvpc)
         // Or supplied at run time.
         _this.modules = [AdobeAgent, ConvivaCastAgent, OzTamAgent];
-        _this.version = 'tracking v0.0.15 Thu, 18 Apr 2019 20:30:31 GMT';
+        _this.version = 'tracking v0.0.15 Thu, 18 Apr 2019 21:19:05 GMT';
         _this.registrar = new Registrar(_this);
         return _this;
     }
@@ -1281,7 +1281,7 @@ var ConvivaCastAgent = /** @class */ (function (_super) {
         _super.prototype.onNotify.call(this, notification);
         this.processNotification(notification);
         switch (notification.name) {
-            case AppEvent.SessionStart:
+            case AppEvent.ContentStart:
                 this.createConvivaSession();
                 break;
             case AppEvent.AdBreakStart:
@@ -1308,7 +1308,7 @@ var ConvivaCastAgent = /** @class */ (function (_super) {
         }
     };
     ConvivaCastAgent.prototype.createConvivaSession = function () {
-        if (!this.vo.isSet('playerManager', this.notification.body)) {
+        if (!this.playerInfoVo.playerManager) {
             this.isDebug() && this.logger.log('playerManger not provided');
             return;
         }
@@ -1319,11 +1319,15 @@ var ConvivaCastAgent = /** @class */ (function (_super) {
         else {
             this.Conviva.LivePass.init(this.vo.customerKey);
         }
-        this.castPlayerManager = this.notification.body.playerManager;
+        //this.castPlayerManager = <CastPlayerManager>this.notification.body.playerManager;
+        this.castPlayerManager = this.playerInfoVo.playerManager;
         this.convivaStreamer = new this.Conviva.ConvivaCastV3StreamerProxy(this.castPlayerManager);
         this.convivaSessionId = this.Conviva.LivePass.createSession(this.convivaStreamer, this.vo.getContentInfo(), this.vo.getSessionOptions());
     };
     ConvivaCastAgent.prototype.onAdBreakStart = function () {
+        if (!this.convivaSessionId) {
+            this.createConvivaSession();
+        }
         // Detach streamer as soon as main content stops playing
         this.Conviva.LivePass.detachStreamer(this.convivaSessionId);
         this.adBreakInfo = this.vo.getAdBreakInfo();
