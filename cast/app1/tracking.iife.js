@@ -313,14 +313,14 @@ var View;
     View.getScreenSize = getScreenSize;
     function injectScript(scriptSrc, handler) {
         if (isWindow()) {
-            appendToWindow(scriptSrc, handler);
+            appendChild(scriptSrc, handler);
         }
         else {
             // Determine injection strategy for other platforms
         }
     }
     View.injectScript = injectScript;
-    function appendToWindow(scriptSrc, handler) {
+    function appendChild(scriptSrc, handler) {
         var script = window.document.createElement('script');
         script.src = scriptSrc;
         script.type = 'text/javascript';
@@ -328,7 +328,7 @@ var View;
         script.onerror = function () { return handler(JsInjector.ERROR); };
         document.getElementsByTagName('head')[0].appendChild(script);
     }
-    View.appendToWindow = appendToWindow;
+    View.appendChild = appendChild;
     function getProtocol() {
         if (!isTop()) {
             return '';
@@ -727,7 +727,7 @@ var Tracker = /** @class */ (function (_super) {
         // Modules list can be created at build time based on the tracking config (uvpc)
         // Or supplied at run time.
         _this.modules = [AdobeAgent, ConvivaCastAgent, OzTamAgent];
-        _this.version = 'tracking v0.0.15 Thu, 18 Apr 2019 22:07:48 GMT';
+        _this.version = 'tracking v0.0.15 Fri, 19 Apr 2019 00:20:07 GMT';
         _this.registrar = new Registrar(_this);
         return _this;
     }
