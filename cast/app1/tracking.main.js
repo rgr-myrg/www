@@ -20,7 +20,7 @@
         }
     },
     Adobe: {
-        enabled: false,
+        enabled: true,
         params: {
             prodApiServer: 'cbs-stage.hb-api.omtrdc.net',
             devApiServer: 'cbs-dev.hb-api.omtrdc.net',
@@ -32,7 +32,7 @@
         }
     },
     OzTam: {
-        enabled: false,
+        enabled: true,
         category: 'tracking',
         params: {
             publisherId: '779e3a9f-0ad4-4288-ae57-b4fba8259c1f',
