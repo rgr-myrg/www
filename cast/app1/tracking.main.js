@@ -77,7 +77,7 @@ tracker.on('contentStart', () => {
         assetURL: '<the-asset-url>',
         mediaId: '<the-media-id>',
         ozTamMediaId: 'oz-f0f6155f6efa-6589-8dw9',
-        duration: 653,
+        duration: 596,
         videoTitle: '<the-video-title>',
         seriesTitle: '<the-series-title>',
         season: 1,
