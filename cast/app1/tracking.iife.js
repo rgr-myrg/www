@@ -359,6 +359,7 @@ var DataVo = /** @class */ (function () {
         this.hlsJsPlayer = {};
         this.videoElement = {};
         this.isMobile = false;
+        this.sessionId = '';
         /* Ad Break Info */
         this.adBreakType = '';
         this.adBreakPosition = -1;
@@ -376,6 +377,7 @@ var DataVo = /** @class */ (function () {
         this.episodeTitle = '';
         this.seriesTitle = '';
         this.videoTitle = '';
+        this.airDate = '';
         this.duration = -1;
         this.episodeFlag = false;
         this.isLive = false;
@@ -383,6 +385,7 @@ var DataVo = /** @class */ (function () {
         this.playhead = -1;
         this.season = -1;
         this.episode = -1;
+        this.liveSegmentData = {};
         /* Playback Info */
         this.cdn = '';
         this.currentBitrate = -1;
@@ -400,6 +403,8 @@ var DataVo = /** @class */ (function () {
         /* OzTam Info */
         this.ozTamMediaId = '';
         this.ozTamOptOut = false;
+        /* Nielsen Info */
+        this.nielsenOptOut = false;
         /* Error Info */
         this.errorCode = -1;
         this.errorMessage = '';
@@ -422,6 +427,7 @@ var Agent = /** @class */ (function () {
         //this.processQueue();
     };
     Agent.prototype.onNotify = function (notification) {
+        this.isDebug() && this.logger.log(this.config.name, notification);
         this.notification = notification;
         this.checkForAdPlay();
     };
@@ -569,7 +575,7 @@ var Tracker = /** @class */ (function (_super) {
         _this.registrar = new Registrar();
         // Modules list can be created at build time or supplied at run time.
         _this.modules = [AdobeAgent, ConvivaCastAgent, OzTamAgent];
-        _this.version = 'tracking v0.0.15 Sat, 20 Apr 2019 16:03:28 GMT';
+        _this.version = 'tracking v0.0.15 Sun, 21 Apr 2019 16:12:34 GMT';
         return _this;
     }
     Tracker.prototype.track = function (name, data) {
@@ -582,6 +588,9 @@ var Tracker = /** @class */ (function (_super) {
     };
     Tracker.prototype.setContextData = function (data) {
         DataProxy.getDefault().update({ contextData: data });
+    };
+    Tracker.prototype.setLiveSegmentData = function (data) {
+        DataProxy.getDefault().update({ liveSegmentData: data });
     };
     Tracker.prototype.setDebug = function (debug) {
         Log.getDefault().debug = debug;
