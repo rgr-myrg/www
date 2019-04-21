@@ -20,16 +20,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-function Override() {
-    return function (target, propertyKey) {
-        target.annotated = target.annotated || {};
-        target.annotated.override = target.annotated.override || [];
-        target.annotated.override.push(propertyKey);
-    };
-}
-exports.Override = Override;
-// Data Decorator
-function Data(value) {
+function ModuleParam(value) {
     return function (target, propertyKey) {
         if (!target.keys) {
             target.keys = {};
@@ -49,8 +40,7 @@ function Data(value) {
         };
     };
 }
-exports.Data = Data;
-exports.ModuleParam = Data;
+exports.ModuleParam = ModuleParam;
 var DataAccess = /** @class */ (function () {
     function DataAccess(data) {
         this.data = data;
@@ -63,16 +53,6 @@ var DataAccess = /** @class */ (function () {
             self[key] = _this.keys[key](_this.data);
         });
         return self;
-    };
-    DataAccess.prototype.getElapsedTime = function (startTime) {
-        var currentTime = (new Date()).getTime();
-        return Math.floor((currentTime - startTime) / 1000);
-    };
-    DataAccess.prototype.getValue = function (key, data) {
-        return this.isSet(key, data) ? data[key] : null;
-    };
-    DataAccess.prototype.isSet = function (key, data) {
-        return data.hasOwnProperty(key) && data[key];
     };
     return DataAccess;
 }());
@@ -123,6 +103,7 @@ var JsInjector = /** @class */ (function () {
 exports.JsInjector = JsInjector;
 var Log = /** @class */ (function () {
     function Log() {
+        this.debug = false;
     }
     Log.getDefault = function () {
         return this.instance || (this.instance = new this());
@@ -154,13 +135,10 @@ var Observable = /** @class */ (function () {
             observer.onRegister();
         }
     };
-    Observable.prototype.unregister = function (observer) {
+    Observable.prototype.deregister = function (observer) {
         this.observers = this.observers.filter(function (item) { return item !== observer; });
     };
     Observable.prototype.notify = function (notification) {
-        if (!this.observers) {
-            return;
-        }
         for (var i = this.observers.length; i--;) {
             var observer = this.observers[i];
             observer.onNotify.call(observer, notification);
@@ -197,6 +175,22 @@ var Queue = /** @class */ (function () {
     return Queue;
 }());
 exports.Queue = Queue;
+var Reflector = /** @class */ (function () {
+    function Reflector() {
+    }
+    Reflector.mergeObjects = function (source, destination) {
+        if (typeof source === 'object') {
+            Object.keys(source).forEach(function (key) {
+                if (destination.hasOwnProperty(key)) {
+                    destination[key] = source[key];
+                }
+            });
+        }
+        return destination;
+    };
+    return Reflector;
+}());
+exports.Reflector = Reflector;
 var RestClient = /** @class */ (function () {
     function RestClient(baseUrl) {
         this.baseUrl = baseUrl;
@@ -313,14 +307,14 @@ var View;
     View.getScreenSize = getScreenSize;
     function injectScript(scriptSrc, handler) {
         if (isWindow()) {
-            appendChild(scriptSrc, handler);
+            appendChildToHead(scriptSrc, handler);
         }
         else {
             // Determine injection strategy for other platforms
         }
     }
     View.injectScript = injectScript;
-    function appendChild(scriptSrc, handler) {
+    function appendChildToHead(scriptSrc, handler) {
         var script = window.document.createElement('script');
         script.src = scriptSrc;
         script.type = 'text/javascript';
@@ -328,7 +322,7 @@ var View;
         script.onerror = function () { return handler(JsInjector.ERROR); };
         document.getElementsByTagName('head')[0].appendChild(script);
     }
-    View.appendChild = appendChild;
+    View.appendChildToHead = appendChildToHead;
     function getProtocol() {
         if (!isTop()) {
             return '';
@@ -337,287 +331,137 @@ var View;
     }
     View.getProtocol = getProtocol;
 })(View = exports.View || (exports.View = {}));
-var ErrorVo = /** @class */ (function (_super) {
-    __extends(ErrorVo, _super);
-    function ErrorVo() {
-        return _super !== null && _super.apply(this, arguments) || this;
+var DataProxy = /** @class */ (function () {
+    function DataProxy() {
+        this.metadata = new DataVo();
     }
-    __decorate([
-        Data()
-    ], ErrorVo.prototype, "code", void 0);
-    __decorate([
-        Data()
-    ], ErrorVo.prototype, "message", void 0);
-    __decorate([
-        Data()
-    ], ErrorVo.prototype, "isFatal", void 0);
-    return ErrorVo;
-}(DataAccess));
-exports.ErrorVo = ErrorVo;
-var MetadataVo = /** @class */ (function (_super) {
-    __extends(MetadataVo, _super);
-    function MetadataVo(data) {
-        var _this = _super.call(this, data) || this;
-        _this.data = data;
-        if (_this.isLive) {
-            _this.duration = -1;
+    DataProxy.getDefault = function () {
+        return this.instance || (this.instance = new this());
+    };
+    DataProxy.prototype.update = function (data) {
+        this.metadata = Reflector.mergeObjects(data, this.metadata);
+        this.metadata.timestamp = (new Date()).getTime();
+    };
+    DataProxy.prototype.getData = function () {
+        return this.metadata;
+    };
+    return DataProxy;
+}());
+exports.DataProxy = DataProxy;
+var DataVo = /** @class */ (function () {
+    function DataVo() {
+        /* Player Info */
+        this.playerName = '';
+        this.playerVersion = '';
+        this.playerInitTime = -1;
+        this.playerManager = {};
+        this.dashJsPlayer = {};
+        this.hlsJsPlayer = {};
+        this.videoElement = {};
+        this.isMobile = false;
+        /* Ad Break Info */
+        this.adBreakType = '';
+        this.adBreakPosition = -1;
+        this.adBreakDuration = -1;
+        /* Ad Item Info */
+        this.adTitle = '';
+        this.adId = '';
+        this.adAssetUrl = '';
+        this.adDuration = -1;
+        this.adPosition = -1;
+        /* Content Info */
+        this.assetUrl = '';
+        this.category = '';
+        this.mediaId = '';
+        this.episodeTitle = '';
+        this.seriesTitle = '';
+        this.videoTitle = '';
+        this.duration = -1;
+        this.episodeFlag = false;
+        this.isLive = false;
+        this.timestamp = -1;
+        this.playhead = -1;
+        this.season = -1;
+        this.episode = -1;
+        /* Playback Info */
+        this.cdn = '';
+        this.currentBitrate = -1;
+        this.playbackFramerate = -1;
+        this.drmEnabled = false;
+        this.drmType = '';
+        /* Page Info */
+        this.visitorId = '';
+        this.userId = '';
+        this.userStatus = 'anon';
+        this.partner = '';
+        this.userCountry = '';
+        this.userConnectionType = '';
+        this.contextData = {};
+        /* OzTam Info */
+        this.ozTamMediaId = '';
+        this.ozTamOptOut = false;
+        /* Error Info */
+        this.errorCode = -1;
+        this.errorMessage = '';
+        this.errorIsFatal = false;
+    }
+    return DataVo;
+}());
+exports.DataVo = DataVo;
+var Agent = /** @class */ (function () {
+    function Agent(config) {
+        this.config = config;
+        this.isAdPlaying = false;
+        this.hasSdk = false;
+    }
+    Agent.prototype.onRegister = function () {
+        this.isDebug() && this.logger.log(this.config.name, 'start up');
+    };
+    Agent.prototype.onSdkLoaded = function () {
+        this.hasSdk = true;
+        //this.processQueue();
+    };
+    Agent.prototype.onNotify = function (notification) {
+        this.notification = notification;
+        this.checkForAdPlay();
+    };
+    Agent.prototype.checkForAdPlay = function () {
+        switch (this.notification.name) {
+            case AppEvent.AdBreakStart:
+            case AppEvent.AdStart:
+                this.isAdPlaying = true;
+                break;
+            case AppEvent.AdEnd:
+            case AppEvent.AdBreakEnd:
+            case AppEvent.ContentStart:
+                this.isAdPlaying = false;
+                break;
         }
-        return _this;
-    }
-    __decorate([
-        Data(-1)
-    ], MetadataVo.prototype, "adBreakDuration", void 0);
-    __decorate([
-        Data(-1)
-    ], MetadataVo.prototype, "adBreakPosition", void 0);
-    __decorate([
-        Data()
-    ], MetadataVo.prototype, "adBreakType", void 0);
-    __decorate([
-        Data()
-    ], MetadataVo.prototype, "adServerName", void 0);
-    __decorate([
-        Data(-1)
-    ], MetadataVo.prototype, "adDuration", void 0);
-    __decorate([
-        Data()
-    ], MetadataVo.prototype, "adTitle", void 0);
-    __decorate([
-        Data()
-    ], MetadataVo.prototype, "adId", void 0);
-    __decorate([
-        Data(-1)
-    ], MetadataVo.prototype, "adPosition", void 0);
-    __decorate([
-        Data()
-    ], MetadataVo.prototype, "adAssetUrl", void 0);
-    __decorate([
-        Data()
-    ], MetadataVo.prototype, "adClickThruUrl", void 0);
-    __decorate([
-        Data(false)
-    ], MetadataVo.prototype, "isVpaid", void 0);
-    __decorate([
-        Data()
-    ], MetadataVo.prototype, "wrapperAdId", void 0);
-    __decorate([
-        Data()
-    ], MetadataVo.prototype, "assetUrl", void 0);
-    __decorate([
-        Data()
-    ], MetadataVo.prototype, "category", void 0);
-    __decorate([
-        Data()
-    ], MetadataVo.prototype, "cdn", void 0);
-    __decorate([
-        Data(-1)
-    ], MetadataVo.prototype, "currentBitrate", void 0);
-    __decorate([
-        Data(-1)
-    ], MetadataVo.prototype, "duration", void 0);
-    __decorate([
-        Data()
-    ], MetadataVo.prototype, "episode", void 0);
-    __decorate([
-        Data(false)
-    ], MetadataVo.prototype, "episodeFlag", void 0);
-    __decorate([
-        Data()
-    ], MetadataVo.prototype, "episodeTitle", void 0);
-    __decorate([
-        Data(false)
-    ], MetadataVo.prototype, "isLive", void 0);
-    __decorate([
-        Data()
-    ], MetadataVo.prototype, "mediaId", void 0);
-    __decorate([
-        Data()
-    ], MetadataVo.prototype, "ozTamMediaId", void 0);
-    __decorate([
-        Data(false)
-    ], MetadataVo.prototype, "ozTamOptOut", void 0);
-    __decorate([
-        Data()
-    ], MetadataVo.prototype, "playbackFramerate", void 0);
-    __decorate([
-        Data()
-    ], MetadataVo.prototype, "season", void 0);
-    __decorate([
-        Data()
-    ], MetadataVo.prototype, "seriesTitle", void 0);
-    __decorate([
-        Data()
-    ], MetadataVo.prototype, "streamType", void 0);
-    __decorate([
-        Data(-1)
-    ], MetadataVo.prototype, "timestamp", void 0);
-    __decorate([
-        Data()
-    ], MetadataVo.prototype, "videoTitle", void 0);
-    __decorate([
-        Data(false)
-    ], MetadataVo.prototype, "nielsenOptOut", void 0);
-    __decorate([
-        Data()
-    ], MetadataVo.prototype, "airDate", void 0);
-    return MetadataVo;
-}(DataAccess));
-exports.MetadataVo = MetadataVo;
-var PlayerInfoVo = /** @class */ (function (_super) {
-    __extends(PlayerInfoVo, _super);
-    function PlayerInfoVo() {
-        return _super !== null && _super.apply(this, arguments) || this;
-    }
-    __decorate([
-        Data(false)
-    ], PlayerInfoVo.prototype, "allowConcurrentPlayback", void 0);
-    __decorate([
-        Data()
-    ], PlayerInfoVo.prototype, "bitrate", void 0);
-    __decorate([
-        Data()
-    ], PlayerInfoVo.prototype, "channel", void 0);
-    __decorate([
-        Data()
-    ], PlayerInfoVo.prototype, "cdn", void 0);
-    __decorate([
-        Data()
-    ], PlayerInfoVo.prototype, "cms", void 0);
-    __decorate([
-        Data()
-    ], PlayerInfoVo.prototype, "currentIndex", void 0);
-    __decorate([
-        Data()
-    ], PlayerInfoVo.prototype, "drmDashPlayreadyURL", void 0);
-    __decorate([
-        Data()
-    ], PlayerInfoVo.prototype, "drmDashWidevineURL", void 0);
-    __decorate([
-        Data(false)
-    ], PlayerInfoVo.prototype, "drmEnabled", void 0);
-    __decorate([
-        Data()
-    ], PlayerInfoVo.prototype, "drmFairplayAppCertURL", void 0);
-    __decorate([
-        Data()
-    ], PlayerInfoVo.prototype, "drmTicketDrmType", void 0);
-    __decorate([
-        Data()
-    ], PlayerInfoVo.prototype, "drmType", void 0);
-    __decorate([
-        Data(false)
-    ], PlayerInfoVo.prototype, "enableMutedAutoplay", void 0);
-    __decorate([
-        Data(false)
-    ], PlayerInfoVo.prototype, "enableNativeMobileAutoplay", void 0);
-    __decorate([
-        Data(false)
-    ], PlayerInfoVo.prototype, "enableReplay", void 0);
-    __decorate([
-        Data(false)
-    ], PlayerInfoVo.prototype, "enableUnmutedAutoplay", void 0);
-    __decorate([
-        Data()
-    ], PlayerInfoVo.prototype, "framerate", void 0);
-    __decorate([
-        Data(false)
-    ], PlayerInfoVo.prototype, "isAutoplay", void 0);
-    __decorate([
-        Data(false)
-    ], PlayerInfoVo.prototype, "isFullScreen", void 0);
-    __decorate([
-        Data(false)
-    ], PlayerInfoVo.prototype, "isMobile", void 0);
-    __decorate([
-        Data(false)
-    ], PlayerInfoVo.prototype, "isMultiCDN", void 0);
-    __decorate([
-        Data(false)
-    ], PlayerInfoVo.prototype, "isMuteAtPlayStart", void 0);
-    __decorate([
-        Data(false)
-    ], PlayerInfoVo.prototype, "isMuted", void 0);
-    __decorate([
-        Data(false)
-    ], PlayerInfoVo.prototype, "isSslRequired", void 0);
-    __decorate([
-        Data(false)
-    ], PlayerInfoVo.prototype, "livestream", void 0);
-    __decorate([
-        Data(false)
-    ], PlayerInfoVo.prototype, "liveSyncDurationCount", void 0);
-    __decorate([
-        Data()
-    ], PlayerInfoVo.prototype, "maxBitrate", void 0);
-    __decorate([
-        Data()
-    ], PlayerInfoVo.prototype, "minBitrate", void 0);
-    __decorate([
-        Data(false)
-    ], PlayerInfoVo.prototype, "pageProvidesTealium", void 0);
-    __decorate([
-        Data()
-    ], PlayerInfoVo.prototype, "pagetype", void 0);
-    __decorate([
-        Data()
-    ], PlayerInfoVo.prototype, "partner", void 0);
-    __decorate([
-        Data()
-    ], PlayerInfoVo.prototype, "pguid", void 0);
-    __decorate([
-        Data()
-    ], PlayerInfoVo.prototype, "quality", void 0);
-    __decorate([
-        Data()
-    ], PlayerInfoVo.prototype, "sessionId", void 0);
-    __decorate([
-        Data()
-    ], PlayerInfoVo.prototype, "startTime", void 0);
-    __decorate([
-        Data()
-    ], PlayerInfoVo.prototype, "streamType", void 0);
-    __decorate([
-        Data(false)
-    ], PlayerInfoVo.prototype, "useIma", void 0);
-    __decorate([
-        Data()
-    ], PlayerInfoVo.prototype, "userConnectionType", void 0);
-    __decorate([
-        Data()
-    ], PlayerInfoVo.prototype, "userCountry", void 0);
-    __decorate([
-        Data()
-    ], PlayerInfoVo.prototype, "userIsp", void 0);
-    __decorate([
-        Data()
-    ], PlayerInfoVo.prototype, "userPpid", void 0);
-    __decorate([
-        Data()
-    ], PlayerInfoVo.prototype, "userStatus", void 0);
-    __decorate([
-        Data()
-    ], PlayerInfoVo.prototype, "viewguid", void 0);
-    __decorate([
-        Data()
-    ], PlayerInfoVo.prototype, "playerName", void 0);
-    __decorate([
-        Data(-1)
-    ], PlayerInfoVo.prototype, "playerInitTime", void 0);
-    __decorate([
-        Data()
-    ], PlayerInfoVo.prototype, "playerVersion", void 0);
-    __decorate([
-        Data()
-    ], PlayerInfoVo.prototype, "userId", void 0);
-    __decorate([
-        Data()
-    ], PlayerInfoVo.prototype, "playerManager", void 0);
-    __decorate([
-        Data()
-    ], PlayerInfoVo.prototype, "videoElement", void 0);
-    return PlayerInfoVo;
-}(DataAccess));
-exports.PlayerInfoVo = PlayerInfoVo;
+    };
+    Agent.prototype.hasContentCompleted = function () {
+        var metadata = this.getData();
+        // Live doesn't have duration
+        if (metadata && metadata.isLive) {
+            return false;
+        }
+        return metadata.playhead >= metadata.duration * 0.95;
+    };
+    Agent.prototype.getData = function () {
+        return DataProxy.getDefault().getData();
+    };
+    Agent.prototype.isDebug = function () {
+        return Log.getDefault().debug;
+    };
+    Object.defineProperty(Agent.prototype, "logger", {
+        get: function () {
+            return Log.getDefault().getLogger();
+        },
+        enumerable: true,
+        configurable: true
+    });
+    return Agent;
+}());
+exports.Agent = Agent;
 var AppEvent;
 (function (AppEvent) {
     AppEvent["AppClose"] = "appClose";
@@ -647,7 +491,7 @@ var AppEvent;
     AppEvent["ContentPause"] = "contentPause";
     AppEvent["ContentResume"] = "contentResume";
     AppEvent["ContentStart"] = "contentStart";
-    AppEvent["ContextData"] = "contextData";
+    //ContextData = 'contextData',
     AppEvent["DashJsLoaded"] = "dashJsLoaded";
     AppEvent["EnterForeground"] = "EnterForeground";
     AppEvent["ExitForeground"] = "ExitForeground";
@@ -680,12 +524,12 @@ var BuildInfo;
     BuildInfo.isSamsungTv = isSamsungTv;
 })(BuildInfo = exports.BuildInfo || (exports.BuildInfo = {}));
 var Registrar = /** @class */ (function () {
-    function Registrar(observable) {
-        this.observable = observable;
+    function Registrar() {
     }
-    Registrar.prototype.registerAgents = function () {
+    Registrar.prototype.registerAgents = function (tracker) {
         var _this = this;
-        this.observable.modules.forEach(function (Module) {
+        this.tracker = tracker;
+        this.tracker.modules.forEach(function (Module) {
             if (_this.isAgentEnabled(Module.NAME)) {
                 var agentConfig = _this.getAgentConfig(Module.NAME);
                 _this.registerAgent(new Module(agentConfig));
@@ -693,18 +537,17 @@ var Registrar = /** @class */ (function () {
         });
     };
     Registrar.prototype.isAgentEnabled = function (name) {
-        return this.observable.config.hasOwnProperty(name)
-            && this.observable.config[name].hasOwnProperty('enabled')
-            && this.observable.config[name].enabled;
+        return this.tracker.config.hasOwnProperty(name)
+            && this.tracker.config[name].hasOwnProperty('enabled')
+            && this.tracker.config[name].enabled;
     };
     Registrar.prototype.getAgentConfig = function (name) {
-        var agentConfig = this.observable.config[name];
-        agentConfig.debug = this.observable.debug;
+        var agentConfig = this.tracker.config[name];
         agentConfig.name = name;
         return agentConfig;
     };
     Registrar.prototype.registerAgent = function (agent) {
-        this.observable.register(agent);
+        this.tracker.register(agent);
         // Not all agents have injectable sdks
         if (typeof agent.injectable !== 'object') {
             return;
@@ -722,159 +565,38 @@ exports.Registrar = Registrar;
 var Tracker = /** @class */ (function (_super) {
     __extends(Tracker, _super);
     function Tracker() {
-        var _this = _super.call(this) || this;
-        _this.debug = false;
-        // Modules list can be created at build time based on the tracking config (uvpc)
-        // Or supplied at run time.
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.registrar = new Registrar();
+        // Modules list can be created at build time or supplied at run time.
         _this.modules = [AdobeAgent, ConvivaCastAgent, OzTamAgent];
-        _this.version = 'tracking v0.0.15 Fri, 19 Apr 2019 00:20:07 GMT';
-        _this.registrar = new Registrar(_this);
+        _this.version = 'tracking v0.0.15 Sat, 20 Apr 2019 16:03:28 GMT';
         return _this;
     }
-    Tracker.prototype.track = function (eventName, data) {
-        data = data || {};
-        data.timestamp = (new Date()).getTime();
-        this.isDebug() && this.logger.log('[Tracker]', eventName, data);
-        _super.prototype.notify.call(this, { name: eventName, body: data });
+    Tracker.prototype.track = function (name, data) {
+        DataProxy.getDefault().update(data);
+        _super.prototype.notify.call(this, { name: name, body: data });
     };
     Tracker.prototype.setConfig = function (config) {
         this.config = config;
-        this.registrar.registerAgents();
+        this.registrar.registerAgents(this);
     };
     Tracker.prototype.setContextData = function (data) {
-        _super.prototype.notify.call(this, { name: AppEvent.ContextData, body: data });
+        DataProxy.getDefault().update({ contextData: data });
     };
     Tracker.prototype.setDebug = function (debug) {
-        this.debug = debug;
+        Log.getDefault().debug = debug;
     };
     Tracker.prototype.setLogger = function (logger) {
         Log.getDefault().setLogger(logger);
-        this.logger = Log.getDefault().getLogger();
     };
-    Tracker.prototype.isDebug = function () {
-        return this.debug && this.logger ? true : false;
-    };
-    /**
-     * Destroys each observer from the collection. This method is invoked before
-     * the object is destroyed via Destroyable decorator
-     *
-     * @returns {void}
-     * @memberof Tracker
-     */
-    Tracker.prototype.onBeforeDestroy = function () {
-        for (var i = this.observers.length; i--;) {
-            var observer = this.observers[i];
-            observer.destroy && observer.destroy();
-        }
-    };
-    Tracker = __decorate([
-        Destroyable()
-    ], Tracker);
     return Tracker;
 }(Observable));
 exports.Tracker = Tracker;
-var TrackingAgent = /** @class */ (function () {
-    function TrackingAgent(config) {
-        this.config = config;
-        this.debug = false;
-        this.hasSdk = false;
-        this.contextData = {};
-        this.liveSegmentData = {};
-        this.playheadTime = 0;
-        this.isAdPlaying = false;
-        this.logger = Log.getDefault().getLogger();
-        this.debug = config.hasOwnProperty('debug') && config.debug;
-        this.queue = new Queue();
-        this.isDebug() && this.logger.log(this.config.name, 'starts up');
-    }
-    TrackingAgent.prototype.onSdkLoaded = function () {
-        this.hasSdk = true;
-        this.processQueue();
-    };
-    TrackingAgent.prototype.onNotify = function (notification) {
-        // Add to queue if agent sdk isn't ready yet
-        if (!this.hasSdk) {
-            this.queue.add(notification);
-            return;
-        }
-        this.processQueue();
-        this.processNotification(notification);
-    };
-    TrackingAgent.prototype.processQueue = function () {
-        var _this = this;
-        if (!this.queue.isEmpty()) {
-            this.queue.forEach(function (notification) {
-                _this.processNotification(notification);
-            });
-        }
-    };
-    TrackingAgent.prototype.processNotification = function (notification) {
-        //this.isDebug() && this.logger.log(this.config.name, notification);
-        this.notification = notification;
-        this.checkForAdPlay();
-        // Sync the playhead on every notification
-        if (notification.body.playheadTime) {
-            this.playheadTime = notification.body.playheadTime;
-        }
-        switch (notification.name) {
-            case AppEvent.SessionStart:
-                if (notification.body) {
-                    this.playerInfoVo = new PlayerInfoVo(notification.body);
-                }
-                break;
-            case AppEvent.ContentStart:
-            case AppEvent.AdBreakStart:
-            case AppEvent.AdStart:
-                if (notification.body) {
-                    this.metadataVo = new MetadataVo(notification.body);
-                }
-                break;
-            case AppEvent.ContextData:
-                this.contextData = notification.body;
-                break;
-            case AppEvent.LiveSegmentStart:
-                this.liveSegmentData = notification.body;
-                break;
-            case AppEvent.LiveSegmentEnd:
-                this.liveSegmentData = {};
-                break;
-            case AppEvent.PlayerError:
-                this.errorVo = new ErrorVo(notification.body);
-                break;
-        }
-    };
-    TrackingAgent.prototype.isDebug = function () {
-        return this.debug && this.logger ? true : false;
-    };
-    TrackingAgent.prototype.checkForAdPlay = function () {
-        switch (this.notification.name) {
-            case AppEvent.AdBreakStart:
-            case AppEvent.AdStart:
-                this.isAdPlaying = true;
-                break;
-            case AppEvent.AdEnd:
-            case AppEvent.AdBreakEnd:
-            case AppEvent.ContentStart:
-                this.isAdPlaying = false;
-                break;
-        }
-    };
-    TrackingAgent.prototype.hasContentCompleted = function () {
-        var metadata = this.metadataVo;
-        // Live doesn't have duration
-        if (metadata && metadata.isLive) {
-            return false;
-        }
-        return this.playheadTime >= metadata.duration * 0.95;
-    };
-    return TrackingAgent;
-}());
-exports.TrackingAgent = TrackingAgent;
 var ChromecastTracker = /** @class */ (function (_super) {
     __extends(ChromecastTracker, _super);
     function ChromecastTracker() {
         var _this = _super.call(this) || this;
-        _this.playheadTime = 0;
+        _this.playhead = 0;
         _this.hasLoadStart = false;
         _this.isBuffering = false;
         _this.isAdPlaying = false;
@@ -939,7 +661,7 @@ var ChromecastTracker = /** @class */ (function (_super) {
             return;
         }
         if (e.currentMediaTime) {
-            this.playheadTime = e.currentMediaTime;
+            this.playhead = e.currentMediaTime;
             this.trackEvent(AppEvent.PlayheadUpdate);
         }
     };
@@ -1007,7 +729,7 @@ var ChromecastTracker = /** @class */ (function (_super) {
             }
         }
         // Sync up the tracker with the latest playhead position on every event
-        payload.playheadTime = this.playheadTime;
+        payload.playhead = this.playhead;
         _super.prototype.track.call(this, name, payload);
     };
     return ChromecastTracker;
@@ -1023,8 +745,9 @@ var AdobeAgent = /** @class */ (function (_super) {
         return _this;
     }
     AdobeAgent.prototype.onRegister = function () {
+        _super.prototype.onRegister.call(this);
         this.vo = new AdobeVo(this);
-        this.restClient = new RestClient(this.debug ? this.vo.devApiServer : this.vo.prodApiServer);
+        this.restClient = new RestClient(this.isDebug() ? this.vo.devApiServer : this.vo.prodApiServer);
         this.eventQueue = new Queue();
         this.timer = new Timer(this.vo.hbInterval);
     };
@@ -1146,17 +869,11 @@ var AdobeAgent = /** @class */ (function (_super) {
         this.trackEvent('sessionEnd');
     };
     AdobeAgent.NAME = 'Adobe';
-    __decorate([
-        Override()
-    ], AdobeAgent.prototype, "onRegister", null);
-    __decorate([
-        Override()
-    ], AdobeAgent.prototype, "onNotify", null);
     AdobeAgent = __decorate([
         Destroyable()
     ], AdobeAgent);
     return AdobeAgent;
-}(TrackingAgent));
+}(Agent));
 exports.AdobeAgent = AdobeAgent;
 var AdobeVo = /** @class */ (function (_super) {
     __extends(AdobeVo, _super);
@@ -1166,58 +883,56 @@ var AdobeVo = /** @class */ (function (_super) {
         return _this;
     }
     AdobeVo.prototype.getSessionStartData = function () {
-        var playerInfo = this.agent.playerInfoVo;
-        var metadata = this.agent.metadataVo;
+        var data = this.agent.getData();
         var eventData = this.getPayload('sessionStart');
         eventData.params = {
             'analytics.trackingServer': this.trackingServer,
             'analytics.reportSuite': this.reportSuite,
-            'analytics.visitorId': this.getValue('visitorId', this.agent.contextData) || '',
+            'analytics.visitorId': data.visitorId,
             'analytics.enableSSL': this.enableSSL,
             'visitor.marketingCloudOrgId': this.marketingCloudOrgId,
-            'media.playerName': playerInfo.playerName,
-            'media.contentType': metadata.isLive ? 'Live' : 'VOD',
-            'media.length': metadata.duration,
-            'media.id': metadata.mediaId,
-            'media.name': metadata.videoTitle,
+            'media.playerName': data.playerName,
+            'media.contentType': data.isLive ? 'Live' : 'VOD',
+            'media.length': data.duration,
+            'media.id': data.mediaId,
+            'media.name': data.videoTitle,
             'media.channel': this.channel,
-            'media.sdkVersion': playerInfo.playerVersion,
-            'media.show': metadata.seriesTitle,
-            'media.season': metadata.season.toString(),
-            'media.episode': metadata.episode.toString(),
-            'media.genre': metadata.category,
+            'media.sdkVersion': data.playerVersion,
+            'media.show': data.seriesTitle,
+            'media.season': data.season.toString(),
+            'media.episode': data.episode.toString(),
+            'media.genre': data.category,
             'media.network': this.channel,
             // Set to 0 for Full Episode, 2 for Clip
-            'media.showType': metadata.episodeFlag ? '0' : '2',
+            'media.showType': data.episodeFlag ? '0' : '2',
             // Set to true if the session was closed and then resumed at a later time, e.g., 
             // the user left the video but eventually came back, and the player resumed the 
             // video from the playhead where it was stopped
             'media.resume': false
         };
-        eventData.customMetadata = this.agent.contextData;
+        eventData.customMetadata = data.contextData;
         return eventData;
     };
     AdobeVo.prototype.getAdBreakStartData = function () {
-        var metadata = this.agent.metadataVo;
+        var data = this.agent.getData();
         return {
-            'media.ad.podFriendlyName': metadata.adBreakType,
-            'media.ad.podIndex': metadata.adBreakPosition,
-            'media.ad.podPosition': metadata.adBreakPosition,
-            'media.ad.podSecond': this.agent.playheadTime
+            'media.ad.podFriendlyName': data.adBreakType,
+            'media.ad.podIndex': data.adBreakPosition,
+            'media.ad.podPosition': data.adBreakPosition,
+            'media.ad.podSecond': data.playhead
         };
     };
     // https://marketing.adobe.com/resources/help/en_US/sc/appmeasurement/hbvideo/mc-api-req-params.html
     AdobeVo.prototype.getAdItemData = function () {
-        var session = this.agent.playerInfoVo;
-        var metadata = this.agent.metadataVo;
+        var data = this.agent.getData();
         return {
-            'media.ad.name': metadata.adTitle,
-            'media.ad.id': metadata.videoTitle + ' - ' + metadata.adTitle,
-            'media.ad.length': metadata.adDuration,
-            'media.ad.creativeId': metadata.adId,
-            'media.ad.creativeURL': metadata.adAssetUrl,
-            'media.ad.playerName': session.playerName,
-            'media.ad.podPosition': metadata.adPosition
+            'media.ad.name': data.adTitle,
+            'media.ad.id': data.videoTitle + ' - ' + data.adTitle,
+            'media.ad.length': data.adDuration,
+            'media.ad.creativeId': data.adId,
+            'media.ad.creativeURL': data.adAssetUrl,
+            'media.ad.playerName': data.playerName,
+            'media.ad.podPosition': data.adPosition
         };
     };
     AdobeVo.prototype.getApiPath = function (location) {
@@ -1226,7 +941,7 @@ var AdobeVo = /** @class */ (function (_super) {
         return [location, 'events'].join('/');
     };
     AdobeVo.prototype.getPayload = function (eventName) {
-        var metadata = this.agent.metadataVo;
+        var data = this.agent.getData();
         var params = {};
         switch (eventName) {
             case 'adBreakStart':
@@ -1239,7 +954,7 @@ var AdobeVo = /** @class */ (function (_super) {
         return {
             eventType: eventName,
             playerTime: {
-                playhead: this.agent.playheadTime,
+                playhead: data.playhead,
                 ts: (new Date()).getTime()
             },
             params: params
@@ -1247,28 +962,28 @@ var AdobeVo = /** @class */ (function (_super) {
     };
     AdobeVo.SESSION_PATH = 'api/v1/sessions';
     __decorate([
-        exports.ModuleParam(false)
+        ModuleParam(false)
     ], AdobeVo.prototype, "enableSSL", void 0);
     __decorate([
-        exports.ModuleParam()
+        ModuleParam()
     ], AdobeVo.prototype, "channel", void 0);
     __decorate([
-        exports.ModuleParam()
+        ModuleParam()
     ], AdobeVo.prototype, "reportSuite", void 0);
     __decorate([
-        exports.ModuleParam()
+        ModuleParam()
     ], AdobeVo.prototype, "trackingServer", void 0);
     __decorate([
-        exports.ModuleParam()
+        ModuleParam()
     ], AdobeVo.prototype, "marketingCloudOrgId", void 0);
     __decorate([
-        exports.ModuleParam()
+        ModuleParam()
     ], AdobeVo.prototype, "devApiServer", void 0);
     __decorate([
-        exports.ModuleParam()
+        ModuleParam()
     ], AdobeVo.prototype, "prodApiServer", void 0);
     __decorate([
-        exports.ModuleParam(10000)
+        ModuleParam(10000)
     ], AdobeVo.prototype, "hbInterval", void 0);
     AdobeVo = __decorate([
         Destroyable()
@@ -1282,6 +997,7 @@ var ConvivaCastAgent = /** @class */ (function (_super) {
         return _super !== null && _super.apply(this, arguments) || this;
     }
     ConvivaCastAgent.prototype.onRegister = function () {
+        _super.prototype.onRegister.call(this);
         this.vo = new ConvivaCastVo(this);
     };
     ConvivaCastAgent.prototype.onSdkLoaded = function () {
@@ -1290,7 +1006,6 @@ var ConvivaCastAgent = /** @class */ (function (_super) {
     };
     ConvivaCastAgent.prototype.onNotify = function (notification) {
         _super.prototype.onNotify.call(this, notification);
-        this.processNotification(notification);
         switch (notification.name) {
             case AppEvent.ContentStart:
                 this.createConvivaSession();
@@ -1308,7 +1023,7 @@ var ConvivaCastAgent = /** @class */ (function (_super) {
                 this.onAdBreakEnd();
                 break;
             case AppEvent.BitrateChange:
-                this.Conviva.LivePass.setBitrate(this.convivaSessionId, this.metadataVo.currentBitrate);
+                this.Conviva.LivePass.setBitrate(this.convivaSessionId, this.getData().currentBitrate);
                 break;
             case AppEvent.SessionEnd:
                 this.onSessionEnd();
@@ -1319,19 +1034,18 @@ var ConvivaCastAgent = /** @class */ (function (_super) {
         }
     };
     ConvivaCastAgent.prototype.createConvivaSession = function () {
-        if (!this.playerInfoVo.playerManager) {
+        if (!this.vo.getCastPlayerManager()) {
             this.isDebug() && this.logger.log('playerManger not provided');
             return;
         }
-        if (this.debug) {
+        if (this.isDebug()) {
             this.Conviva.LivePass.toggleTraces(true);
             this.Conviva.LivePass.initWithSettings(this.vo.customerKey, this.vo.getInitOptions());
         }
         else {
             this.Conviva.LivePass.init(this.vo.customerKey);
         }
-        //this.castPlayerManager = <CastPlayerManager>this.notification.body.playerManager;
-        this.castPlayerManager = this.playerInfoVo.playerManager;
+        this.castPlayerManager = this.vo.getCastPlayerManager();
         this.convivaStreamer = new this.Conviva.ConvivaCastV3StreamerProxy(this.castPlayerManager);
         this.convivaSessionId = this.Conviva.LivePass.createSession(this.convivaStreamer, this.vo.getContentInfo(), this.vo.getSessionOptions());
     };
@@ -1352,12 +1066,12 @@ var ConvivaCastAgent = /** @class */ (function (_super) {
         this.Conviva.LivePass.attachStreamer(this.convivaSessionId, this.convivaStreamer);
     };
     ConvivaCastAgent.prototype.onBitRateChange = function () {
-        this.Conviva.LivePass.setBitrate(this.convivaSessionId, this.metadataVo.currentBitrate);
+        this.Conviva.LivePass.setBitrate(this.convivaSessionId, this.getData().currentBitrate);
     };
     ConvivaCastAgent.prototype.onPlayerError = function () {
         var error = this.vo.getConvivaError();
         this.Conviva.LivePass.reportError(error.sessionId, error.message, error.type);
-        if (this.errorVo.isFatal) {
+        if (this.getData().errorIsFatal) {
             this.Conviva.LivePass.cleanupSession(this.convivaSessionId);
             this.createConvivaSession();
         }
@@ -1366,15 +1080,6 @@ var ConvivaCastAgent = /** @class */ (function (_super) {
         this.hasContentCompleted() && this.Conviva.LivePass.cleanupSession(this.convivaSessionId);
     };
     ConvivaCastAgent.NAME = 'ConvivaCast';
-    __decorate([
-        Override()
-    ], ConvivaCastAgent.prototype, "onRegister", null);
-    __decorate([
-        Override()
-    ], ConvivaCastAgent.prototype, "onSdkLoaded", null);
-    __decorate([
-        Override()
-    ], ConvivaCastAgent.prototype, "onNotify", null);
     ConvivaCastAgent = __decorate([
         Injectable({
             src: 'sdk/conviva-chromecast.js',
@@ -1384,7 +1089,7 @@ var ConvivaCastAgent = /** @class */ (function (_super) {
         Destroyable()
     ], ConvivaCastAgent);
     return ConvivaCastAgent;
-}(TrackingAgent));
+}(Agent));
 exports.ConvivaCastAgent = ConvivaCastAgent;
 var ConvivaCastVo = /** @class */ (function (_super) {
     __extends(ConvivaCastVo, _super);
@@ -1394,7 +1099,7 @@ var ConvivaCastVo = /** @class */ (function (_super) {
         return _this;
     }
     ConvivaCastVo.prototype.getInitOptions = function () {
-        var gatewayUrl = this.agent.debug ? this.testServerUrl : this.prodServerUrl;
+        var gatewayUrl = this.agent.isDebug() ? this.testServerUrl : this.prodServerUrl;
         if (gatewayUrl.search(/^http/) === -1) {
             gatewayUrl = View.getProtocol() + gatewayUrl;
         }
@@ -1409,68 +1114,70 @@ var ConvivaCastVo = /** @class */ (function (_super) {
             _a;
     };
     ConvivaCastVo.prototype.getContentInfo = function () {
-        var playerInfo = this.agent.playerInfoVo;
-        var metadata = this.agent.metadataVo;
+        var data = this.agent.getData();
         var info = new Conviva.ConvivaContentInfo();
-        info.playerName = playerInfo.playerName;
-        info.streamUrl = metadata.assetUrl;
-        info.assetName = metadata.videoTitle;
-        info.duration = metadata.duration;
-        info.defaultReportingBitrateKbps = metadata.currentBitrate;
-        info.defaultReportingResource = metadata.cdn;
-        info.encodedFps = metadata.playbackFramerate;
-        info.isLive = metadata.isLive;
-        info.viewerId = playerInfo.userId;
+        info.playerName = data.playerName;
+        info.streamUrl = data.assetUrl;
+        info.assetName = data.videoTitle;
+        info.duration = data.duration;
+        info.defaultReportingBitrateKbps = data.currentBitrate;
+        info.defaultReportingResource = data.cdn;
+        info.encodedFps = data.playbackFramerate;
+        info.isLive = data.isLive;
+        info.viewerId = data.userId;
         info.tags = {
-            accessType: playerInfo.userStatus || 'anon',
-            contentId: metadata.mediaId || 'N/A',
-            contentType: info.isLive ? 'LIVE' : 'VOD',
-            isEpisode: metadata.episodeFlag,
-            Partner_ID: playerInfo.partner,
-            Player_Version: playerInfo.playerVersion,
-            seriesTitle: metadata.seriesTitle,
-            episodeTitle: metadata.episodeTitle || metadata.videoTitle,
-            app: playerInfo.playerName,
-            appVersion: playerInfo.playerVersion,
-            appRegion: playerInfo.userCountry || 'us',
-            drm: playerInfo.drmEnabled,
-            drmType: playerInfo.drmType || 'N/A',
-            connectionType: playerInfo.userConnectionType || 'unknown',
+            accessType: data.userStatus || 'anon',
+            contentId: data.mediaId || 'N/A',
+            contentType: data.isLive ? 'LIVE' : 'VOD',
+            isEpisode: data.episodeFlag,
+            Partner_ID: data.partner,
+            Player_Version: data.playerVersion,
+            seriesTitle: data.seriesTitle,
+            episodeTitle: data.episodeTitle || data.videoTitle,
+            app: data.playerName,
+            appVersion: data.playerVersion,
+            appRegion: data.userCountry || 'us',
+            drm: data.drmEnabled,
+            drmType: data.drmType || 'N/A',
+            connectionType: data.userConnectionType || 'unknown',
             winDimension: View.getScreenSize()
         };
         return info;
     };
     ConvivaCastVo.prototype.getAdBreakInfo = function () {
-        var metadata = this.agent.metadataVo;
+        var data = this.agent.getData();
         return {
-            podDuration: metadata.adBreakDuration,
-            podIndex: metadata.adBreakPosition,
-            podPosition: metadata.adBreakType + '-roll'
+            podDuration: data.adBreakDuration,
+            podIndex: data.adBreakPosition,
+            podPosition: data.adBreakType + '-roll'
         };
     };
     ConvivaCastVo.prototype.getConvivaError = function () {
-        var errorVo = this.agent.errorVo;
+        var data = this.agent.getData();
         var errorType = this.agent.Conviva.StreamerError;
         return {
             sessionId: this.agent.convivaSessionId,
-            message: [errorVo.code, errorVo.message].join(':'),
-            type: errorVo.isFatal ? errorType.SEVERITY_FATAL : errorType.SEVERITY_WARNING
+            message: [data.errorCode, data.errorMessage].join(':'),
+            type: data.errorIsFatal ? errorType.SEVERITY_FATAL : errorType.SEVERITY_WARNING
         };
     };
+    ConvivaCastVo.prototype.getCastPlayerManager = function () {
+        return this.agent.getData().playerManager;
+    };
     __decorate([
-        exports.ModuleParam()
+        ModuleParam()
     ], ConvivaCastVo.prototype, "customerId", void 0);
     __decorate([
-        exports.ModuleParam()
+        ModuleParam()
     ], ConvivaCastVo.prototype, "customerKey", void 0);
     __decorate([
-        exports.ModuleParam(5)
+        ModuleParam(5)
     ], ConvivaCastVo.prototype, "heartbeatInterval", void 0);
     __decorate([
-        exports.ModuleParam()
+        ModuleParam()
     ], ConvivaCastVo.prototype, "testServerUrl", void 0);
     __decorate([
-        exports.ModuleParam()
+        ModuleParam()
     ], ConvivaCastVo.prototype, "prodServerUrl", void 0);
     ConvivaCastVo = __decorate([
         Destroyable()
@@ -1487,6 +1194,7 @@ var OzTamAgent = /** @class */ (function (_super) {
         return _this;
     }
     OzTamAgent.prototype.onRegister = function () {
+        _super.prototype.onRegister.call(this);
         this.vo = new OzTamVo(this);
     };
     OzTamAgent.prototype.onSdkLoaded = function () {
@@ -1543,15 +1251,6 @@ var OzTamAgent = /** @class */ (function (_super) {
         this.ozTamInstance && this.ozTamInstance.startSession(this.mediaInfo.mediaId, this.mediaInfo.url, this.mediaInfo.mediaDuration, this.mediaInfo.mediaType);
     };
     OzTamAgent.NAME = 'OzTam';
-    __decorate([
-        Override()
-    ], OzTamAgent.prototype, "onRegister", null);
-    __decorate([
-        Override()
-    ], OzTamAgent.prototype, "onSdkLoaded", null);
-    __decorate([
-        Override()
-    ], OzTamAgent.prototype, "onNotify", null);
     OzTamAgent = __decorate([
         Injectable({
             src: 'sdk/oztam-service.js',
@@ -1561,7 +1260,7 @@ var OzTamAgent = /** @class */ (function (_super) {
         Destroyable()
     ], OzTamAgent);
     return OzTamAgent;
-}(TrackingAgent));
+}(Agent));
 exports.OzTamAgent = OzTamAgent;
 var OzTamVo = /** @class */ (function (_super) {
     __extends(OzTamVo, _super);
@@ -1574,60 +1273,56 @@ var OzTamVo = /** @class */ (function (_super) {
         return {
             publisherId: this.publisherId,
             vendorVersion: this.getVendorVersion(),
-            productionMode: !this.agent.debug,
-            verboseLogging: this.agent.debug,
+            productionMode: !this.agent.isDebug(),
+            verboseLogging: this.agent.isDebug(),
             useHTTPS: top.location.href.search(/^https/) > -1
         };
     };
     OzTamVo.prototype.getVendorVersion = function () {
-        var playerInfo = this.agent.playerInfoVo;
-        var platformInfo = playerInfo.isMobile ? 'Mobile-Web' : 'Desktop-Web';
+        var data = this.agent.getData();
+        var platformInfo = data.isMobile ? 'Mobile-Web' : 'Desktop-Web';
         if (BuildInfo.isChromecast()) {
             platformInfo = 'Chromecast';
         }
         return [
             this.platform,
             platformInfo,
-            playerInfo.playerVersion
+            data.playerVersion
         ].join('_');
     };
     OzTamVo.prototype.getMediaInfo = function () {
-        var metadata = this.agent.metadataVo;
+        var data = this.agent.getData();
         return {
-            mediaId: metadata.ozTamMediaId || metadata.mediaId,
-            url: metadata.assetUrl,
-            mediaDuration: metadata.duration,
-            mediaType: metadata.isLive ? 'live' : 'vod',
+            mediaId: data.ozTamMediaId || data.mediaId,
+            url: data.assetUrl,
+            mediaDuration: data.duration,
+            mediaType: data.isLive ? 'live' : 'vod',
             mediaPositionFunction: this.getPlayheadTime.bind(this),
             properties: this.getPropertyDictionary()
         };
     };
     OzTamVo.prototype.getPlayheadTime = function () {
-        return Math.floor(this.agent.playheadTime);
+        return Math.floor(this.agent.getData().playhead);
     };
     OzTamVo.prototype.getPropertyDictionary = function () {
-        var playerInfo = this.agent.playerInfoVo;
-        var metadata = this.agent.metadataVo;
+        var data = this.agent.getData();
         var property = {};
-        if (metadata.ozTamMediaId) {
-            property.altMediaId = metadata.mediaId;
+        if (data.ozTamMediaId) {
+            property.altMediaId = data.mediaId;
         }
-        if (playerInfo.userId) {
-            property.demo1 = playerInfo.userId;
+        if (data.userId) {
+            property.demo1 = data.userId;
         }
         return property;
     };
     OzTamVo.prototype.isOzTamOptOut = function () {
-        if (!this.agent.metadataVo) {
-            return false;
-        }
-        return this.agent.metadataVo.ozTamOptOut;
+        return this.agent.getData().ozTamOptOut;
     };
     __decorate([
-        exports.ModuleParam()
+        ModuleParam()
     ], OzTamVo.prototype, "publisherId", void 0);
     __decorate([
-        exports.ModuleParam()
+        ModuleParam()
     ], OzTamVo.prototype, "platform", void 0);
     OzTamVo = __decorate([
         Destroyable()
