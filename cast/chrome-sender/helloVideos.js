@@ -58,6 +58,7 @@ var currentMediaThumb = mediaThumbs[0];
 var timer = null;
 
 var applicationIDs = [
+    'AF026B04',
     '66354228'
 ];
 
