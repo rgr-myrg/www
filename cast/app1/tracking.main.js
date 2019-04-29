@@ -88,3 +88,21 @@ tracker.on('contentStart', () => {
         ozTamOptOut: false
     }
 });
+
+tracker.on('adBreakStart', () => {
+    return {
+        adBreakType: 'pre',
+        adBreakPosition: 1,
+        adBreakDuration: 5
+    }
+});
+
+tracker.on('adStart', () => {
+    return {
+        adId: 'pre',
+        adTitle: '<the-ad-title>',
+        adAssetUrl: '<the-ad-asset-url>',
+        adPosition: 1,
+        adDuration: 5
+    }
+});

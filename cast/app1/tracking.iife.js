@@ -175,22 +175,6 @@ var Queue = /** @class */ (function () {
     return Queue;
 }());
 exports.Queue = Queue;
-var Reflector = /** @class */ (function () {
-    function Reflector() {
-    }
-    Reflector.mergeObjects = function (source, destination) {
-        if (typeof source === 'object') {
-            Object.keys(source).forEach(function (key) {
-                if (destination.hasOwnProperty(key)) {
-                    destination[key] = source[key];
-                }
-            });
-        }
-        return destination;
-    };
-    return Reflector;
-}());
-exports.Reflector = Reflector;
 var RestClient = /** @class */ (function () {
     function RestClient(baseUrl) {
         this.baseUrl = baseUrl;
@@ -339,7 +323,7 @@ var DataProxy = /** @class */ (function () {
         return this.instance || (this.instance = new this());
     };
     DataProxy.prototype.update = function (data) {
-        this.metadata = Reflector.mergeObjects(data, this.metadata);
+        this.metadata = Object.assign(this.metadata, data);
         this.metadata.timestamp = (new Date()).getTime();
     };
     DataProxy.prototype.getData = function () {
@@ -575,7 +559,7 @@ var Tracker = /** @class */ (function (_super) {
         _this.registrar = new Registrar();
         // Modules list can be created at build time or supplied at run time.
         _this.modules = [AdobeAgent, ConvivaCastAgent, OzTamAgent];
-        _this.version = 'tracking v0.0.15 Sun, 21 Apr 2019 16:12:34 GMT';
+        _this.version = 'tracking v0.1.1 Mon, 29 Apr 2019 23:21:33 GMT';
         return _this;
     }
     Tracker.prototype.track = function (name, data) {
@@ -606,7 +590,8 @@ var ChromecastTracker = /** @class */ (function (_super) {
     function ChromecastTracker() {
         var _this = _super.call(this) || this;
         _this.playhead = 0;
-        _this.hasLoadStart = false;
+        _this.hasSessionStart = false;
+        _this.hasClipStarted = false;
         _this.isBuffering = false;
         _this.isAdPlaying = false;
         _this.isPaused = false;
@@ -621,14 +606,13 @@ var ChromecastTracker = /** @class */ (function (_super) {
         var _a;
         var type = cast.framework.events.EventType;
         var eventMap = (_a = {},
-            _a[type.LOAD_START] = this.onLoadStart,
             _a[type.CLIP_STARTED] = this.onClipStarted,
-            _a[type.BUFFERING] = this.onBuffering,
-            _a[type.TIME_UPDATE] = this.onTimeUpdate,
             _a[type.BREAK_STARTED] = this.onBreakStarted,
             _a[type.BREAK_CLIP_STARTED] = this.onBreakClipStarted,
             _a[type.BREAK_CLIP_ENDED] = this.onBreakClipEnded,
             _a[type.BREAK_ENDED] = this.onBreakEnded,
+            _a[type.BUFFERING] = this.onBuffering,
+            _a[type.TIME_UPDATE] = this.onTimeUpdate,
             _a[type.PLAYING] = this.onPlaying,
             _a[type.PAUSE] = this.onPause,
             _a[type.SEEKING] = this.onSeeking,
@@ -645,14 +629,31 @@ var ChromecastTracker = /** @class */ (function (_super) {
     ChromecastTracker.prototype.on = function (eventName, callback) {
         this.eventCallback[eventName] = callback;
     };
-    ChromecastTracker.prototype.onLoadStart = function (e) {
-        this.trackEvent(AppEvent.SessionStart, {
-            playerManager: this.playerManager,
-            playerInitTime: (new Date()).getTime()
-        });
-    };
     ChromecastTracker.prototype.onClipStarted = function (e) {
-        this.trackEvent(AppEvent.ContentStart);
+        !this.hasSessionStart && this.trackSessionStart();
+        if (this.isAdPlaying) {
+            return;
+        }
+        if (!this.hasClipStarted) {
+            this.hasClipStarted = true;
+            this.trackEvent(AppEvent.ContentStart);
+        }
+    };
+    ChromecastTracker.prototype.onBreakStarted = function (e) {
+        !this.hasSessionStart && this.trackSessionStart();
+        this.trackEvent(AppEvent.AdBreakStart);
+    };
+    ChromecastTracker.prototype.onBreakClipStarted = function (e) {
+        this.isAdPlaying = true;
+        this.trackEvent(AppEvent.AdStart);
+    };
+    ChromecastTracker.prototype.onBreakClipEnded = function (e) {
+        this.isAdPlaying = false;
+        this.trackEvent(AppEvent.AdEnd);
+    };
+    ChromecastTracker.prototype.onBreakEnded = function (e) {
+        this.isAdPlaying = false;
+        this.trackEvent(AppEvent.AdBreakEnd);
     };
     ChromecastTracker.prototype.onBuffering = function (e) {
         if (!this.isBuffering) {
@@ -673,21 +674,6 @@ var ChromecastTracker = /** @class */ (function (_super) {
             this.playhead = e.currentMediaTime;
             this.trackEvent(AppEvent.PlayheadUpdate);
         }
-    };
-    ChromecastTracker.prototype.onBreakStarted = function (e) {
-        this.trackEvent(AppEvent.AdBreakStart);
-    };
-    ChromecastTracker.prototype.onBreakClipStarted = function (e) {
-        this.isAdPlaying = true;
-        this.trackEvent(AppEvent.AdStart);
-    };
-    ChromecastTracker.prototype.onBreakClipEnded = function (e) {
-        this.isAdPlaying = false;
-        this.trackEvent(AppEvent.AdEnd);
-    };
-    ChromecastTracker.prototype.onBreakEnded = function (e) {
-        this.isAdPlaying = false;
-        this.trackEvent(AppEvent.AdBreakEnd);
     };
     ChromecastTracker.prototype.onPlaying = function (e) {
         if (this.isPaused) {
@@ -711,10 +697,14 @@ var ChromecastTracker = /** @class */ (function (_super) {
         this.trackEvent(AppEvent.BitrateChange, { currentBitrate: e.totalBitrate });
     };
     ChromecastTracker.prototype.onClipEnded = function (e) {
+        if (this.isAdPlaying) {
+            return;
+        }
+        this.hasClipStarted = false;
         this.trackEvent(AppEvent.ContentEnd);
     };
     ChromecastTracker.prototype.onMediaFinished = function (e) {
-        this.trackEvent(AppEvent.SessionEnd);
+        this.trackSessionEnd();
     };
     ChromecastTracker.prototype.onPlayerError = function (event) {
         if (event && event.endedReason && event.endedReason === cast.framework.events.EndedReason.ERROR) {
@@ -724,6 +714,21 @@ var ChromecastTracker = /** @class */ (function (_super) {
                 isFatal: false
             });
         }
+    };
+    ChromecastTracker.prototype.trackSessionStart = function () {
+        this.hasSessionStart = true;
+        this.trackEvent(AppEvent.SessionStart, {
+            playerManager: this.playerManager,
+            playerInitTime: (new Date()).getTime()
+        });
+    };
+    ChromecastTracker.prototype.trackSessionEnd = function () {
+        this.hasSessionStart = false;
+        this.hasClipStarted = false;
+        this.isAdPlaying = false;
+        this.isBuffering = false;
+        this.isPaused = false;
+        this.trackEvent(AppEvent.SessionEnd);
     };
     ChromecastTracker.prototype.trackEvent = function (name, data) {
         var payload = data || {};
@@ -1124,7 +1129,7 @@ var ConvivaCastVo = /** @class */ (function (_super) {
     };
     ConvivaCastVo.prototype.getContentInfo = function () {
         var data = this.agent.getData();
-        var info = new Conviva.ConvivaContentInfo();
+        var info = new this.agent.Conviva.ConvivaContentInfo();
         info.playerName = data.playerName;
         info.streamUrl = data.assetUrl;
         info.assetName = data.videoTitle;
