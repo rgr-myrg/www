@@ -2,32 +2,41 @@ const posterUrl = "https://redirector.gvt1.com/videoplayback/id/5bad011a1282b323
 const adFileUrl = "//mirrors.standaloneinstaller.com/video-sample/TRA3106.mp4";
 const playerManager = cast.framework.CastReceiverContext.getInstance().getPlayerManager();
 
+function addBreakToMedia(request) {
+    request.media.breakClips = [{
+        id: 'AdClip',
+        title: 'Test Ad',
+        posterUrl: posterUrl,
+        contentId: adFileUrl,
+        contentType: 'video/mp4',
+        duration: 16
+    }];
+    request.media.breaks = [
+        {
+            id: 'AdBreak1',
+            breakClipIds: ['AdClip'],
+            position: 0
+        },
+        {
+            id: 'AdBreak2',
+            breakClipIds: ['AdClip'],
+            position: 60
+        }
+    ];
+}
+
 playerManager.setMessageInterceptor(
     cast.framework.messages.MessageType.LOAD,
     request => {
         console.log('[MessageType.LOAD] Inserting Ad Break', request);
+        addBreakToMedia(request);
 
         // request.media.breakClips = [{
-        //     id: 'AdClip1',
-        //     title: 'Test Ad',
-        //     contentId: 'video/small.mp4',
-        //     contentType: 'video/mp4',
-        //     posterUrl: posterUrl,
-        //     whenSkippable: 2
-        // }];
-        //
-        // request.media.breaks = [{
         //     id: 'AdBreak1',
-        //     breakClipIds: ['AdClip1'],
-        //     position: 0
+        //     vastAdsRequest:{
+        //         adTagUrl: 'https://castsample.com/vast?rand=' + Math.floor(Math.random()* 10000)
+        //     }
         // }];
-
-        request.media.breakClips = [{
-            id: 'AdBreak1',
-            vastAdsRequest:{
-                adTagUrl: 'https://castsample.com/vast?rand=' + Math.floor(Math.random()* 10000)
-            }
-        }];
 
         return request;
     }
