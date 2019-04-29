@@ -15,12 +15,14 @@ function addBreakToMedia(request) {
         {
             id: 'AdBreak1',
             breakClipIds: ['AdClip'],
-            position: 0
+            position: 0,
+            isEmbedded: false
         },
         {
             id: 'AdBreak2',
             breakClipIds: ['AdClip'],
-            position: 60
+            position: 60,
+            isEmbedded: false
         }
     ];
 }
