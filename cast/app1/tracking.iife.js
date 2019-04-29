@@ -559,7 +559,7 @@ var Tracker = /** @class */ (function (_super) {
         _this.registrar = new Registrar();
         // Modules list can be created at build time or supplied at run time.
         _this.modules = [AdobeAgent, ConvivaCastAgent, OzTamAgent];
-        _this.version = 'tracking v0.1.1 Mon, 29 Apr 2019 23:21:33 GMT';
+        _this.version = 'tracking v0.1.1 Mon, 29 Apr 2019 23:40:56 GMT';
         return _this;
     }
     Tracker.prototype.track = function (name, data) {
@@ -618,7 +618,6 @@ var ChromecastTracker = /** @class */ (function (_super) {
             _a[type.SEEKING] = this.onSeeking,
             _a[type.SEEKED] = this.onSeeked,
             _a[type.BITRATE_CHANGED] = this.onBitRateChanged,
-            _a[type.CLIP_ENDED] = this.onClipEnded,
             _a[type.MEDIA_FINISHED] = this.onMediaFinished,
             _a[type.ERROR] = this.onPlayerError,
             _a);
@@ -630,11 +629,11 @@ var ChromecastTracker = /** @class */ (function (_super) {
         this.eventCallback[eventName] = callback;
     };
     ChromecastTracker.prototype.onClipStarted = function (e) {
-        !this.hasSessionStart && this.trackSessionStart();
         if (this.isAdPlaying) {
             return;
         }
         if (!this.hasClipStarted) {
+            !this.hasSessionStart && this.trackSessionStart();
             this.hasClipStarted = true;
             this.trackEvent(AppEvent.ContentStart);
         }
@@ -696,13 +695,6 @@ var ChromecastTracker = /** @class */ (function (_super) {
     ChromecastTracker.prototype.onBitRateChanged = function (e) {
         this.trackEvent(AppEvent.BitrateChange, { currentBitrate: e.totalBitrate });
     };
-    ChromecastTracker.prototype.onClipEnded = function (e) {
-        if (this.isAdPlaying) {
-            return;
-        }
-        this.hasClipStarted = false;
-        this.trackEvent(AppEvent.ContentEnd);
-    };
     ChromecastTracker.prototype.onMediaFinished = function (e) {
         this.trackSessionEnd();
     };
@@ -723,6 +715,7 @@ var ChromecastTracker = /** @class */ (function (_super) {
         });
     };
     ChromecastTracker.prototype.trackSessionEnd = function () {
+        this.trackEvent(AppEvent.ContentEnd);
         this.hasSessionStart = false;
         this.hasClipStarted = false;
         this.isAdPlaying = false;
