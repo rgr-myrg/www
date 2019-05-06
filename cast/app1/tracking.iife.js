@@ -343,6 +343,7 @@ var DataVo = /** @class */ (function () {
         this.hlsJsPlayer = {};
         this.videoElement = {};
         this.isMobile = false;
+        this.hasSessionResumed = false;
         this.sessionId = '';
         /* Ad Break Info */
         this.adBreakType = '';
@@ -559,7 +560,7 @@ var Tracker = /** @class */ (function (_super) {
         _this.registrar = new Registrar();
         // Modules list can be created at build time or supplied at run time.
         _this.modules = [AdobeAgent, ConvivaCastAgent, OzTamAgent];
-        _this.version = 'tracking v0.1.1 Mon, 29 Apr 2019 23:40:56 GMT';
+        _this.version = 'tracking v0.1.1 Mon, 06 May 2019 20:49:33 GMT';
         return _this;
     }
     Tracker.prototype.track = function (name, data) {
@@ -585,13 +586,84 @@ var Tracker = /** @class */ (function (_super) {
     return Tracker;
 }(Observable));
 exports.Tracker = Tracker;
+var CastTracker = /** @class */ (function (_super) {
+    __extends(CastTracker, _super);
+    function CastTracker() {
+        var _this = _super.call(this) || this;
+        _this.playhead = 0;
+        _this.hasPlayerLoadComplete = false;
+        _this.hasSessionStart = false;
+        _this.hasClipStarted = false;
+        _this.hasBreakStarted = false;
+        _this.isBuffering = false;
+        _this.isAdPlaying = false;
+        _this.isPaused = false;
+        _this.eventCallback = {};
+        _this.context = cast.framework.CastReceiverContext.getInstance();
+        _this.playerManager = _this.context.getPlayerManager();
+        _this.addEventListeners();
+        return _this;
+    }
+    CastTracker.prototype.addEventListeners = function () {
+        this.playerManager.addEventListener(cast.framework.events.EventType.ALL, this.onEventTypeAll.bind(this));
+    };
+    CastTracker.prototype.onEventTypeAll = function (event) {
+        var type = cast.framework.events.EventType;
+        switch (event.type) {
+            case type.PLAYER_LOAD_COMPLETE:
+                this.hasPlayerLoadComplete = true;
+                break;
+            case type.CLIP_STARTED:
+                break;
+            case type.MEDIA_FINISHED:
+                this.hasSessionStart = false;
+                this.hasClipStarted = false;
+                this.hasBreakStarted = false;
+                this.isAdPlaying = false;
+                this.isBuffering = false;
+                this.isPaused = false;
+                this.trackSessionEnd();
+                break;
+        }
+    };
+    CastTracker.prototype.on = function (eventName, callback) {
+        this.eventCallback[eventName] = callback;
+    };
+    CastTracker.prototype.trackSessionStart = function () {
+        this.trackEvent(AppEvent.SessionStart, {
+            playerManager: this.playerManager,
+            playerInitTime: (new Date()).getTime()
+        });
+    };
+    CastTracker.prototype.trackSessionEnd = function () {
+        this.trackEvent(AppEvent.ContentEnd);
+        this.trackEvent(AppEvent.SessionEnd);
+    };
+    CastTracker.prototype.trackEvent = function (name, data) {
+        var payload = data || {};
+        // Merge data from callback
+        if (typeof this.eventCallback[name] === 'function') {
+            var eventData = this.eventCallback[name]();
+            if (typeof eventData === 'object') {
+                payload = Object.assign(payload, eventData);
+                delete this.eventCallback[name];
+            }
+        }
+        // Sync up the tracker with the latest playhead position
+        payload.playhead = this.playhead;
+        _super.prototype.track.call(this, name, payload);
+    };
+    return CastTracker;
+}(Tracker));
 var ChromecastTracker = /** @class */ (function (_super) {
     __extends(ChromecastTracker, _super);
     function ChromecastTracker() {
         var _this = _super.call(this) || this;
         _this.playhead = 0;
+        _this.hasPlayerLoadComplete = false;
         _this.hasSessionStart = false;
         _this.hasClipStarted = false;
+        _this.hasBreakStarted = false;
         _this.isBuffering = false;
         _this.isAdPlaying = false;
         _this.isPaused = false;
@@ -606,6 +678,7 @@ var ChromecastTracker = /** @class */ (function (_super) {
         var _a;
         var type = cast.framework.events.EventType;
         var eventMap = (_a = {},
+            _a[type.PLAYER_LOAD_COMPLETE] = this.onPlayerLoadComplete,
             _a[type.CLIP_STARTED] = this.onClipStarted,
             _a[type.BREAK_STARTED] = this.onBreakStarted,
             _a[type.BREAK_CLIP_STARTED] = this.onBreakClipStarted,
@@ -628,34 +701,55 @@ var ChromecastTracker = /** @class */ (function (_super) {
     ChromecastTracker.prototype.on = function (eventName, callback) {
         this.eventCallback[eventName] = callback;
     };
+    ChromecastTracker.prototype.onPlayerLoadComplete = function (e) {
+        this.hasPlayerLoadComplete = true;
+    };
     ChromecastTracker.prototype.onClipStarted = function (e) {
         if (this.isAdPlaying) {
             return;
         }
+        // When a clip starts playing ad breaks are over
+        //this.hasBreakStarted = false;
+        // Start the session the first time
         if (!this.hasClipStarted) {
-            !this.hasSessionStart && this.trackSessionStart();
-            this.hasClipStarted = true;
+            this.startSession();
             this.trackEvent(AppEvent.ContentStart);
         }
+        // Track content resume in case we are here after an ad break
+        if (this.hasBreakStarted && this.isPaused) {
+            this.hasBreakStarted = false;
+            this.isPaused = false;
+            this.trackEvent(AppEvent.ContentResume);
+        }
+        this.hasClipStarted = true;
     };
     ChromecastTracker.prototype.onBreakStarted = function (e) {
-        !this.hasSessionStart && this.trackSessionStart();
+        this.startSession();
+        this.hasBreakStarted = true;
         this.trackEvent(AppEvent.AdBreakStart);
     };
     ChromecastTracker.prototype.onBreakClipStarted = function (e) {
+        // track ad break started if missed the first time
+        !this.hasBreakStarted && this.onBreakStarted(e);
+        // pause HBs for main content
+        this.hasClipStarted && this.onPause(e);
         this.isAdPlaying = true;
         this.trackEvent(AppEvent.AdStart);
     };
     ChromecastTracker.prototype.onBreakClipEnded = function (e) {
         this.isAdPlaying = false;
+        if (e.endedReason === 'SKIPPED') {
+            this.trackEvent(AppEvent.AdSkip);
+        }
         this.trackEvent(AppEvent.AdEnd);
     };
     ChromecastTracker.prototype.onBreakEnded = function (e) {
         this.isAdPlaying = false;
+        // this.hasBreakStarted = false;
         this.trackEvent(AppEvent.AdBreakEnd);
     };
     ChromecastTracker.prototype.onBuffering = function (e) {
-        if (!this.isBuffering) {
+        if (this.hasSessionStart && !this.isBuffering) {
             this.isBuffering = true;
             this.trackEvent(AppEvent.BufferStart);
         }
@@ -707,8 +801,14 @@ var ChromecastTracker = /** @class */ (function (_super) {
             });
         }
     };
+    ChromecastTracker.prototype.startSession = function () {
+        // Track the session start if we haven't previously
+        if (this.hasPlayerLoadComplete && !this.hasSessionStart) {
+            this.hasSessionStart = true;
+            this.trackSessionStart();
+        }
+    };
     ChromecastTracker.prototype.trackSessionStart = function () {
-        this.hasSessionStart = true;
         this.trackEvent(AppEvent.SessionStart, {
             playerManager: this.playerManager,
             playerInitTime: (new Date()).getTime()
@@ -718,6 +818,7 @@ var ChromecastTracker = /** @class */ (function (_super) {
         this.trackEvent(AppEvent.ContentEnd);
         this.hasSessionStart = false;
         this.hasClipStarted = false;
+        this.hasBreakStarted = false;
         this.isAdPlaying = false;
         this.isBuffering = false;
         this.isPaused = false;
@@ -727,16 +828,18 @@ var ChromecastTracker = /** @class */ (function (_super) {
         var payload = data || {};
         // Merge data from callback
         if (typeof this.eventCallback[name] === 'function') {
-            var eventData_1 = this.eventCallback[name]();
-            if (typeof eventData_1 === 'object') {
-                Object.keys(eventData_1).forEach(function (key) {
-                    payload[key] = eventData_1[key];
-                });
+            var eventData = this.eventCallback[name]();
+            if (typeof eventData === 'object') {
+                // Object.keys(eventData).forEach(key => {
+                //     payload[key] = eventData[key];
+                // });
+                payload = Object.assign(payload, eventData);
                 delete this.eventCallback[name];
             }
         }
-        // Sync up the tracker with the latest playhead position on every event
+        // Sync up the tracker with the latest playhead position
         payload.playhead = this.playhead;
+        console.log('[#####]', name, payload);
         _super.prototype.track.call(this, name, payload);
     };
     return ChromecastTracker;
@@ -898,6 +1001,7 @@ var AdobeVo = /** @class */ (function (_super) {
             'analytics.visitorId': data.visitorId,
             'analytics.enableSSL': this.enableSSL,
             'visitor.marketingCloudOrgId': this.marketingCloudOrgId,
+            'visitor.marketingCloudUserId': this.marketingCloudUserId,
             'media.playerName': data.playerName,
             'media.contentType': data.isLive ? 'Live' : 'VOD',
             'media.length': data.duration,
@@ -915,7 +1019,7 @@ var AdobeVo = /** @class */ (function (_super) {
             // Set to true if the session was closed and then resumed at a later time, e.g., 
             // the user left the video but eventually came back, and the player resumed the 
             // video from the playhead where it was stopped
-            'media.resume': false
+            'media.resume': data.hasSessionResumed
         };
         eventData.customMetadata = data.contextData;
         return eventData;
@@ -983,6 +1087,9 @@ var AdobeVo = /** @class */ (function (_super) {
     __decorate([
         ModuleParam()
     ], AdobeVo.prototype, "marketingCloudOrgId", void 0);
+    __decorate([
+        ModuleParam()
+    ], AdobeVo.prototype, "marketingCloudUserId", void 0);
     __decorate([
         ModuleParam()
     ], AdobeVo.prototype, "devApiServer", void 0);
