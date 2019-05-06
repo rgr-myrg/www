@@ -32,7 +32,7 @@
         }
     },
     OzTam: {
-        enabled: false,
+        enabled: true,
         category: 'tracking',
         params: {
             publisherId: '779e3a9f-0ad4-4288-ae57-b4fba8259c1f',
@@ -40,7 +40,7 @@
         }
     },
     ConvivaCast: {
-        enabled: false,
+        enabled: true,
         category: 'tracking',
         params: {
             customerId: 'c3.CBS',
