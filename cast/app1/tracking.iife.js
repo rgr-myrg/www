@@ -560,7 +560,7 @@ var Tracker = /** @class */ (function (_super) {
         _this.registrar = new Registrar();
         // Modules list can be created at build time or supplied at run time.
         _this.modules = [AdobeAgent, ConvivaCastAgent, OzTamAgent];
-        _this.version = 'tracking v0.1.1 Mon, 06 May 2019 21:13:12 GMT';
+        _this.version = 'tracking v0.1.1 Mon, 06 May 2019 21:18:26 GMT';
         return _this;
     }
     Tracker.prototype.track = function (name, data) {
@@ -727,8 +727,9 @@ var ChromecastTracker = /** @class */ (function (_super) {
         if (!this.hasPlayerLoadComplete) {
             return;
         }
-        //this.startSession();
         this.hasBreakStarted = true;
+        // pause HBs for main content
+        this.hasClipStarted && this.onPause(e);
         this.trackEvent(AppEvent.AdBreakStart);
     };
     ChromecastTracker.prototype.onBreakClipStarted = function (e) {
@@ -737,8 +738,6 @@ var ChromecastTracker = /** @class */ (function (_super) {
         }
         // track ad break started if missed the first time
         !this.hasBreakStarted && this.onBreakStarted(e);
-        // pause HBs for main content
-        this.hasClipStarted && this.onPause(e);
         this.isAdPlaying = true;
         this.trackEvent(AppEvent.AdStart);
     };
