@@ -560,7 +560,7 @@ var Tracker = /** @class */ (function (_super) {
         _this.registrar = new Registrar();
         // Modules list can be created at build time or supplied at run time.
         _this.modules = [AdobeAgent, ConvivaCastAgent, OzTamAgent];
-        _this.version = 'tracking v0.1.1 Tue, 07 May 2019 15:25:25 GMT';
+        _this.version = 'tracking v0.1.1 Tue, 07 May 2019 15:39:35 GMT';
         return _this;
     }
     Tracker.prototype.track = function (name, data) {
@@ -673,6 +673,7 @@ var ChromecastTracker = /** @class */ (function (_super) {
         _this.isBuffering = false;
         _this.isAdPlaying = false;
         _this.isPaused = false;
+        _this.isSeeking = false;
         _this.eventCallback = {};
         _this.context = cast.framework.CastReceiverContext.getInstance();
         _this.playerManager = _this.context.getPlayerManager();
@@ -694,7 +695,7 @@ var ChromecastTracker = /** @class */ (function (_super) {
             _a[type.TIME_UPDATE] = this.onTimeUpdate,
             _a[type.PLAYING] = this.onPlaying,
             _a[type.PAUSE] = this.onPause,
-            _a[type.SEEKING] = this.onSeeking,
+            _a[type.REQUEST_SEEK] = this.onRequestSeek,
             _a[type.SEEKED] = this.onSeeked,
             _a[type.BITRATE_CHANGED] = this.onBitRateChanged,
             _a[type.MEDIA_FINISHED] = this.onMediaFinished,
@@ -792,11 +793,15 @@ var ChromecastTracker = /** @class */ (function (_super) {
             this.trackEvent(this.isAdPlaying ? AppEvent.AdPause : AppEvent.ContentPause);
         }
     };
-    ChromecastTracker.prototype.onSeeking = function (e) {
+    ChromecastTracker.prototype.onRequestSeek = function (e) {
+        this.isSeeking = true;
         this.trackEvent(AppEvent.SeekStart);
     };
     ChromecastTracker.prototype.onSeeked = function (e) {
-        this.trackEvent(AppEvent.SeekEnd);
+        if (this.isSeeking) {
+            this.trackEvent(AppEvent.SeekEnd);
+            this.isSeeking = false;
+        }
     };
     ChromecastTracker.prototype.onBitRateChanged = function (e) {
         this.trackEvent(AppEvent.BitrateChange, { currentBitrate: e.totalBitrate });
