@@ -560,7 +560,7 @@ var Tracker = /** @class */ (function (_super) {
         _this.registrar = new Registrar();
         // Modules list can be created at build time or supplied at run time.
         _this.modules = [AdobeAgent, ConvivaCastAgent, OzTamAgent];
-        _this.version = 'tracking v0.1.1 Mon, 06 May 2019 21:18:26 GMT';
+        _this.version = 'tracking v0.1.1 Tue, 07 May 2019 14:58:19 GMT';
         return _this;
     }
     Tracker.prototype.track = function (name, data) {
@@ -582,6 +582,12 @@ var Tracker = /** @class */ (function (_super) {
     };
     Tracker.prototype.setLogger = function (logger) {
         Log.getDefault().setLogger(logger);
+    };
+    Tracker.prototype.isDebug = function () {
+        return Log.getDefault().debug;
+    };
+    Tracker.prototype.logger = function () {
+        return Log.getDefault().getLogger();
     };
     return Tracker;
 }(Observable));
@@ -844,7 +850,7 @@ var ChromecastTracker = /** @class */ (function (_super) {
         }
         // Sync up the tracker with the latest playhead position
         payload.playhead = this.playhead;
-        console.log('[#####]', name, payload);
+        this.isDebug() && this.logger().log('[Track] ' + name, payload);
         _super.prototype.track.call(this, name, payload);
     };
     return ChromecastTracker;
