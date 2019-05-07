@@ -560,7 +560,7 @@ var Tracker = /** @class */ (function (_super) {
         _this.registrar = new Registrar();
         // Modules list can be created at build time or supplied at run time.
         _this.modules = [AdobeAgent, ConvivaCastAgent, OzTamAgent];
-        _this.version = 'tracking v0.1.1 Tue, 07 May 2019 16:07:40 GMT';
+        _this.version = 'tracking v0.1.1 Tue, 07 May 2019 16:21:26 GMT';
         return _this;
     }
     Tracker.prototype.track = function (name, data) {
@@ -950,7 +950,7 @@ var AdobeAgent = /** @class */ (function (_super) {
         this.restClient.request(options).then(function (response) {
             _this.isDebug() && _this.logger.log(_this.config.name, 'statusCode', response.statusCode);
         });
-        if (eventName === 'play') {
+        if (eventName === 'play' && !this.isAdPlaying) {
             this.startHbTracking();
         }
     };
