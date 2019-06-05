@@ -102,7 +102,8 @@ tracker.on('contentStart', () => {
     }
 });
 
-tracker.on('adBreakStart', () => {
+tracker.on('adBreakStart', (event) => {
+    console.log('[#####] adBreakStart', event);
     return {
         adBreakType: 'pre',
         adBreakPosition: 1,
@@ -110,7 +111,8 @@ tracker.on('adBreakStart', () => {
     }
 });
 
-tracker.on('adStart', () => {
+tracker.on('adStart', (event) => {
+    console.log('[#####] adStart', event);
     return {
         adId: 'pre',
         adTitle: '<the-ad-title>',
