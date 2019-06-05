@@ -24,10 +24,11 @@
         params: {
             prodApiServer: 'cbs-stage.hb-api.omtrdc.net',
             devApiServer: 'cbs-dev.hb-api.omtrdc.net',
-            trackingServer: '<your-aa-tracking-server>',
-            reportSuite: '<your-aa-rsid>',
-            marketingCloudOrgId: '<your-aa-marketingCloudOrgId>',
-            channel: 'AU-AllAccess',
+            trackingServer: 'saa.cbsi.com',
+            reportSuite: 'cnetcbscomsite',
+            marketingCloudOrgId: '10D31225525FF5790A490D4D@AdobeOrg',
+            marketingCloudUserId: '<d_mid-value-from-json>',
+            channel: 'CBS Entertainment',
             enableSSL: true
         }
     },
@@ -52,19 +53,31 @@
 });
 
 tracker.setContextData({
-    brandPlatformId: '<your-brand-platform-id>',
-    userId: '<your-user-id>',
-    visitorId: '<your-visitor-id>'
+    deviceId:  "<deviceId>",
+    brandPlatformId:  "cbscom_ott_chromecast",
+    castSenderApp:  "<iOS/Android/Chrome>",
+    mediaDynamicPlay:  "<true/false>",
+    mediaContentType:  "vod:movies",
+    mediaSvodContentType:  "paid",
+    pageType:  "video",
+    pageViewGuid:  "<pageViewGuid>",
+    screenName:  "<screenName>",
+    movieId:  "CranAlmZaumgQ7UWYgDVZvdEdZ_xUeDf",
+    movieTitle:  "Ace Ventura: Pet Detective",
+    userRegId:  "<userRegId>",
+    userStatus:  "<userStatus>",
+    userType:  "<userType>"
 });
 
 tracker.on('sessionStart', () => {
     return {
         playerName: '<the-player-name>',
         playerVersion: '<the-player-version>',
-        sessionId: (new Date()).getTime(),
+        sessionId: '<the-session-id>',
+        hasSessionResumed: false,
         userId: '<the-user-id>',
         partner: '<partner>',
-        userCountry: 'au',
+        userCountry: '<the-two-digit-country-code>',
         drmEnabled: false,
         userConnectionType: 'desktop',
         videoElement: document.getElementById('castMediaElementId'),
@@ -74,7 +87,7 @@ tracker.on('sessionStart', () => {
 
 tracker.on('contentStart', () => {
     return {
-        assetURL: '<the-asset-url>',
+        mediaUrl: '<the-asset-url>',
         mediaId: '<the-media-id>',
         ozTamMediaId: 'oz-f0f6155f6efa-6589-8dw9',
         duration: 596,
