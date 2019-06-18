@@ -44,7 +44,8 @@
         enabled: true,
         category: 'tracking',
         params: {
-            customerId: 'c3.CBS',
+            //customerId: 'c3.CBS',
+            customerId: 'c3.CBSCom-Test',
             customerKey: 'ce4836fb66f6e081bcf6fea7df4531f22ac7ffbb',
             testServerUrl: 'cbscom-test.testonly.conviva.com',
             prodServerUrl: 'cbscom-test.testonly.conviva.com'
