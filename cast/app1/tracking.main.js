@@ -7,10 +7,11 @@
  * tracking.context and tracking.playerManager respectively if needed.
  */
 
- let tracker = new vtg.tracking.ChromecastTracker();
- tracker.setDebug(true);
+let tracker = new vtg.tracking.ChromecastTracker();
 
- tracker.setConfig({
+tracker.setDebug(true);
+
+tracker.setConfig({
     Mux: {
         enabled: false,
         params: {
@@ -52,6 +53,19 @@
         }
     }
 });
+
+const playerManager = cast.framework.CastReceiverContext.getInstance().getPlayerManager();
+
+playerManager.setMessageInterceptor(
+    cast.framework.messages.MessageType.LOAD,
+    request => {
+        console.log('[MessageType.LOAD] Setting up Tracking', request);
+        initTracking();
+        return request;
+    }
+);
+
+function initTracking() {
 
 tracker.setContextData({
     deviceId:  "<deviceId>",
@@ -126,3 +140,5 @@ tracker.on('adStart', (event) => {
         playhead: 0
     }
 });
+
+}
