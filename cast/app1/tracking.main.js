@@ -75,6 +75,7 @@ tracker.on('sessionStart', () => {
         playerName: '<the-player-name>',
         playerVersion: '<the-player-version>',
         sessionId: '<the-session-id>',
+        playhead: 0,
         hasSessionResumed: false,
         userId: '<the-user-id>',
         partner: '<partner>',
@@ -82,8 +83,7 @@ tracker.on('sessionStart', () => {
         drmEnabled: false,
         userConnectionType: 'desktop',
         videoElement: document.getElementById('castMediaElementId'),
-        isMobile: false,
-        playhead: 0
+        isMobile: false
     }
 });
 
@@ -93,6 +93,7 @@ tracker.on('contentStart', () => {
         mediaId: '<the-media-id>',
         ozTamMediaId: 'oz-f0f6155f6efa-6589-8dw9',
         duration: 596,
+        playhead: 0,
         videoTitle: '<the-video-title>',
         seriesTitle: '<the-series-title>',
         season: 1,
@@ -100,8 +101,7 @@ tracker.on('contentStart', () => {
         category: '<the-genre>',
         isLive: false,
         episodeFlag: false,
-        ozTamOptOut: false,
-        playhead: 0
+        ozTamOptOut: false
     }
 });
 
@@ -110,7 +110,8 @@ tracker.on('adBreakStart', (event) => {
     return {
         adBreakType: 'pre',
         adBreakPosition: 1,
-        adBreakDuration: 5
+        adBreakDuration: 5,
+        playhead: 0
     }
 });
 
@@ -121,6 +122,7 @@ tracker.on('adStart', (event) => {
         adTitle: '<the-ad-title>',
         adAssetUrl: '<the-ad-asset-url>',
         adPosition: 1,
-        adDuration: 5
+        adDuration: 5,
+        playhead: 0
     }
 });
