@@ -82,7 +82,8 @@ tracker.on('sessionStart', () => {
         drmEnabled: false,
         userConnectionType: 'desktop',
         videoElement: document.getElementById('castMediaElementId'),
-        isMobile: false
+        isMobile: false,
+        playhead: 0
     }
 });
 
@@ -99,7 +100,8 @@ tracker.on('contentStart', () => {
         category: '<the-genre>',
         isLive: false,
         episodeFlag: false,
-        ozTamOptOut: false
+        ozTamOptOut: false,
+        playhead: 0
     }
 });
 
