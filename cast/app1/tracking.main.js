@@ -54,7 +54,7 @@ tracker.setConfig({
     }
 });
 
-const playerManager = cast.framework.CastReceiverContext.getInstance().getPlayerManager();
+//const playerManager = cast.framework.CastReceiverContext.getInstance().getPlayerManager();
 
 playerManager.setMessageInterceptor(
     cast.framework.messages.MessageType.LOAD,
