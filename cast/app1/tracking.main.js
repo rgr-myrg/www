@@ -60,6 +60,7 @@ playerManager.setMessageInterceptor(
     cast.framework.messages.MessageType.LOAD,
     request => {
         console.log('[MessageType.LOAD] Setting up Tracking', request);
+        insertAdBreak(request);
         initTracking();
         return request;
     }

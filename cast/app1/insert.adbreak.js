@@ -31,22 +31,22 @@ function insertAdBreak(request) {
     ];
 }
 
-playerManager.setMessageInterceptor(
-    cast.framework.messages.MessageType.LOAD,
-    request => {
-        console.log('[MessageType.LOAD] Inserting Ad Break', request);
-        insertAdBreak(request);
-
-        // request.media.breakClips = [{
-        //     id: 'AdBreak1',
-        //     vastAdsRequest:{
-        //         adTagUrl: 'https://castsample.com/vast?rand=' + Math.floor(Math.random()* 10000)
-        //     }
-        // }];
-
-        return request;
-    }
-);
+// playerManager.setMessageInterceptor(
+//     cast.framework.messages.MessageType.LOAD,
+//     request => {
+//         console.log('[MessageType.LOAD] Inserting Ad Break', request);
+//         insertAdBreak(request);
+//
+//         // request.media.breakClips = [{
+//         //     id: 'AdBreak1',
+//         //     vastAdsRequest:{
+//         //         adTagUrl: 'https://castsample.com/vast?rand=' + Math.floor(Math.random()* 10000)
+//         //     }
+//         // }];
+//
+//         return request;
+//     }
+// );
 
 //https://developers.google.com/cast/docs/reference/caf_receiver/cast.framework.events#.EventType
 playerManager.addEventListener(
