@@ -9,49 +9,10 @@
 
 let tracker = new vtg.tracking.ChromecastTracker();
 
-tracker.setDebug(true);
+vtg.config.Adobe.marketingCloudUserId = (cloudUserId || (cloudUserId = getCloudUserId(), cloudUserId));
+vtg.config.OzTam.enabled = countryCode() === 'AU';
 
-tracker.setConfig({
-    Mux: {
-        enabled: false,
-        params: {
-            experimentName: 'AllAccess Chromecast Player',
-            propertyKey: 'ec83cce4c209447a2af3d62f2',
-            subPropertyId: 'AU-AllAccess'
-        }
-    },
-    Adobe: {
-        enabled: true,
-        params: {
-            prodApiServer: 'cbs-stage.hb-api.omtrdc.net',
-            devApiServer: 'cbs-dev.hb-api.omtrdc.net',
-            trackingServer: 'saa.cbsi.com',
-            reportSuite: 'cnetcbscomsite',
-            marketingCloudOrgId: '10D31225525FF5790A490D4D@AdobeOrg',
-            marketingCloudUserId: '<d_mid-value-from-json>',
-            channel: 'CBS Entertainment',
-            enableSSL: true
-        }
-    },
-    OzTam: {
-        enabled: true,
-        category: 'tracking',
-        params: {
-            publisherId: '779e3a9f-0ad4-4288-ae57-b4fba8259c1f',
-            platform: 'TenAllAccess'
-        }
-    },
-    ConvivaCast: {
-        enabled: true,
-        category: 'tracking',
-        params: {
-            customerKey: "87a6b28bc7823e67a5bb2a0a6728c702afcae78d",
-            testCustomerKey: "ce4836fb66f6e081bcf6fea7df4531f22ac7ffbb",
-            prodServerUrl: "cws.conviva.com",
-            testServerUrl: "cbscom-test.testonly.conviva.com"
-        }
-    }
-});
+tracker.setConfig(vtg.config);
 
 //const playerManager = cast.framework.CastReceiverContext.getInstance().getPlayerManager();
 
@@ -97,7 +58,8 @@ tracker.on('sessionStart', () => {
         drmEnabled: false,
         userConnectionType: 'desktop',
         videoElement: document.getElementById('castMediaElementId'),
-        isMobile: false
+        isMobile: false,
+        streamId: 'wer876234ewre23'
     }
 });
 

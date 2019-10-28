@@ -12,6 +12,12 @@
         src="//www.gstatic.com/cast/sdk/libs/caf_receiver/v3/cast_receiver_framework.js">
     </script>
 
+    <script>
+        /* Mock CBS All Access Functions */
+        function countryCode() { return 'AU';}
+        function getCloudUserId() { return '1234567890987654321'; }
+        var cloudUserId = getCloudUserId();
+    </script>
     <!-- <script type="text/javascript" src="//imasdk.googleapis.com/js/sdkloader/ima3_dai.js"></script> -->
 
     <!-- <script
@@ -50,7 +56,8 @@
     <video class="castMediaElement" id="castMediaElementId"></video>
 
     <script type="text/javascript" src="insert.adbreak.js"></script>
-    <!-- <script type="text/javascript" src="tracking.iife.js"></script> -->
+    <script type="text/javascript" src="tracking.iife.js"></script>
+    <script type="text/javascript" src="tracking.config.js"></script>
     <script type="text/javascript" src="tracking.main.js"></script>
     <script type="text/javascript">
         /* Start the CastReceiverContext for content Playback */
