@@ -9,7 +9,7 @@
 
 let tracker = new vtg.tracking.ChromecastTracker();
 
-vtg.config.Adobe.marketingCloudUserId = (cloudUserId || (cloudUserId = getCloudUserId(), cloudUserId));
+vtg.config.Adobe.params.marketingCloudUserId = (cloudUserId || (cloudUserId = getCloudUserId(), cloudUserId));
 vtg.config.OzTam.enabled = countryCode() === 'AU';
 
 tracker.setConfig(vtg.config);
