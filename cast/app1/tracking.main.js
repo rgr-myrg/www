@@ -10,7 +10,7 @@
 let tracker = new vtg.tracking.ChromecastTracker();
 
 vtg.config.Adobe.params.marketingCloudUserId = (cloudUserId || (cloudUserId = getCloudUserId(), cloudUserId));
-vtg.config.OzTam.enabled = countryCode() === 'AU';
+vtg.config.OzTam.enabled = (countryCode() === 'AU');
 
 tracker.setConfig(vtg.config);
 
@@ -28,22 +28,23 @@ playerManager.setMessageInterceptor(
 
 function initTracking() {
 
-tracker.setContextData({
-    deviceId:  "<deviceId>",
-    brandPlatformId:  "cbscom_ott_chromecast",
-    castSenderApp:  "<iOS/Android/Chrome>",
-    mediaDynamicPlay:  "<true/false>",
-    mediaContentType:  "vod:movies",
-    mediaSvodContentType:  "paid",
-    pageType:  "video",
-    pageViewGuid:  "<pageViewGuid>",
-    screenName:  "<screenName>",
-    movieId:  "CranAlmZaumgQ7UWYgDVZvdEdZ_xUeDf",
-    movieTitle:  "Ace Ventura: Pet Detective",
-    userRegId:  "<userRegId>",
-    userStatus:  "<userStatus>",
-    userType:  "<userType>"
-});
+// tracker.setContextData({
+//     deviceId:  "<deviceId>",
+//     brandPlatformId:  "cbscom_ott_chromecast",
+//     castSenderApp:  "<iOS/Android/Chrome>",
+//     mediaDynamicPlay:  "<true/false>",
+//     mediaContentType:  "vod:movies",
+//     mediaSvodContentType:  "paid",
+//     pageType:  "video",
+//     pageViewGuid:  "<pageViewGuid>",
+//     screenName:  "<screenName>",
+//     movieId:  "CranAlmZaumgQ7UWYgDVZvdEdZ_xUeDf",
+//     movieTitle:  "Ace Ventura: Pet Detective",
+//     userRegId:  "<userRegId>",
+//     userStatus:  "<userStatus>",
+//     userType:  "<userType>",
+//     showSeriesId: 61456418
+// });
 
 tracker.on('sessionStart', () => {
     return {
@@ -58,26 +59,31 @@ tracker.on('sessionStart', () => {
         drmEnabled: false,
         userConnectionType: 'desktop',
         videoElement: document.getElementById('castMediaElementId'),
-        isMobile: false,
-        streamId: 'wer876234ewre23'
+        isMobile: false
     }
 });
 
 tracker.on('contentStart', () => {
     return {
         mediaUrl: '<the-asset-url>',
-        mediaId: '<the-media-id>',
-        ozTamMediaId: 'oz-f0f6155f6efa-6589-8dw9',
+        mediaId: '4836fb66f6e081bcf6fea7df4531f22ac7ff',
+        //ozTamMediaId: 'oz-f0f6155f6efa-6589-8dw9',
         duration: 596,
         playhead: 0,
-        videoTitle: '<the-video-title>',
-        seriesTitle: '<the-series-title>',
+        videoTitle: 'the-video-title',
+        seriesTitle: 'the-series-title',
         season: 1,
         episode: 3,
-        category: '<the-genre>',
+        category: 'the-genre',
         isLive: false,
         episodeFlag: false,
-        ozTamOptOut: false
+        ozTamOptOut: false,
+        streamId: 'wer876234ewre23',
+        contextData: {
+            brandPlatformId:  "cbscom_ott_chromecast",
+            pageType:  "video",
+            showSeriesId: 61456418
+        }
     }
 });
 
