@@ -47,6 +47,7 @@ function initTracking() {
 // });
 
 tracker.on('sessionStart', () => {
+    console.log('[#####] sessionStart');
     return {
         playerName: '<the-player-name>',
         playerVersion: '<the-player-version>',
@@ -64,6 +65,7 @@ tracker.on('sessionStart', () => {
 });
 
 tracker.on('contentStart', () => {
+    console.log('[#####] contentStart');
     return {
         mediaUrl: '<the-asset-url>',
         mediaId: '4836fb66f6e081bcf6fea7df4531f22ac7ff',
