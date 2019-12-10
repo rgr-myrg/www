@@ -104,7 +104,7 @@ tracker.on('adStart', (event) => {
     return {
         adId: 'pre',
         adTitle: '<the-ad-title>',
-        adAssetUrl: '<the-ad-asset-url>',
+        adUrl: '<the-ad-url>',
         adPosition: 1,
         adDuration: 5,
         playhead: 0
