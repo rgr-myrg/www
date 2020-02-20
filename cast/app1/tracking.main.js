@@ -28,87 +28,72 @@ playerManager.setMessageInterceptor(
 
 function initTracking() {
 
-// tracker.setContextData({
-//     deviceId:  "<deviceId>",
-//     brandPlatformId:  "cbscom_ott_chromecast",
-//     castSenderApp:  "<iOS/Android/Chrome>",
-//     mediaDynamicPlay:  "<true/false>",
-//     mediaContentType:  "vod:movies",
-//     mediaSvodContentType:  "paid",
-//     pageType:  "video",
-//     pageViewGuid:  "<pageViewGuid>",
-//     screenName:  "<screenName>",
-//     movieId:  "CranAlmZaumgQ7UWYgDVZvdEdZ_xUeDf",
-//     movieTitle:  "Ace Ventura: Pet Detective",
-//     userRegId:  "<userRegId>",
-//     userStatus:  "<userStatus>",
-//     userType:  "<userType>",
-//     showSeriesId: 61456418
-// });
-
-tracker.on('sessionStart', () => {
-    console.log('[#####] sessionStart');
-    return {
-        playerName: '<the-player-name>',
-        playerVersion: '<the-player-version>',
-        sessionId: '<the-session-id>',
-        playhead: 0,
-        hasSessionResumed: false,
-        userId: '<the-user-id>',
-        partner: '<partner>',
-        userCountry: '<the-two-digit-country-code>',
-        drmEnabled: false,
-        userConnectionType: 'desktop',
-        videoElement: document.getElementById('castMediaElementId'),
-        isMobile: false
-    }
-});
-
-tracker.on('contentStart', () => {
-    console.log('[#####] contentStart');
-    return {
-        mediaUrl: '<the-asset-url>',
-        mediaId: '4836fb66f6e081bcf6fea7df4531f22ac7ff',
-        //ozTamMediaId: 'oz-f0f6155f6efa-6589-8dw9',
-        duration: 596,
-        playhead: 0,
-        videoTitle: 'the-video-title',
-        seriesTitle: 'the-series-title',
-        season: 1,
-        episode: 3,
-        category: 'the-genre',
-        isLive: false,
-        episodeFlag: false,
-        ozTamOptOut: false,
-        streamId: 'wer876234ewre23',
-        contextData: {
-            brandPlatformId:  "cbscom_ott_chromecast",
-            pageType:  "video",
-            showSeriesId: 61456418
+    tracker.on('sessionStart', () => {
+        console.log('[#####] sessionStart');
+        return {
+            playerName: '<the-player-name>',
+            playerVersion: '<the-player-version>',
+            sessionId: '<the-session-id>',
+            playhead: 0,
+            hasSessionResumed: false,
+            userId: '<the-user-id>',
+            userStatus: 'sb|10',
+            partner: '<partner>',
+            userCountry: 'au',
+            drmEnabled: false,
+            drmType: 'drmType',
+            userConnectionType: 'desktop',
+            videoElement: document.getElementById('castMediaElementId'),
+            isMobile: false
         }
-    }
-});
+    });
 
-tracker.on('adBreakStart', (event) => {
-    console.log('[#####] adBreakStart', event);
-    return {
-        adBreakType: 'pre',
-        adBreakPosition: 1,
-        adBreakDuration: 5,
-        playhead: 0
-    }
-});
+    tracker.on('contentStart', () => {
+        console.log('[#####] contentStart');
+        return {
+            mediaUrl: '<the-asset-url>',
+            mediaId: '4836fb66f6e081bcf6fea7df4531f22ac7ff',
+            //ozTamMediaId: 'oz-f0f6155f6efa-6589-8dw9',
+            duration: 596,
+            playhead: 0,
+            videoTitle: 'the-video-title',
+            seriesTitle: 'the-series-title',
+            season: 1,
+            episode: 3,
+            category: 'the-genre',
+            isLive: false,
+            isEpisode: false,
+            ozTamOptOut: false,
+            streamId: 'wer876234ewre23',
+            cdn: 'Fastly',
+            contextData: {
+                brandPlatformId:  "cbscom_ott_chromecast",
+                pageType:  "video",
+                showSeriesId: 61456418
+            }
+        }
+    });
 
-tracker.on('adStart', (event) => {
-    console.log('[#####] adStart', event);
-    return {
-        adId: 'pre',
-        adTitle: '<the-ad-title>',
-        adUrl: '<the-ad-url>',
-        adPosition: 1,
-        adDuration: 5,
-        playhead: 0
-    }
-});
+    tracker.on('adBreakStart', (event) => {
+        console.log('[#####] adBreakStart', event);
+        return {
+            adBreakType: 'pre',
+            adBreakPosition: 1,
+            adBreakDuration: 5,
+            playhead: 0
+        }
+    });
+
+    tracker.on('adStart', (event) => {
+        console.log('[#####] adStart', event);
+        return {
+            adId: 'pre',
+            adTitle: '<the-ad-title>',
+            adUrl: '<the-ad-url>',
+            adPosition: 1,
+            adDuration: 5,
+            playhead: 0
+        }
+    });
 
 }
